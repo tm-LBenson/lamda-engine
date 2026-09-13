@@ -33,6 +33,7 @@ LUI:RegisterModule({id="cd",name="LamdaCD",build=function(parent)
     LUI:Button(display,"More options",310,-322,260,function()display:Hide();advanced:Show()end)
 
     label(advanced,"Cooldown display options",4,0,true)
+    LUI:Checkbox(advanced,"Combat logging","autoLog",-348,310)
     LUI:Button(advanced,"Back",510,0,90,function()advanced:Hide();display:Show()end)
     label(advanced,"Pin display to",4,-40)
     local anchors={"Top left","Top","Top right","Left","Center","Right","Bottom left","Bottom","Bottom right"}

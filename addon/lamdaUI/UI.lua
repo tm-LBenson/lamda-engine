@@ -153,7 +153,7 @@ end
 function LUI:BuildUI()
     if self.frame then return end
     local f=CreateFrame("Frame","LamdaUIFrame",UIParent,"BackdropTemplate")
-    self.frame=f;f:SetSize(660,520);f:SetPoint("CENTER");f:SetFrameStrata("DIALOG")
+    self.frame=f;f:SetSize(660,558);f:SetPoint("CENTER");f:SetFrameStrata("DIALOG")
     f:SetClampedToScreen(true);f:SetMovable(true);f:EnableMouse(true);f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart",function(self)self:StartMoving()end)
     f:SetScript("OnDragStop",function(self)self:StopMovingOrSizing()end)
@@ -162,21 +162,39 @@ function LUI:BuildUI()
     local title=f:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
     title:SetPoint("TOPLEFT",18,-16);title:SetText("LamdaUI")
     local close=CreateFrame("Button",nil,f,"UIPanelCloseButton");close:SetPoint("TOPRIGHT",-3,-3)
+    local general=CreateFrame("Frame",nil,f)
+    general:SetPoint("TOPLEFT",20,-90);general:SetSize(620,410)
+    self:BuildGeneral(general)
+    local modules=CreateFrame("Frame",nil,f)
+    modules:SetPoint("TOPLEFT",20,-90);modules:SetSize(620,410)
+    self.generalPage=general;self.modulesPage=modules
     local panels,buttons={},{}
-    local function selectTab(index)
+    self.modulePanels=panels
+    local function selectModule(index)
         for i,p in ipairs(panels)do p:SetShown(i==index);buttons[i]:SetEnabled(i~=index)end
+        LUI.selectedModule=LUI.modules[index] and LUI.modules[index].id
     end
     for i,m in ipairs(self.modules)do
-        local p=CreateFrame("Frame",nil,f);p:SetPoint("TOPLEFT",20,-90);p:SetSize(620,370);p:Hide()
+        local p=CreateFrame("Frame",nil,modules);p:SetPoint("TOPLEFT",0,-40);p:SetSize(620,370);p:Hide()
         panels[i]=p;m.build(p)
-        buttons[i]=self:Button(f,m.name,18+(i-1)*124,-48,118,function()selectTab(i)end)
+        buttons[i]=self:Button(modules,m.name,(i-1)*124,0,118,function()selectModule(i)end)
     end
+    local generalButton,modulesButton
+    function self:SelectPage(page)
+        local isGeneral=page=="general"
+        self.selectedPage=isGeneral and "general" or "modules"
+        general:SetShown(isGeneral);modules:SetShown(not isGeneral)
+        generalButton:SetEnabled(not isGeneral);modulesButton:SetEnabled(isGeneral)
+    end
+    generalButton=self:Button(f,"General",18,-48,118,function()LUI:SelectPage("general")end)
+    modulesButton=self:Button(f,"Modules",142,-48,118,function()LUI:SelectPage("modules")end)
+    selectModule(1)
     self.commitInputs=function()for _,commit in ipairs(inputs)do commit()end end
-    local save=self:Button(f,"Apply & Reload",18,-478,150,function()LUI:Save()end)
+    local save=self:Button(f,"Apply & Reload",18,-516,150,function()LUI:Save()end)
     local function refresh()save:SetEnabled(not InCombatLockdown())end
     f:RegisterEvent("PLAYER_REGEN_DISABLED");f:RegisterEvent("PLAYER_REGEN_ENABLED")
     f:SetScript("OnEvent",refresh);f:SetScript("OnShow",function()refresh();LUI:RefreshCooldownPreview()end)
-    selectTab(1);f:Hide()
+    self:SelectPage("general");f:Hide()
     UISpecialFrames=UISpecialFrames or {};table.insert(UISpecialFrames,"LamdaUIFrame")
 end
 
@@ -208,4 +226,9 @@ function LUI:Slider(parent,text,key,y,min,max,step,x)
     end)
     slider:SetScript("OnShow",function(self)refreshing=true;self:SetValue(LUI:DB()[key]);refreshing=false;value:SetText(tostring(LUI:DB()[key]))end)
     return slider
+end
+
+function LUI:OpenUI()
+    self:SelectPage("general")
+    self.frame:Show()
 end

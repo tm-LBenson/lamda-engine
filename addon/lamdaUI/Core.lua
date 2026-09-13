@@ -37,7 +37,7 @@ events:SetScript("OnEvent",function(_,event)
         LUI:BuildUI()
         SLASH_LAMDAUI1="/lui"
         SLASH_LAMDAUI2="/lamdaui"
-        SlashCmdList.LAMDAUI=function() LUI.frame:Show() end
+        SlashCmdList.LAMDAUI=function() LUI:OpenUI() end
     end
     LUI:EnsureLogging()
     C_Timer.After(11,function() LUI:EnsureLogging() end)

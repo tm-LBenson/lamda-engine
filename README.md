@@ -33,11 +33,11 @@ The installer creates **lambaUI** on your desktop with an LUI icon. Click it to
 start the background engine; repeated clicks do not start another instance.
 WoW must use windowed or borderless mode for the external overlay. It appears only
 while WoW is foreground. It is not anchored to DandersFrames; set its position in
-LamdaUI's LamdaCD tab.
+LamdaUI's Modules → LamdaCD page.
 
 1. Start WoW and open `/lui`.
-2. Configure **LamdaCD** and **Settings**, then **Apply & Reload**.
-3. Ensure combat logging is enabled. LamdaUI Settings includes
+2. Configure **General** and **Modules → LamdaCD**, then **Apply & Reload**.
+3. Ensure combat logging is enabled. LamdaCD → More options includes
    Combat logging, which enables it when entering a party instance; `/combatlog`
    also toggles logging and prints the resulting state.
 4. Enter a follower dungeon or delve with a supported companion, or party with a
@@ -46,7 +46,7 @@ LamdaUI's LamdaCD tab.
 
 The old standalone lamdaCD addon is not required by the engine. The installer
 leaves it installed; disable it if you do not want its separate in-game display.
-The public addon contains only LamdaCD and Settings. Legacy class helpers, action-
+The public addon contains General settings and the LamdaCD module. Legacy class helpers, action-
 bar setup, macros, layouts, training and profile modules have been removed. Old
 SavedVariables are preserved but never interpreted by the new hub. The prior
 dungeon error has not been diagnosed or claimed fixed.
@@ -56,7 +56,7 @@ dungeon error has not been diagnosed or claimed fixed.
 Successful casts by party-affiliated players and explicitly supported friendly
 companions are accepted. Your own player casts, enemies, unrelated NPCs, pets,
 aura-only records and raid-only affiliations are excluded. **Companions** is on by
-default and can be disabled in the LamdaCD tab.
+default and can be disabled under Modules → LamdaCD.
 
 Timers use the original event timestamp, not the time the file reader receives
 it. `~` means estimated; `*` marks an ability that may have additional charges.
@@ -95,7 +95,7 @@ NPC display and layout, but do not establish real-player event coverage.
 
 ## Customizing the cooldown area
 
-`/lui` → LamdaCD opens **Team cooldown display**, with an always-visible sample
+`/lui` → Modules → LamdaCD opens **Team cooldown display**, with an always-visible sample
 preview. Compact, Standard and Large presets and width/height/text/spacing/opacity
 sliders update those samples immediately without waiting for the engine.
 
@@ -121,7 +121,7 @@ needs work. **Do not remove MiniAuras expecting full feature coverage yet.**
 
 ## Settings and status
 
-LamdaUI has **LamdaCD** and **Settings** module entries only. Controls are deliberately minimal. SavedVariables are read only after
+LamdaUI opens on **General** for engine update preferences. **Modules → LamdaCD** contains cooldown controls. Controls are deliberately minimal. SavedVariables are read only after
 WoW persists them; the engine never executes Lua or writes back to those settings.
 A partial/invalid settings snapshot retains the last valid configuration.
 

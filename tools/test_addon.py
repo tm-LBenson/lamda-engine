@@ -32,6 +32,7 @@ class AddonTests(unittest.TestCase):
           function w:CreateFontString()return widget()end
           function w:CreateTexture()return widget()end
           function w:IsShown()return self.shown==true end
+          function w:SetShown(v)self.shown=v end
           function w:Hide()self.shown=false end
           function w:SetSize(x,y)self.width=x;self.height=y end
           function w:GetWidth()return self.width or 0 end
@@ -42,7 +43,7 @@ class AddonTests(unittest.TestCase):
           function w:Show()self.shown=true end
           return w
         end
-        function CreateFrame(...)local w=widget();table.insert(frames,w);return w end
+        function CreateFrame(kind,name,parent,template)local w=widget();w.parent=parent;table.insert(frames,w);return w end
         UIParent=widget();UIParent.width=1280;UIParent.height=800;UIParent.top=800
         function GetPhysicalScreenSize()return 2560,1600 end
         STANDARD_TEXT_FONT="test-font"
@@ -50,9 +51,17 @@ class AddonTests(unittest.TestCase):
         for name in ['Core.lua','Modules/LamdaCD.lua','Modules/Settings.lua','UI.lua']:
             lua.execute('local f=assert(loadstring(...)); f("lamdaUI",LUI)',(ROOT/'addon/lamdaUI'/name).read_text())
         lua.execute('''
-        assert(#LUI.modules==2 and LUI.modules[1].name=="LamdaCD" and LUI.modules[2].name=="Settings")
+        assert(#LUI.modules==1 and LUI.modules[1].name=="LamdaCD")
         frames[1].scripts.OnEvent(nil,"PLAYER_LOGIN")
         SlashCmdList.LAMDAUI("");assert(LUI.frame.shown)
+        assert(LUI.selectedPage=="general" and LUI.generalPage:IsShown() and not LUI.modulesPage:IsShown())
+        LUI:SelectPage("modules")
+        assert(not LUI.generalPage:IsShown() and LUI.modulesPage:IsShown())
+        assert(LUI.selectedModule=="cd" and LUI.modulePanels[1]:IsShown())
+        assert(LUI.modulePanels[1].parent==LUI.modulesPage)
+        assert(LUI.inlinePreview.parent.parent==LUI.modulePanels[1])
+        SlashCmdList.LAMDAUI("")
+        assert(LUI.selectedPage=="general" and not LUI.modulesPage:IsShown())
         LamdaEngineDB.rowWidth=403
         for _,f in ipairs(frames)do if f.scripts.OnShow then f.scripts.OnShow(f)end end
         assert(LamdaEngineDB.rowWidth==403)
