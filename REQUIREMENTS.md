@@ -1,157 +1,109 @@
 # LamdaUI requirements and acceptance criteria
 
-This records the user's agreed product, including the corrections made after
-testing. It is a requirements record, not a claim that the whole product is
-finished. Requirements were audited on 2026-09-13 and source status was updated
-after the corresponding hub review. Source checks and live verification are
-distinguished below.
+Reviewed against the user conversation on 2026-09-13 for engine 0.7.0 / addon
+0.26.0. This is the accepted product scope, not a completion claim.
 
-## Product and immediate priority
+## Product and priority
 
-**LamdaUI is the lightweight in-game interface for Lamda Engine.** Lamda Engine
-is a background process. A separate desktop settings application was explicitly
-deferred. The immediate working module is **LamdaCD**, focused on teammates'
-cooldowns. The user's own cooldowns already worked and are not the problem this
-module is meant to solve.
+**LamdaUI is the lightweight in-game interface for Lamda Engine.** General is
+the hub settings page; Modules contains each installed module. A separate
+desktop settings application was deferred.
 
-The agreed order is: a usable General/modules hub, useful and honest teammate
-cooldown tracking, full customization and MiniCC replacement coverage, then the
-existing Vision helper and a broader visual rule editor. Calling the current
-cooldown screen the entire hub does not meet that requirement. Recording a
-missing feature in a roadmap does not implement it.
+**LamdaCD must behave like MiniCC: icons on the user's unit frames, with the
+corresponding aura, debuff, defensive, CC, and customization features.** The
+user explicitly requested complete MiniCC replacement. This is required work,
+not an optional roadmap. A detached timer bar and its settings editor do not
+satisfy the request.
 
-## Hub acceptance criteria
+The original standalone lamdaCD 0.2.1 already had frame attachment. Inspection
+also confirmed that installed MiniCC is a saved-settings bridge and MiniAuras
+supplies the current CC functionality. Build on the intended frame behavior and
+cover the active successor's feature set.
 
-| ID | Requirement | Acceptance check |
-| --- | --- | --- |
-| HUB-1 | `/lui` opens LamdaUI on General. | Fresh login and reopening after editing a module both open General. |
-| HUB-2 | General contains hub/engine settings only; Modules contains named module pages. | General contains no cooldown preview, sizing, positioning, companion or spell controls. LamdaCD owns all of those. |
-| HUB-3 | Each module has its own controls and enable state. | Selecting another page hides the previous page and its editing tools; disabling a module stops its live output after settings are applied. |
-| HUB-4 | Navigation grows with installed modules. | Registering another module gives it a named destination without putting its controls in General or rewriting the hub for that module. |
-| HUB-5 | Controls explain what they change through their labels and location. | A layout editor clearly identifies its module/display, uses previews and direct placement, and does not present unexplained coordinate fields. |
-| HUB-6 | Keep the UI lightweight and quiet. | No personal class helpers, long diagnostic text, fake status, unfinished-module placeholders, or guessed engine online/offline state. |
-| HUB-7 | Engine update preferences belong in General. | A check-for-updates toggle persists; notification/frequency controls clearly apply to engine updates. Checking never installs code automatically. |
-| HUB-8 | Public defaults work for friends. | No character, class, specialization, desktop path or private data is required by the public addon. Existing user data is preserved during migration. |
-| HUB-9 | Editing is safe and predictable. | Saving is blocked during combat; entering combat or reopening the hub closes the placement editor safely; Cancel restores changes made in that editor. Invalid saved numeric settings cannot crash layout creation. |
+Teammate cooldown readiness and active aura duration are separate requirements.
+Native aura icons address current effects on teammates; they do not resolve
+unknown cooldown readiness. The existing Vision helper and a broader
+WeakAuras-like editor are explicitly later modules.
 
-## LamdaCD acceptance criteria
+## Hub acceptance
 
 | ID | Requirement | Acceptance check |
 | --- | --- | --- |
-| CD-1 | Show useful teammate cooldown observations. | Real-player party casts are detected from a verified data source and appear for the correct teammate; own casts cannot masquerade as teammate coverage. |
-| CD-2 | Preserve uncertainty. | Unknown cast identity, absent observations, talent changes and unsupported charge/reset behavior never become claims of confirmed readiness. Samples are visibly separate from observations. |
-| CD-3 | Test in follower dungeons and delves. | Verified friendly companions produce display events; unsupported companions remain unknown. NPC abilities do not inherit player cooldown values without evidence. |
-| CD-4 | Layout can be adjusted without fighting a boss. | A labelled preview works without the engine or fresh combat casts. Presets, size, scale, spacing and placement can be changed visually and persist after applying. |
-| CD-5 | Full useful display customization. | Position, screen/frame anchoring, sizes, fonts, spacing, growth, limits, visibility and presentation controls affect the actual display as well as preview. Per-unit frame placement and icon presentation remain required for MiniCC parity. |
-| CD-6 | Runtime reliability is measured, not inferred from replay. | Live log arrival delay, actual player coverage, zone/party transitions and overlay alignment are checked in game. Windows rendering must be tested on Windows. |
-| CD-7 | Missing data has a discoverable diagnosis without cluttering gameplay. | An intentional troubleshooting action can distinguish no logging, no supported casts, a disabled module and display failure where the system has evidence. General stays free of guessed status. |
+| HUB-1 | `/lui` opens General. | Fresh login and reopening both select General. |
+| HUB-2 | General contains hub/engine settings only. | Aura previews, positioning, filters, and sizing live under Modules → LamdaCD. |
+| HUB-3 | Modules have independent controls and enable states. | Disabling LamdaCD stops its output; page changes hide the prior workspace. |
+| HUB-4 | Navigation supports installed modules. | Registration adds a named module without rewriting the hub or adding nonfunctional placeholders. |
+| HUB-5 | Controls show what they affect. | Frame previews and meaningful labels replace unexplained coordinate forms. |
+| HUB-6 | Normal UI stays lightweight and quiet. | No personal helpers, diagnostic filler, or guessed Engine Online/Offline text. |
+| HUB-7 | General owns update preferences. | Check/notification/frequency settings persist; checking never installs code. |
+| HUB-8 | Public defaults work for friends. | No character, class, private path, or personal data is required; migration preserves saved data. |
+| HUB-9 | Editing respects combat restrictions. | Container creation and changes are guarded/deferred safely; save/reload is combat guarded. |
+| HUB-10 | Profiles cover module settings. | Save, switch, rename, delete, import/export, and reset preserve global preferences and reject invalid data. |
 
-CD-7 is an implementation acceptance criterion inferred from the repeated
-"teammates do not work" reports, rather than an explicit request for a permanent
-diagnostic panel. It must not override the instruction to keep normal UI quiet.
-
-## Distribution acceptance criteria
+## Frame module acceptance
 
 | ID | Requirement | Acceptance check |
 | --- | --- | --- |
-| DIST-1 | Public GitHub distribution for friends. | A fresh user can obtain the source without signing into GitHub. |
-| DIST-2 | PowerShell builds locally. | The installer obtains missing Git and Go, builds the engine from source, and installs the addon and required runtime files. |
-| DIST-3 | One desktop launch action. | The requested `lambaUI` shortcut and LUI logo start one engine instance; the overlay follows WoW visibility without a separate settings application. |
-| DIST-4 | Updates preserve user settings. | Versioned releases are reproducible; installation failure restores replaced files and leaves SavedVariables intact. |
+| FRAME-1 | Icons attach to actual frames. | DandersFrames and Blizzard show the correct unit's auras and follow movement/sorting. |
+| FRAME-2 | Frame identity is authoritative. | Public unit bindings determine identity; slot number never substitutes for identity. Hidden, forbidden, secret, or conflicting targets are safe. |
+| FRAME-3 | Show team CC, debuffs, defensives, and important auras. | Native groups show real effects during restricted encounters; own auras do not stand in for teammate validation. |
+| FRAME-4 | Support pets and content rules. | Player/party/raid/pet toggles and world/dungeon/raid/arena/BG/delve rules control supported regions. |
+| FRAME-5 | Useful customization affects live output. | Anchors, distance/adjustments, size, spacing, wrapping, category caps, text, swipes/reverse, stacks, borders, glow, and tooltips work in display and preview. |
+| FRAME-6 | Preview without combat or engine. | Labelled samples use available frames or a fallback; stopping preview restores native auras. |
+| FRAME-7 | Native display is independent. | Team icons work with engine stopped and logging off; native mode suppresses detached engine bars. |
+| FRAME-8 | Preserve uncertainty. | Aura duration never means ability readiness; missing observations and samples never create readiness claims. |
+| FRAME-9 | Respect supported filters. | Unsupported friendly-debuff spell-ID selection is not advertised as functional. |
+| FRAME-10 | Verify real behavior. | Combat, sorting, roster changes, zoning, reload, and providers pass live checks; mocked calls alone are insufficient. |
+| FRAME-11 | Replace old Lamda display without disabling unrelated features. | Successful native setup retires the standalone Lamda estimate region, preserves its preference, and leaves MiniAuras/Danders features alone. |
 
-Local compilation is the requested distribution approach; it is not a guarantee
-that Windows will never display an unsigned-software or script prompt.
+## Cooldown readiness acceptance
 
-## Full MiniCC replacement and later modules
+| ID | Requirement | Acceptance check |
+| --- | --- | --- |
+| CD-1 | Find useful teammate cooldown information. | A verified source supplies correctly attributed player observations with measured latency. |
+| CD-2 | Do not invent readiness. | Unknown identities, talents, charges, resets, and missing observations stay unknown or explicitly estimated. |
+| CD-3 | Test appropriately with followers/delves. | Native aura/layout tests use displayed units; log reuse estimates require NPC mappings and never borrow player cooldowns. |
+| CD-4 | Diagnose missing data intentionally. | Explicit troubleshooting distinguishes known evidence without speculative status in normal UI. |
 
-The user explicitly requested that nobody need MiniCC once this is complete.
-The locally installed MiniCC is now only a SavedVariables bridge into MiniAuras,
-so its active MiniAuras modules are the reference feature inventory. The detailed
-coverage matrix is [FEATURE-COVERAGE.md](FEATURE-COVERAGE.md).
+The disk reader has demonstrated delays above 20 seconds and cannot be called
+dependable live readiness. Native aura containers do not cure that separate
+problem. Addon-message sharing also remains unverified in restricted encounters;
+readable own casts do not establish permitted or reliable send/receive delivery.
 
-Completion includes crowd-control and pet regions, important auras, party/raid
-frame auras, healer warnings, nameplates, portraits, arena trinkets, ally/enemy
-interrupts, enemy alerts, personal aura editing, profiles, sound, sharing, frame
-adapters and the associated appearance/filter controls. These are independent
-runtime features; adding empty tabs or an external cooldown bar is not parity.
-Use supported native display APIs where applicable and verified engine data
-where appropriate. A disk cast record is not live aura state.
+## Complete replacement acceptance
 
-The existing Vision marker helper should eventually be managed through LamdaUI
-as another module. The requested future WeakAuras-like UI should support visual
-creation/editing of rules and displays. Those later ambitions do not require
-putting nonfunctional controls in the current hub or returning to a desktop
-settings application.
+[FEATURE-COVERAGE.md](FEATURE-COVERAGE.md) is mandatory scope: friendly/raid/pet
+CC, important auras, frame buffs/debuffs, healer warnings, nameplates, portraits,
+arena trinkets, ally/enemy interrupts, enemy alerts, personal aura groups,
+profiles, sounds/TTS, sharing, adapters, and their appearance/filter controls.
 
-## Current source status and unresolved checks
+Each feature needs settings, runtime behavior, persistence, supported restriction
+handling, and live checks. Empty tabs, copied labels, or generic bars do not meet
+acceptance. If the current API cannot support original behavior, record the
+specific limitation rather than inventing an equivalent. MiniAuras is All
+Rights Reserved; Lamda uses original code and public Blizzard/provider APIs,
+not wholesale copied source.
 
-After the 2026-09-13 implementation review:
+## Distribution acceptance
 
-- General contains engine update preferences and module profiles. Modules has a
-  scrollable list and separate detail pages. `/lui` selects General and cancels
-  any placement guide first. Tests check recursive page visibility and ancestry
-  with a second independent module, rather than only navigation flags.
-- The module registry owns each module's defaults, validation and enable key.
-  LamdaCD has Appearance, Placement and Tracking tabs. Configuration pages still
-  build eagerly; registration does not yet implement an arbitrary engine
-  module's runtime lifecycle.
-- The visual cooldown editor has samples, presets, sliders and drag/resize.
-  Screen anchors exist. Live party-frame attachment, spell icons, per-spell
-  selection and most MiniCC/MiniAuras runtime modules are absent.
-- Module profiles support create/clone, switch, rename, delete, reset,
-  import and export. They preserve General update preferences. Import rejects
-  unsupported keys and invalid values without executing Lua. Data is stored in
-  the already-declared `LamdaUIDB.engineHub` namespace; other legacy fields are
-  preserved.
-- Teammate tracking uses disk-log successful casts and a 48-spell baseline
-  catalog. It estimates timers; it does not establish actual readiness, current
-  talented cooldowns, complete charges, or a current party roster.
-- Five companions have explicit mappings. Brann and other unmapped companions
-  are not supported. Follower observations do not establish real-player event
-  coverage.
-- Log tailing, replay, source filtering, settings parsing, geometry and installer
-  rollback have automated checks. Live laptop observations have recorded cast
-  delivery delays from 0.214 seconds to 26.637 seconds; a Valeera observation at
-  15:04:57 arrived 20.327 seconds late. The delay problem is established, not
-  merely an untested risk. Real-player Mythic+ event coverage remains unknown.
-  Physical Windows overlay alignment and the native in-game editor still need
-  live verification.
-- The Go engine, public source releases, PowerShell installer, LUI assets and
-  desktop shortcut exist. General update preferences persist through reload.
-- The earlier in-dungeon addon error was never diagnosed. Removal of legacy
-  code is not evidence that its cause has been identified or fixed.
-- The earlier guide-over-General defect and invalid numeric-setting geometry
-  failures have been corrected in source and covered by Lua tests. Those tests
-  do not establish in-game rendering or persistence after the user's reload.
+| ID | Requirement | Acceptance check |
+| --- | --- | --- |
+| DIST-1 | Public GitHub distribution. | Friends obtain source without authentication. |
+| DIST-2 | PowerShell installs and compiles locally. | Missing Git/Go install; versioned source builds and addon/runtime files install. |
+| DIST-3 | One desktop launch action. | Requested `lambaUI` shortcut/LUI logo start one engine; no desktop settings app. |
+| DIST-4 | Updates preserve settings. | Reproducible releases; failed installs restore files and preserve SavedVariables. |
 
-Update implementation status with concrete tests and observed behavior; retain
-unverified or unfinished requirements until those checks have actually passed.
+Local compilation does not guarantee the absence of Windows script/software
+prompts.
 
-## Native sharing feasibility check
+## Current acceptance status
 
-The idea of each client sharing its own readable casts was checked against
-Blizzard's generated API documentation in the current public UI-source mirror
-on 2026-09-13. It must not be advertised as a verified replacement for log
-tracking in restricted encounters.
+0.7.0 replaces the bar-centric module page with native frame auras and controls.
+General/module profiles remain the hub. Native mode suppresses detached engine
+rows and does not enable automatic logging. `/lui debug` exposes known provider
+and runtime evidence without claiming engine liveness.
 
-- `UNIT_SPELLCAST_SUCCEEDED` has the `SecretWhenUnitSpellCastRestricted`
-  predicate. Its payload includes the unit, cast GUID and spell ID.
-  [Unit event documentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/UnitDocumentation.lua).
-- That predicate generally leaves player/pet casts readable, with per-spell
-  secrecy flags taking precedence. A client must still check readability
-  before interpreting its own event.
-  [Secret predicate documentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/SecretPredicatesDocumentation.lua).
-- `C_ChatInfo.SendAddonMessage` rejects secret arguments. The documented
-  `AreOutgoingAddonChatMessagesRestricted()` query accounts for realm policy,
-  including tournament exceptions, and notes that receive restrictions are
-  separate. `InChatMessagingLockdown()` exposes active chat restrictions.
-  [Chat API documentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/ChatInfoDocumentation.lua).
-- The send-result enumeration includes `AddOnMessageLockdown`, so a send attempt
-  is not proof that another client can receive usable observations.
-  [Chat constants](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/ChatConstantsDocumentation.lua).
-
-Inference: sharing readable own-cast observations could work where communication
-is allowed and both users run the module. Those API declarations do not establish
-delivery in the user's dungeon, delve or Mythic+ context. A scoped live send and
-receive test would be needed before selecting it as a tracking source. Do not
-try to decode secret payloads or route around a reported communication lock.
+Full replacement, verified teammate readiness, and live combat/frame rendering
+remain open. Automated results and observed limits are in
+[VALIDATION.md](VALIDATION.md). The earlier dungeon error is undiagnosed; removing
+legacy code does not establish its cause or prove it fixed.

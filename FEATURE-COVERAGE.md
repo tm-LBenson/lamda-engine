@@ -1,57 +1,67 @@
-# MiniCC / MiniAuras replacement target
+# MiniCC / MiniAuras replacement coverage
 
-The user's target is to replace the whole addon, not just its cooldown panel.
-Reference: the installed MiniCC settings bridge and current MiniAuras configuration
-panels inspected locally. This is a feature inventory, not copied implementation.
-LamdaUI is **not yet a complete replacement**; keep MiniAuras for unfinished features.
+**Complete replacement is required. It is not yet complete.** This inventory
+comes from the installed MiniCC bridge and MiniAuras 5.40.0 modules/settings.
+It records behavior to implement, not source to redistribute. Standalone
+lamdaCD 0.2.1 already attached defensive estimate icons; 0.7.0 returns LamdaUI's
+module to the intended frame-based direction.
 
-## Current deliverable
+“Implemented” describes source behavior. Live WoW rendering, combat safety, and
+complete replacement need the checks in [VALIDATION.md](VALIDATION.md). Keep
+MiniAuras features you use until their replacements are verified.
 
-| Feature | Lamda status |
+## Frame work in 0.7.0 / addon 0.26.0
+
+| Feature | Current coverage | Outstanding acceptance |
+| --- | --- | --- |
+| Native attachment | DandersFrames/Blizzard; actual unit bindings; player/party/raid and supported pets | Live sorting/unit changes/combat and remaining providers |
+| Friendly CC | Native crowd-control aura group | Live party/raid/pet coverage and full reference controls |
+| Team debuffs | Native harmful group, separate CC category | Live restricted encounters; remaining dispel/caster/duration controls |
+| Defensive buffs | Separate big/external defensive groups | Remaining category/selection/appearance parity |
+| Important buffs | Native important-buff group | Full offensive/important selection and reference behavior |
+| Placement | Nine frame anchors, distance and horizontal/vertical adjustments | Independent region/per-unit layouts, full growth options |
+| Appearance | Icon size/spacing/wrapping/caps, text size, swipes/reverse, timers/stacks, borders, static glow, tooltips | Fonts/custom colors/text offsets, animated glow, skins/media |
+| Visibility | Player/party/raid/pet and world/dungeon/follower/raid/arena/BG/delve controls | Live transitions and full reference filtering |
+| Preview | Labelled samples on frames; fallback sample when needed | Native in-game visual checks |
+| Engine independence | No engine/log dependency; native mode suppresses detached rows | Installed mode persists and applies on reload |
+| Migration | Successful native setup hides only standalone Lamda display and preserves its preference | Live coexistence; other addon features remain untouched |
+| Hub/profiles/distribution | General/modules, profiles/import/export, source installer, update preferences | Actual Windows install/update and regression checks |
+
+These icons show active effects and their duration, not verified teammate ability
+readiness. The separate disk-log estimator has measured delays up to about 26.6
+seconds.
+
+## Required remaining coverage
+
+| Area | Required behavior still incomplete |
 | --- | --- |
-| Teammate defensive estimates from disk logs | Implemented; live coverage/latency still need validation |
-| Follower/delve companions | Five mapped NPCs; observed casts and isolated reuse estimates |
-| Layout preview | Inline live samples and native drag/resize guide, labelled and isolated from observations |
-| Window anchors and signed offsets | Nine anchors implemented for cooldown area |
-| Row sizing, spacing, columns, count limit and upward/downward growth | Implemented for cooldown rows |
-| Scale, font size, opacity, border, progress bars and color presets | Implemented for cooldown rows |
-| Name, spell and timer visibility | Implemented for cooldown rows |
-| General/modules hub, module enable controls, source-build installer and update checks | Implemented |
-| Module profiles | Create, rename, switch, save as new, delete, validated import/export; engine preferences remain global |
+| Frame adapters | Remaining providers, provider changes, pet coverage, independent region/per-unit placement |
+| Filters/categories | Full supported spell/category/caster/duration/dispel controls; separate party/raid configurations |
+| Icon/text styling | Custom fonts/colors, class/dispel colors, text offsets/decimal thresholds, stack placement, skins/media |
+| Healer CC | Dedicated region, warning text/icons, color and sound |
+| Nameplates | Supported CC, defensive and offensive aura regions |
+| Portraits | Player/target/focus presentation and selected additional buffs |
+| Arena trinkets | Supported identity/visibility, sizing, borders and presentation |
+| Ally interrupts | Dedicated tracker, ordering, settings and reliable supported observations |
+| Enemy interrupts | Arena tracking, role filters, identity and honest unknown-event handling |
+| Enemy alerts | Important/defensive regions, split groups, filters and sounds |
+| Personal aura groups | Reference group editor: unit/spell selection, conditions, layouts, text, textures and sound |
+| Sound/TTS | Selection, channel/volume, supported native triggers, TTS and per-trigger playback |
+| Sharing/profiles | Group import/export and migrations for each runtime; module profiles alone do not cover these groups |
+| Compatibility | Coexistence controls, optional skin/media adapters, combat-safe changes and taint regression tests |
+| Cooldown readiness | Verified player observations/latency, talented intervals, charges, resets and missing events |
 
-## Still required for a full replacement
+These are current acceptance work. Only Vision integration and the broader
+WeakAuras-like authoring interface are explicitly later modules.
 
-| Area | Required behavior |
-| --- | --- |
-| Positioning | Live unit-frame attachment, supported third-party frames and per-unit layouts (native drag/resize placement guide now implemented) |
-| Icon presentation | Spell icons, icon sizing/padding, cooldown swipes, reverse swipes, stack placement, tooltips, glow and skin integration |
-| Text and colors | Font selection, custom colors, category/class/dispel colors, text offsets and decimal thresholds |
-| Display rules | Self filters; separate rules for world, dungeon, raid, arena and battleground contexts |
-| Crowd control | Friendly/raid CC regions, category filters, per-unit limits and native aura display |
-| Pet CC | Pet unit-frame regions and supported party/raid pet frames |
-| Important auras | Defensive/offensive/CC/interrupt categories and independent limits |
-| Party/raid frame auras | Buff/debuff regions, selected-spell filters, caster/duration filters and frame anchors |
-| Healer CC | Separate healer warning region, icons, warning text, color and sound |
-| Nameplates | Permitted CC, defensive and offensive auras attached to nameplates |
-| Portraits | Player/target/focus aura presentation and selected additional buffs |
-| Arena trinkets | Arena trinket presentation, identity/visibility limits, sizing and borders |
-| Ally interrupts | Dedicated party interrupt tracker with its own settings and ordering |
-| Enemy interrupts | Arena interrupt tracking, role filters, identity handling and unknown-event behavior |
-| Enemy alerts | Important/defensive spell regions, split groups, filtering and sounds |
-| Personal auras | Visual editor for triggers, units/spells, conditions, groups, layout, text, textures and sounds |
-| Profiles | Module settings profiles implemented; broader display/group and future-module coverage awaits those runtimes |
-| Sound | Sound selection, volume/channel controls, TTS and per-trigger playback |
-| Sharing | Module/group import/export, version migrations and validation |
-| Compatibility | Coexistence settings, optional skin/media adapters, combat-safe updates and taint regression testing |
+## Implementation boundaries
 
-## Implementation boundary
+Use Blizzard's supported native machinery for current aura state. Lamda does not
+read, infer, or decode its secret values. Friendly harmful auras cannot be
+selected by spell-ID candidate filters on the current API; permitted native
+category/dispel filters must be used where applicable. A cast record is not
+live aura state.
 
-Some displays belong inside WoW using supported aura/UI APIs. Others can use engine
-log data with measured delay. A log event is not proof of live aura state, and an
-external overlay cannot simply attach itself to an addon frame without position
-information. Choose the appropriate implementation for each feature rather than
-presenting an unverified equivalent. Unknown state must remain silent.
-
-A feature is complete only after its settings, runtime behavior, persistence,
-applicable combat restrictions and live tests are verified. The legacy personal
-class helpers are not part of this replacement target.
+MiniAuras is All Rights Reserved. Lamda uses original code, existing Lamda frame
+work, public provider interfaces, and Blizzard APIs. Unknown engine status stays
+silent; unfinished runtimes get no placeholder tabs implying that they work.

@@ -71,15 +71,18 @@ class AddonTests(unittest.TestCase):
           limits={testSize={1,20,integer=true}},build=function(parent)LUI:Label(parent,"Independent content",0,0)end})
         login();SlashCmdList.LAMDAUI("")
         assert(LUI.selectedPage=="general" and LUI.generalPage:IsVisible() and not LUI.modulesPage:IsVisible())
-        assert(not LUI.inlinePreview:IsVisible())
+        assert(LUI:DB().nativeFrames and LUI:DB().nativeSize==26)
         for _,f in ipairs(frames)do
-          if f.text=="Row width" or f.text=="LamdaCD" or f.text=="Cooldown preview"then assert(not below(f,LUI.generalPage))end
+          if f.text=="Icon size" or f.text=="LamdaCD" or f.text=="Crowd control"then assert(not below(f,LUI.generalPage))end
+          assert(f.text~="Row width" and f.text~="Move & resize cooldowns")
         end
         click("Modules");assert(LUI.modulesPage:IsVisible() and not LUI.generalPage:IsVisible())
-        assert(LUI.selectedModule=="cd" and LUI.inlinePreview:IsVisible())
+        assert(LUI.selectedModule=="cd" and LUI.modulePanels[1]:IsVisible())
         local content=LUI.modulePanels[1].content
-        click("Placement");assert(content.selectedTab=="placement" and not LUI.inlinePreview:IsVisible())
-        click("Tracking");assert(content.selectedTab=="tracking")
+        assert(content.selectedTab=="auras")
+        click("Frames");assert(content.selectedTab=="frames")
+        click("Appearance");assert(content.selectedTab=="appearance")
+        click("Content");assert(content.selectedTab=="content")
         click("Test module");assert(LUI.selectedModule=="test" and LUI.modulePanels[2]:IsVisible() and not LUI.modulePanels[1]:IsVisible())
         assert(LUI:DB().testEnabled==false)
         assert(reloads==0)
@@ -113,7 +116,7 @@ class AddonTests(unittest.TestCase):
         assert(not LUI:DeleteProfile())
         assert(LamdaUIDB.personal=="preserve" and LamdaUIMigrationDB.personal=="preserve")
         assert(reloads==0)
-        LUI:SelectPage("modules");LUI.modulePanels[1].content.selectTab(3)
+        LUI:SelectPage("modules");LUI.modulePanels[1].content.selectTab(4)
         click("Reset LamdaCD settings");assert(db.rowWidth==403)
         click("Confirm reset");assert(db.rowWidth==340)
         ''')
@@ -153,29 +156,37 @@ class AddonTests(unittest.TestCase):
         assert(LamdaUIDB.personal=="preserve" and LamdaUIMigrationDB.personal=="preserve")
         ''')
 
-    def test_move_cancel_reopen_and_combat(self):
+    def test_native_preview_lifecycle_and_live_controls(self):
         lua=runtime();lua.execute('''
-        login();LUI:OpenUI();LUI:SelectPage("modules")
-        for anchor=1,9 do
-          local ax=((anchor-1)%3)/2;local ay=math.floor((anchor-1)/3)/2
-          local x,y=LUI:GuideOffsets((2560-340)*ax+42,(1600-108)*ay-18,340,108,2560,1600,anchor)
-          assert(x==42 and y==-18)
+        LUI.FrameAuras={preview=false,requests=0,hides=0,changes=0}
+        function LUI.FrameAuras:RequestRefresh()self.requests=self.requests+1 end
+        function LUI.FrameAuras:HideSamples()self.hides=self.hides+1 end
+        function LUI.FrameAuras:SetPreview(enabled)
+          self.preview=enabled;self.changes=self.changes+1;LUI:RefreshUI()
         end
-        combat=true;LUI:MoveCooldowns();assert(LUI.cdGuide==nil)
-        combat=false;local db=LUI:DB();local x,y,w,h=db.overlayX,db.overlayY,db.rowWidth,db.rowHeight
-        LUI:MoveCooldowns();assert(LUI.cdGuide:IsVisible() and not LUI.frame:IsShown())
-        LUI.cdGuide.left=300;LUI.cdGuide.top=500;LUI:RecordGuide();assert(db.overlayX==600 and db.overlayY==600)
-        local grip=findButton("//")
-        grip.scripts.OnMouseDown(nil,"LeftButton");LUI.cdGuide.width=200;LUI.cdGuide.height=75;grip.scripts.OnMouseUp()
-        assert(db.rowWidth==400 and db.rowHeight==48)
-        LUI:OpenUI();assert(LUI.generalPage:IsVisible() and not LUI.cdGuide:IsShown() and not LUI.moveControls:IsShown())
-        assert(db.overlayX==x and db.overlayY==y and db.rowWidth==w and db.rowHeight==h)
-        LUI:MoveCooldowns();db.rowWidth=600;combat=true;LUI.cdGuide.scripts.OnEvent()
-        assert(db.rowWidth==w and not LUI.cdGuide:IsShown())
+        LUI:RegisterModule({id="test",name="Test module",build=function()end})
+        login();LUI:OpenUI();LUI:SelectPage("modules")
+        local auras=LUI.FrameAuras
+        click("Preview on frames");assert(auras.preview and auras.changes==1)
+        local requests=auras.requests
+        LUI:RefreshUI();assert(auras.preview and auras.changes==1 and auras.requests>requests)
+        requests=auras.requests
+        for _,f in ipairs(frames)do
+          if f.kind=="Slider" then f.scripts.OnValueChanged(f,5);break end
+        end
+        assert(LUI:DB().nativeMaxCC==5 and auras.requests>requests)
+        click("General");assert(not auras.preview and auras.hides==1 and auras.changes==1)
+        click("Modules");click("Preview on frames");assert(auras.preview)
+        click("Test module");assert(not auras.preview and auras.hides==2)
+        click("LamdaCD");click("Preview on frames");assert(auras.preview)
+        LUI.frame:Hide();assert(not auras.preview and auras.hides==3)
+        LUI:OpenUI();assert(LUI.selectedPage=="general")
+        click("Modules");click("Preview on frames");assert(auras.preview)
+        LUI:OpenUI();assert(not auras.preview and auras.hides==4 and LUI.selectedPage=="general")
+        click("Modules");combat=true;LUI.frame.scripts.OnEvent()
+        assert(findButton("Preview on frames").enabled==false)
+        findButton("Preview on frames").scripts.OnClick();assert(not auras.preview)
         assert(reloads==0)
-        inside=true;db.cdEnabled=false;LUI:EnsureLogging();assert(loggingCalls==0)
-        db.cdEnabled=true;LUI:EnsureLogging();assert(loggingCalls==1)
-        db.autoLog=false;LUI:EnsureLogging();assert(loggingCalls==1)
         ''')
 
     def test_distribution_has_only_public_hub_modules(self):

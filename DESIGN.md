@@ -1,80 +1,98 @@
-# Lamda Engine distribution and interface
+# LamdaUI and engine design
 
-Status: first Windows preview implemented; see VALIDATION.md for completed checks and live validation gaps.
+Engine 0.7.0 / addon 0.26.0 makes native frame icons the primary gameplay display.
+[REQUIREMENTS.md](REQUIREMENTS.md) records scope; [VALIDATION.md](VALIDATION.md)
+records evidence and open checks.
 
-## Scope
+## Hub and modules
 
-LamdaUI remains the in-game addon hub. No separate desktop settings application.
-Lamda Engine runs in the background. First feature: lamdaCD teammate defensive
-estimates from disk combat logs. Measure delivery delay before promising live
-tracking. Vision integration and a visual rule editor come later. Defer the
-existing LamdaUI dungeon error investigation; remove legacy class helpers from the public hub while preserving old SavedVariables.
+LamdaUI is an in-game hub. `/lui` opens General, which owns engine update
+preferences and module profiles. Modules lists installed runtimes; LamdaCD owns
+Auras, Frames, Appearance, and Content. There is no desktop settings application
+or placeholder module.
 
-## Modules and settings
+Modules own defaults, validation, enabled state, and controls. Profiles hold
+module settings while update preferences stay global. Imports are validated
+data, never executed Lua. Legacy personal helpers are absent; existing saved
+data is preserved.
 
-The hub opens on General. General configures engine update checks, frequency,
-notifications, and module profiles. Modules has a list of installed modules and
-opens each module in its own workspace. LamdaCD owns its Appearance, Placement,
-and Tracking controls. Future modules register their own settings and enabled
-state; no placeholders appear before their implementation exists. Checking for
-updates never installs code.
+## Native frame rendering
 
-Addon preferences persist via SavedVariables on reload/logout. The engine reads
-completed snapshots without executing Lua. The engine must not modify the same
-SavedVariables file. Save/reload is not an acknowledgement of engine receipt.
+Standalone lamdaCD 0.2.1 already supplied frame-attached defensive estimate
+icons. The new module uses owned anchors and Blizzard's
+`CustomAuraContainerTemplate` to show current auras beside DandersFrames and
+Blizzard units. Successful native initialization retires only that old Lamda
+display and preserves its visibility preference; it does not disable other
+addons' features.
 
-## Windows distribution
+Actual public unit bindings identify player, party, raid, and supported pet
+frames. Slot order never substitutes for identity. Danders public lookups and
+sorting callbacks provide discovery; Blizzard uses supported frame targets.
+Hidden, forbidden, secret, or conflicting bindings never become guessed matches.
 
-- Source hosted publicly at github.com/tm-LBenson/lamda-engine (user selected public).
-- A reviewable PowerShell installer obtains Git and Go when missing, fetches a
-  specific release, and compiles the engine locally.
-- Build and verify in staging before replacing an existing installation. Preserve
-  configuration and a rollback version. Fail clearly if a required step fails.
-- Install the addon into the selected WoW Retail installation, preserving existing
-  settings and backing up any replaced addon files.
-- Install engine files per user. Request elevation only when dependency setup
-  requires it. Do not permanently weaken PowerShell execution policy.
-- Create a desktop shortcut named `lambaUI` (user-requested spelling) using an LUI
-  logo. The shortcut launches the background engine; repeat clicks reuse the
-  running instance. No desktop dashboard is required.
-- Update installation follows the same fetch/build/verify/replace process.
-- Local compilation does not sign the executable or guarantee the absence of
-  Windows, antivirus, or PowerShell prompts.
+Five native groups cover CC, other debuffs, big defensives, external defensives,
+and important buffs. Controls select categories/caps, units/contexts, anchors,
+size, spacing, wrapping, and appearance. Owned labelled samples preview real
+frames or a fallback; they do not use Blizzard's global sample aura provider or
+record casts.
 
-## Status boundary
+Container creation and structural changes are combat guarded. Unit/groups are
+set before enabling. An initializer creates fresh texture/cooldown/text regions
+and registers them with each native button. Blizzard supplies aura identity,
+texture, visibility, duration, and stacks. Lamda does not inspect secret fields
+or calculate from secret container geometry. Safe binding updates do not rewrite
+protected frame scripts or click handlers.
 
-Normal WoW addon APIs do not provide arbitrary file reads or a localhost socket
-for engine heartbeats. Therefore the addon cannot currently claim live Engine
-Online/Offline status. Show no status text when status is unknown. Only show a
-status when supported by a tested acknowledgement mechanism. A file loaded on reload can
-at most establish a last-known snapshot, never continuing liveness.
+Spell-ID candidate filtering applies to helpful friendly auras and harmful
+enemy auras, not friendly debuffs. Supported category/dispel filters must be
+used where applicable. A silently ignored filter is not functional support.
+Active aura duration never means ability cooldown readiness.
 
-The external overlay can show engine/module health and log freshness while it is
-running. If the entire engine stops, its own overlay cannot reliably announce that
-failure; a separate watchdog would be required for an independently live warning.
+## Engine boundary
 
-## UI presentation
+Lamda Engine remains a background Go process. Native icons need neither the
+engine nor logging. `nativeFrames=true` suppresses detached engine cooldown rows
+and prevents LamdaUI from enabling automatic logging. The old bar editor is
+removed. Legacy config fields remain readable for migration/profiles without
+redefining native rendering.
 
-Keep LamdaUI lightweight: General, Modules, and necessary controls, with no explanatory
-filler, speculative status, or extra information text. Unknown state stays silent.
-Keep technical diagnostics out of the normal interface; expose them only through
-an explicit diagnostic action when needed.
+The disk reader/replay model remains separate for defensive observations and
+mapped NPC reuse estimates. Measured delivery delay prevents dependable live
+readiness claims. Its estimates do not directly populate addon frames. Native
+aura rendering does not require NPC spell mappings.
 
-## First implementation milestone
+SavedVariables persist on reload/logout. The engine reads completed snapshots
+without executing Lua or writing back to that file. Invalid/partial snapshots
+retain the last valid engine configuration.
 
-1. Read existing logs and replay real teammate defensive casts.
-2. Measure event timestamp versus first appearance on disk during a run.
-3. Show estimated cooldowns and data freshness in an external overlay.
-4. Connect LamdaUI configuration snapshots.
-5. Package the verified feature with the Windows source-build installer and icon.
+## Status and presentation
 
-Do not present a module as functional just because its settings tab or installer
-exists. Engine-generated timers do not directly populate in-game addon frames.
+Normal addon APIs provide no arbitrary file reader or localhost heartbeat
+socket. Reload saves settings; it is not engine acknowledgement. Unknown engine
+status stays silent, and a loaded snapshot cannot prove continuing liveness.
 
-## Full replacement target
+General and module controls remain lightweight. `/lui debug` reports known
+provider discovery and native runtime errors only when requested. Update checks
+notify on confirmed newer releases and never install code automatically.
 
-The user requires the eventual hub to replace the full MiniCC/MiniAuras feature
-set. FEATURE-COVERAGE.md records the inspected modules and missing behaviors.
-LamdaCD customization is the current deliverable; publishing it does not establish
-full replacement coverage. Preserve the clean generic hub, with no legacy personal
-class setup modules.
+## Distribution
+
+- Public source: `github.com/tm-LBenson/lamda-engine`.
+- Reviewed PowerShell installs missing Git/Go and builds a pinned source release.
+- Build/test in staging; back up engine, addon, configuration and shortcut;
+  restore on failure and preserve SavedVariables.
+- The requested `lambaUI` desktop shortcut/LUI logo launch one engine instance.
+  Native icons also work without that process.
+- Updates repeat fetch/build/verify/replace. No permanent execution-policy
+  weakening. Local builds are unsigned and may still prompt in Windows.
+
+## Replacement scope
+
+Full MiniCC/MiniAuras behavior is current required scope, tracked in
+[FEATURE-COVERAGE.md](FEATURE-COVERAGE.md). Native frame auras implement part of
+it; the remaining modules/controls remain acceptance work. Lamda uses original
+code and public APIs, not wholesale copied All Rights Reserved MiniAuras source.
+
+Vision and a broader visual rule editor are later modules. The earlier dungeon
+error remains undiagnosed; this architecture change does not establish its
+cause or claim it fixed.

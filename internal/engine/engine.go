@@ -309,6 +309,15 @@ func ReadConfig(path string) (Config, error) {
 	if c.X < -16000 || c.Y < -16000 || c.X > 16000 || c.Y > 16000 || c.Scale < 0.5 || c.Scale > 3 || math.IsNaN(c.Scale) || math.IsInf(c.Scale, 0) {
 		return c, fmt.Errorf("invalid layout")
 	}
+	// Native frame auras own the display in the addon. Suppress the detached
+	// estimate overlay when that module mode is selected, including old previews.
+	native := field("nativeFrames")
+	if native != "" && native != "true" && native != "false" {
+		return c, fmt.Errorf("invalid nativeFrames")
+	}
+	if native == "true" {
+		c.Enabled = false
+	}
 	return c, nil
 }
 

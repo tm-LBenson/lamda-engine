@@ -1,118 +1,15 @@
 local _,LUI=...
-local colors={{0.21,0.75,0.65},{0.20,0.52,0.84},{0.58,0.40,0.85},{0.85,0.54,0.20}}
-local samples={{"Tank","Shield Wall","~60s",0.5},{"Healer","Pain Suppression","~90s*",0.7},{"Damage","Blur","~25s*",0.4}}
-local keys={"anchor","overlayX","overlayY","rowWidth","rowHeight","overlayScale"}
-local function clamp(v,lo,hi)return math.max(lo,math.min(hi,v))end
-local function round(v)return math.floor(v+0.5)end
-function LUI:PreviewGeometry()
-    local d=self:DB();local count=math.min(3,d.maxRows);local cols=math.min(d.columns,count)
-    local rows=math.ceil(count/cols);local scale=d.overlayScale
-    return cols*d.rowWidth*scale+(cols-1)*d.rowGap*scale,rows*d.rowHeight*scale+(rows-1)*d.rowGap*scale,count,cols,rows
-end
-function LUI:DrawSamples(frame,factor)
-    frame.sampleRows=frame.sampleRows or {}
-    local d=self:DB();local _,_,count,cols,totalRows=self:PreviewGeometry()
-    local color=colors[d.accent] or colors[1]
-    for i=1,3 do
-        local row=frame.sampleRows[i]
-        if not row then
-            row=CreateFrame("Frame",nil,frame,"BackdropTemplate");frame.sampleRows[i]=row
-            row:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8",edgeFile="Interface\\Buttons\\WHITE8X8",edgeSize=1})
-            row.fill=row:CreateTexture(nil,"BACKGROUND");row.fill:SetColorTexture(color[1],color[2],color[3],0.25)
-            row.text=row:CreateFontString(nil,"OVERLAY","GameFontHighlight")
-            row.timer=row:CreateFontString(nil,"OVERLAY","GameFontHighlight")
-        end
-        row:SetShown(i<=count)
-        if i<=count then
-            local width=d.rowWidth*d.overlayScale*factor;local height=d.rowHeight*d.overlayScale*factor
-            local r=math.floor((i-1)/cols);if d.grow==2 then r=totalRows-1-r end
-            local c=(i-1)%cols
-            row:ClearAllPoints();row:SetPoint("TOPLEFT",c*(width+d.rowGap*d.overlayScale*factor),-r*(height+d.rowGap*d.overlayScale*factor))
-            row:SetSize(width,height);row:SetBackdropColor(0.08,0.14,0.19,d.opacity/100)
-            row:SetBackdropBorderColor(color[1],color[2],color[3],d.border and 1 or 0)
-            row.fill:ClearAllPoints();row.fill:SetPoint("TOPLEFT",1,-1);row.fill:SetSize(math.max(1,(width-2)*samples[i][4]),math.max(1,height-2));row.fill:SetShown(d.bars)
-            row.fill:SetColorTexture(color[1],color[2],color[3],0.25)
-            local fontSize=math.max(6,math.min(d.fontSize*d.overlayScale*factor,height-4))
-            row.text:SetFont(STANDARD_TEXT_FONT,fontSize);row.timer:SetFont(STANDARD_TEXT_FONT,fontSize)
-            row.timer:ClearAllPoints();row.timer:SetPoint("RIGHT",-8*factor,0);row.timer:SetText(d.showTimers and samples[i][3] or "")
-            row.text:ClearAllPoints();row.text:SetPoint("LEFT",8*factor,0);row.text:SetJustifyH("LEFT");row.text:SetWordWrap(false)
-            row.text:SetWidth(math.max(1,width-(d.showTimers and 74 or 16)*factor))
-            local parts={};if d.showNames then table.insert(parts,samples[i][1])end;if d.showSpells then table.insert(parts,samples[i][2])end
-            row.text:SetText(table.concat(parts,"  "))
-        end
-    end
-end
 function LUI:RefreshCooldownPreview()
-    local w,h=self:PreviewGeometry();local factor=math.min(0.8,300/w,105/h)
-    for _,preview in ipairs(self.cdPreviews or {}) do self:DrawSamples(preview,factor) end
-    if self.cdGuide and self.cdGuide:IsShown() and not self.resizingGuide then self:RefreshGuide() end
+    local auras=self.FrameAuras
+    if auras and auras.RequestRefresh then auras:RequestRefresh() end
 end
-local function screenUnits()
-    local physicalWidth,physicalHeight=GetPhysicalScreenSize()
-    return physicalWidth,physicalHeight,UIParent:GetWidth()/physicalWidth
-end
-function LUI:GuideOffsets(left,top,width,height,screenWidth,screenHeight,anchor)
-    local ax=((anchor-1)%3)/2;local ay=math.floor((anchor-1)/3)/2
-    return round(left-(screenWidth-width)*ax),round(top-(screenHeight-height)*ay)
-end
-function LUI:RefreshGuide()
-    local sw,sh,factor=screenUnits();local w,h=self:PreviewGeometry();local d=self:DB()
-    local ax=((d.anchor-1)%3)/2;local ay=math.floor((d.anchor-1)/3)/2
-    local f=self.cdGuide;f:ClearAllPoints();f:SetSize(w*factor,h*factor)
-    f:SetPoint("TOPLEFT",UIParent,"TOPLEFT",((sw-w)*ax+d.overlayX)*factor,-((sh-h)*ay+d.overlayY)*factor)
-    self:DrawSamples(f,factor)
-end
-function LUI:RecordGuide()
-    local sw,sh,factor=screenUnits();local f=self.cdGuide;local d=self:DB()
-    local left=(f:GetLeft()-(UIParent:GetLeft() or 0))/factor
-    local top=((UIParent:GetTop() or UIParent:GetHeight())-f:GetTop())/factor
-    local w,h=self:PreviewGeometry()
-    d.overlayX,d.overlayY=self:GuideOffsets(left,top,w,h,sw,sh,d.anchor)
-    d.overlayX=clamp(d.overlayX,-16000,16000);d.overlayY=clamp(d.overlayY,-16000,16000)
-end
-function LUI:FinishMove(cancel)
-    if not self.cdGuide or not self.cdGuide:IsShown() then return end
-    self.cdGuide:StopMovingOrSizing();self.resizingGuide=false
-    if cancel then for k,v in pairs(self.moveSnapshot or {})do self:DB()[k]=v end else self:RecordGuide() end
-    self.cdGuide:Hide();self.moveControls:Hide();self.frame:Show();self:RefreshUI()
-end
-function LUI:MoveCooldowns()
-    if InCombatLockdown() then return end
-    if self.commitInputs then self.commitInputs() end
-    self.moveSnapshot={};for _,k in ipairs(keys)do self.moveSnapshot[k]=self:DB()[k]end
-    if not self.cdGuide then
-        local f=CreateFrame("Frame","LamdaUICooldownGuide",UIParent,"BackdropTemplate");self.cdGuide=f
-        f:SetFrameStrata("DIALOG");f:SetMovable(true);f:SetResizable(true);f:EnableMouse(true);f:RegisterForDrag("LeftButton");f:SetClampedToScreen(true)
-        f:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8",edgeFile="Interface\\Buttons\\WHITE8X8",edgeSize=2})
-        f:SetBackdropColor(0.03,0.06,0.09,0.8);f:SetBackdropBorderColor(0.2,0.85,0.7,1)
-        local title=f:CreateFontString(nil,"OVERLAY","GameFontNormal")
-        title:SetPoint("BOTTOMLEFT",f,"TOPLEFT",0,8);title:SetText("Team cooldowns · Preview — drag to move")
-        f:SetScript("OnDragStart",function(self)if not InCombatLockdown()then self:StartMoving()end end)
-        f:SetScript("OnDragStop",function(self)self:StopMovingOrSizing();LUI:RecordGuide()end)
-        local grip=CreateFrame("Button",nil,f,"UIPanelButtonTemplate");grip:SetSize(22,22);grip:SetPoint("BOTTOMRIGHT",6,-6);grip:SetText("//")
-        grip:SetScript("OnEnter",function(self)GameTooltip:SetOwner(self,"ANCHOR_RIGHT");GameTooltip:SetText("Drag to resize");GameTooltip:Show()end)
-        grip:SetScript("OnLeave",function()GameTooltip:Hide()end)
-        grip:SetScript("OnMouseDown",function(_,button)
-            if button=="LeftButton" and not InCombatLockdown()then
-                LUI.resizingGuide=true;f:StartSizing("BOTTOMRIGHT")
-            end
-        end)
-        grip:SetScript("OnMouseUp",function()
-            if not LUI.resizingGuide then return end
-            f:StopMovingOrSizing();local _,_,factor=screenUnits();local d=LUI:DB();local _,_,_,cols,rows=LUI:PreviewGeometry()
-            d.rowWidth=clamp(round((f:GetWidth()/factor-(cols-1)*d.rowGap*d.overlayScale)/cols/d.overlayScale),120,900)
-            d.rowHeight=clamp(round((f:GetHeight()/factor-(rows-1)*d.rowGap*d.overlayScale)/rows/d.overlayScale),20,100)
-            LUI.resizingGuide=false;LUI:RecordGuide();LUI:RefreshGuide()
-        end)
-        local controls=CreateFrame("Frame",nil,UIParent,"BackdropTemplate");self.moveControls=controls
-        controls:SetSize(310,54);controls:SetPoint("BOTTOM",0,80);controls:SetFrameStrata("DIALOG")
-        controls:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8"});controls:SetBackdropColor(0.03,0.06,0.09,0.95)
-        LUI:Button(controls,"Apply & Reload",12,-14,160,function()if not InCombatLockdown()then LUI:FinishMove(false);LUI:Save()end end)
-        LUI:Button(controls,"Cancel",184,-14,110,function()LUI:FinishMove(true)end)
-        f:RegisterEvent("PLAYER_REGEN_DISABLED");f:SetScript("OnEvent",function()LUI:FinishMove(true)end)
-        f:Hide();controls:Hide()
-    end
-    self.frame:Hide();self.cdGuide:Show();self.moveControls:Show();self:RefreshGuide()
+function LUI:StopFramePreview()
+    local auras=self.FrameAuras
+    if not auras or not auras.preview then return end
+    -- SetPreview refreshes the hub; closing it must not recursively reopen or refresh it.
+    auras.preview=false
+    if auras.HideSamples then auras:HideSamples() end
+    if auras.RequestRefresh then auras:RequestRefresh() end
 end
 
 LUI.refreshers={}
@@ -227,6 +124,7 @@ function LUI:BuildUI()
     local list=CreateFrame("Frame",nil,scroll);list:SetSize(130,math.max(416,#self.modules*36));scroll:SetScrollChild(list)
     local panels,buttons={},{};self.modulePanels=panels
     function self:SelectModule(id)
+        if id~="cd" then self:StopFramePreview() end
         for i,module in ipairs(self.modules) do
             local selected=module.id==id;panels[i]:SetShown(selected);buttons[i]:SetEnabled(not selected)
             if selected then self.selectedModule=id end
@@ -245,6 +143,7 @@ function LUI:BuildUI()
     function self:SelectPage(page)
         if self.profileDialog then self.profileDialog:Hide() end
         local isGeneral=page~="modules";self.selectedPage=isGeneral and "general" or "modules"
+        if isGeneral then self:StopFramePreview() end
         general:SetShown(isGeneral);modules:SetShown(not isGeneral)
         generalButton:SetEnabled(not isGeneral);modulesButton:SetEnabled(isGeneral);self:RefreshUI()
     end
@@ -254,12 +153,15 @@ function LUI:BuildUI()
     local save=self:Button(frame,"Apply & Reload",18,-548,150,function()LUI:Save()end)
     local function refresh()save:SetEnabled(not InCombatLockdown())end
     frame:RegisterEvent("PLAYER_REGEN_DISABLED");frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-    frame:SetScript("OnEvent",refresh);frame:SetScript("OnShow",function()refresh();LUI:RefreshUI()end)
-    frame:SetScript("OnHide",function()if LUI.profileDialog then LUI.profileDialog:Hide()end end)
+    frame:SetScript("OnEvent",function()refresh();LUI:RefreshUI()end)
+    frame:SetScript("OnShow",function()refresh();LUI:RefreshUI()end)
+    frame:SetScript("OnHide",function()
+        LUI:StopFramePreview()
+        if LUI.profileDialog then LUI.profileDialog:Hide()end
+    end)
     self:SelectPage("general");frame:Hide()
     UISpecialFrames=UISpecialFrames or {};table.insert(UISpecialFrames,"LamdaUIFrame")
 end
 function LUI:OpenUI()
-    -- Reopening the hub always ends temporary placement mode first.
-    self:FinishMove(true);self:SelectPage("general");self.frame:Show()
+    self:SelectPage("general");self.frame:Show()
 end

@@ -166,7 +166,7 @@ function LUI:Save()
     self:SaveActiveProfile();ReloadUI()
 end
 function LUI:EnsureLogging()
-    if not self:DB().autoLog or not self:DB().cdEnabled then return end
+    if self:DB().nativeFrames or not self:DB().autoLog or not self:DB().cdEnabled then return end
     local inside,kind=IsInInstance()
     if not inside or (kind~="party" and kind~="scenario") then return end
     if type(LoggingCombat)=="function" then pcall(LoggingCombat,true) end
@@ -179,7 +179,10 @@ events:SetScript("OnEvent",function(_,event)
     if event=="PLAYER_LOGIN" then
         LUI:BuildUI()
         SLASH_LAMDAUI1="/lui";SLASH_LAMDAUI2="/lamdaui"
-        SlashCmdList.LAMDAUI=function()LUI:OpenUI()end
+        SlashCmdList.LAMDAUI=function(text)
+            if text=="debug" and LUI.FrameAuras then LUI.FrameAuras:Diagnostic()
+            else LUI:OpenUI()end
+        end
     end
     LUI:EnsureLogging();C_Timer.After(11,function()LUI:EnsureLogging()end)
 end)

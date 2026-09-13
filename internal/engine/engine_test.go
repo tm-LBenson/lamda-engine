@@ -183,3 +183,36 @@ LamdaEngineDB = {
 		}
 	}
 }
+
+func TestNativeFramesSuppressDetachedDisplay(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "lamdaUI.lua")
+	for _, native := range []string{"true", "false", "42"} {
+		data := `LamdaEngineDB = {
+["schema"] = 1,
+["cdEnabled"] = true,
+["checkUpdates"] = false,
+["notifyUpdates"] = false,
+["checkDays"] = 1,
+["overlayX"] = 60,
+["overlayY"] = 240,
+["overlayScale"] = 1,
+["nativeFrames"] = ` + native + `,
+}`
+		if err := os.WriteFile(p, []byte(data), 0600); err != nil {
+			t.Fatal(err)
+		}
+		cfg, err := ReadConfig(p)
+		if native == "42" {
+			if err == nil {
+				t.Fatal("invalid native setting accepted")
+			}
+			continue
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if cfg.Enabled != (native == "false") {
+			t.Fatal("native and detached displays both enabled", cfg)
+		}
+	}
+}

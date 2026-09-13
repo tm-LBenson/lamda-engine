@@ -2,11 +2,13 @@
 ## Title: LamdaUI
 ## Notes: Module settings for Lamda Engine
 ## Author: Lewis Benson
-## Version: 0.25.0
+## Version: 0.26.0
 ## SavedVariables: LamdaEngineDB, LamdaUIDB, LamdaUIMigrationDB
 ## IconTexture: Interface\Icons\INV_Misc_Gear_01
 
 Core.lua
 Modules\LamdaCD.lua
 Modules\Settings.lua
+NativeAuras.lua
+FrameAuras.lua
 UI.lua
