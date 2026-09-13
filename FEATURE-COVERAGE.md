@@ -11,21 +11,27 @@ runtime reference, not permission to add every new successor module to scope.
 Source behavior and live verification are separate. Keep existing addon features
 you use until their replacements pass the checks in [VALIDATION.md](VALIDATION.md).
 
-## Native frame work — 0.7.2 / addon 0.27.1
+## Native frame work — current 0.7.3 / addon 0.27.2
+
+Independent regions and party/raid layouts were delivered in 0.7.1 / addon
+0.27.0. The current correction restores their original full preview.
 
 | Feature | Source coverage | Outstanding acceptance |
 | --- | --- | --- |
-| Attachment | DandersFrames/Blizzard, actual unit bindings, player/party/raid and supported pets | Live sorting/combat/visibility and other original providers |
+| Attachment | DandersFrames preview attachment confirmed by user/screenshot; Blizzard and supported player/party/raid/pet targets implemented | Real teammate effects, live sorting/combat/visibility and other providers |
 | Aura regions | Four independently placed regions: CC, Debuffs, Defensives, Important buffs; big/external groups share the defensive region | Live team effects; original combined-indicator options and reference category behavior |
 | Party/raid layouts | Each region has its own party and raid settings, selected within Frames/Appearance | Live selection/transitions and preview agreement |
 | Placement | Nine frame anchors, distance/adjustments, eight growth directions, per-region wrapping | Original centered growth behavior and independent per-unit overrides where needed |
 | Appearance | Per-region size/spacing/wrapping/font size/timers/stacks/borders/static highlights/swipe/reverse/tooltips | Relative percentage size, exact original glow/dispel coloring, decimals, additional styling |
 | Categories | Shared category switches and icon caps | Original per-context/per-region selection rules, combined budgets and spell selection |
 | Visibility | Player/party/raid/pet and world/dungeon/follower/raid/arena/BG/delve switches | Original separate region enable rules and live transitions |
-| Preview | DandersFrames sample attachment confirmed by user/screenshot; focused layout preview and one-icon overview implemented | Updated preview appearance, other providers/layouts, fallback and combat cancellation |
+| Preview | All enabled regions at configured icon limits simultaneously on every module page; editing selection does not filter samples | Restored full preview, other providers/layouts, fallback and combat cancellation |
 | Engine independence | Native auras need no engine/log; native mode suppresses detached rows | Persisted installed mode and engine behavior after reload |
 | Migration | Successful native setup retires only the original Lamda display and preserves its preference | Live coexistence without disabling MiniAuras/Danders features |
 | Hub/profiles/install | General/modules, profiles/import-export, source installer and update preferences | Actual Windows installation/update and runtime regression checks |
+
+Full previews show maximum layout occupancy as requested. Crowding alone is not
+a bug or a reason to hide other regions. The ASCII dropdown marker is retained.
 
 These icons show active effects and remaining aura duration, not ability
 cooldown readiness. Original MiniCC's cooldown tracker remains separate missing

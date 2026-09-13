@@ -165,7 +165,7 @@ class FrameRuntimeTests(unittest.TestCase):
         local labels={};for _,sample in ipairs(f.samples)do
           assert(sample:IsShown() and sample.context=="Party" and (sample.target==df1 or sample.target==df2))
           local count=0;for _,icon in ipairs(sample.icons)do if icon:IsShown()then count=count+1 end end
-          assert(count==1)
+          assert(count==({CC=3,Debuffs=4,Defensives=6,Buffs=2})[sample.region])
           labels[sample.title.text]=true
         end
         assert(labels["LamdaCD preview: CC"] and labels["LamdaCD preview: Debuffs"] and labels["LamdaCD preview: Defensives"] and labels["LamdaCD preview: Important buffs"])
@@ -181,31 +181,25 @@ class FrameRuntimeTests(unittest.TestCase):
         LUI:OpenUI();assert(not f.preview and not f.demo:IsShown())
         ''')
 
-    def test_layout_preview_focuses_selected_region_without_changing_live_settings(self):
+    def test_full_preview_preserves_capacity_across_layout_tabs(self):
         lua=frames_runtime();lua.execute('''
         local f=LUI.FrameAuras;local exported=LUI:ExportProfile()
-        LUI:OpenUI();click("Modules");click("Frames")
-        assert(LUI.frameLayoutPreviewFocus)
-        f:SetPreview(true)
-        local function check(region,expected)
-          local shown=0
+        LUI:OpenUI();click("Modules");f:SetPreview(true)
+        local function check()
+          local shown=0;local regions={}
           for _,sample in ipairs(f.samples)do if sample:IsShown()then
-            shown=shown+1;assert(sample.region==region)
+            shown=shown+1;regions[sample.region]=true
             local count=0;for _,icon in ipairs(sample.icons)do if icon:IsShown()then count=count+1 end end
-            assert(count==expected)
+            assert(count==({CC=3,Debuffs=4,Defensives=6,Buffs=2})[sample.region])
           end end
-          assert(shown==2)
+          assert(shown==8 and regions.CC and regions.Debuffs and regions.Defensives and regions.Buffs)
         end
-        check("CC",3)
-        LUI.frameLayoutEdit.region="Debuffs";LUI:RefreshUI();f:Update();check("Debuffs",4)
-        click("Appearance");f:Update();check("Debuffs",4)
-        click("Auras");assert(not LUI.frameLayoutPreviewFocus);f:Update()
-        local shown=0;for _,sample in ipairs(f.samples)do if sample:IsShown()then
-          shown=shown+1
-          local count=0;for _,icon in ipairs(sample.icons)do if icon:IsShown()then count=count+1 end end
-          assert(count==1)
-        end end
-        assert(shown==8 and LUI:ExportProfile()==exported)
+        check()
+        click("Frames");f:Update();check()
+        LUI.frameLayoutEdit.region="Debuffs";LUI:RefreshUI();f:Update();check()
+        click("Appearance");f:Update();check()
+        click("Auras");f:Update();check()
+        assert(LUI:ExportProfile()==exported)
         f:SetPreview(false)
         for _,handle in ipairs(created)do assert(handle.shown)end
         ''')

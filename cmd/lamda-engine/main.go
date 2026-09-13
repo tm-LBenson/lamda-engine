@@ -21,7 +21,7 @@ import (
 	"github.com/tm-LBenson/lamda-engine/internal/engine"
 )
 
-var version = "0.7.2"
+var version = "0.7.3"
 
 type install struct {
 	Retail string `json:"retail"`

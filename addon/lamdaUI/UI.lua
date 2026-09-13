@@ -99,9 +99,7 @@ function LUI:Tabs(parent,definitions)
     local pages,buttons={},{}
     local function select(index)
         for i,page in ipairs(pages) do page:SetShown(i==index);buttons[i]:SetEnabled(i~=index) end
-        parent.selectedTab=definitions[index].id
-        if definitions[index].onSelect then definitions[index].onSelect() end
-        LUI:RefreshUI()
+        parent.selectedTab=definitions[index].id;LUI:RefreshUI()
     end
     for i,definition in ipairs(definitions) do
         local page=CreateFrame("Frame",nil,parent);page:SetPoint("TOPLEFT",0,-44);page:SetSize(620,326)

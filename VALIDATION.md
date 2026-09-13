@@ -1,10 +1,23 @@
-# Validation — 0.7.2 / addon 0.27.1
+# Validation — 0.7.3 / addon 0.27.2
 
 Source implementation, automated checks, and live game behavior are separate
 claims. Native rendering and full replacement are not established by mocked
 API calls.
 
-## Completed for 0.7.2
+## Completed for 0.7.3
+
+- **37 Lua tests pass**, including full configured-capacity previews across
+  Auras, Frames and Appearance and after changing the selected editor region.
+- Linux and Windows engine 0.7.3 builds pass.
+- No Go runtime changed beyond the version. Prior Go race/vet results remain
+  regression evidence; those checks were not rerun for this preview correction.
+
+Addon 0.27.2 is installed locally, with all seven files verified and the local
+hot-reload bundle compiled under Lua 5.1. Engine 0.7.3 is running with its
+detached overlay disabled; the prior addon was backed up. Full previews and the
+ASCII dropdown marker are installed. Live teammate effects remain untested.
+
+## Prior completed checks for 0.7.2
 
 - **37 Lua checks pass**: four independent native regions, separate party/raid
   layouts, all eight growth directions, settings isolation and profile sharing,
@@ -13,8 +26,8 @@ API calls.
 - The installed hot-reload bundle compiles under Lua 5.1. All seven addon files
   were checked against their expected contents after installation, with the
   local bundle used for `UI.lua` to support an already running WoW session.
-- Addon 0.27.1 is installed locally. Engine 0.7.2 is running with its detached
-  overlay disabled. The prior addon directory was backed up before replacement.
+- Addon 0.27.1 was installed locally and engine 0.7.2 was started with its
+  detached overlay disabled. The prior addon directory was backed up.
 
 These are source, mock and installation checks. Live native aura rendering,
 combat behavior and actual Windows installation remain unverified.
@@ -26,11 +39,12 @@ Their screenshot of addon 0.27.0 also shows the four sample regions attached to
 both displayed unit frames. This establishes sample attachment and ownership;
 it does not establish native aura rendering, combat behavior, or cooldown readiness.
 
-The screenshot exposed crowded preview rows/labels and an unsupported dropdown
-symbol. Addon 0.27.1 focuses Frames/Appearance preview on the selected region,
-limits the Auras/Content overview to one sample per region, and uses an ASCII
-dropdown marker. Those corrections have passed automated checks; their updated
-in-game appearance still needs observation.
+The screenshot also showed a dropdown glyph that was replaced with an ASCII
+marker. Preview crowding was initially misclassified as a defect: 0.27.1 limited
+samples to the selected region or a one-icon overview. The user clarified that
+full previews normally look crowded and should show maximum layout occupancy.
+Version 0.27.2 restores all enabled regions at their configured limits across
+module pages. This restores intended behavior; crowding alone is not a bug.
 
 ## Prior completed checks for 0.7.0
 
@@ -70,8 +84,10 @@ WoW rendering or ability cooldown readiness.
   placement, growth, wrapping and appearance; selecting one region must not
   overwrite another. Shared category caps stay consistent. Verify fonts,
   swipes/reverse, stacks, borders, static highlights and tooltips.
-- DandersFrames sample attachment is confirmed. Verify the updated focused
-  preview, fallback samples, and return to real native auras after stopping preview.
+- DandersFrames sample attachment is confirmed. Verify all enabled regions at
+  their configured limits on every module page, fallback samples, and return to
+  real auras after stopping preview. Selecting an editor region must not hide
+  other samples.
 - Exercise world/follower/delve/raid/arena/BG rules where available; one context
   does not establish all others.
 - Enter combat while editing/previewing, check safe deferral and recovery, and
@@ -83,7 +99,7 @@ WoW rendering or ability cooldown readiness.
   module rendered an icon.
 
 **Real native aura rendering remains unverified.** DandersFrames sample placement
-is confirmed; the updated preview and live teammate effects still need checking.
+is confirmed; the restored full preview and live teammate effects still need checking.
 The user has not yet tested real teammate effects with preview stopped. Full
 original MiniCC parity, dependable teammate cooldown readiness, and the earlier
 dungeon error remain open.

@@ -1,7 +1,7 @@
 # LamdaUI requirements and acceptance criteria
 
-Reviewed against the user conversation on 2026-09-13 for engine 0.7.2 / addon
-0.27.1. This is the accepted product scope, not a completion claim.
+Reviewed against the user conversation on 2026-09-13 for engine 0.7.3 / addon
+0.27.2. This is the accepted product scope, not a completion claim.
 
 ## Product and priority
 
@@ -50,7 +50,7 @@ WeakAuras-like editor are explicitly later modules.
 | FRAME-3 | Show team CC, debuffs, defensives, and important auras. | Native groups show real effects during restricted encounters; own auras do not stand in for teammate validation. |
 | FRAME-4 | Support pets and content rules. | Player/party/raid/pet toggles and world/dungeon/raid/arena/BG/delve rules control supported regions. |
 | FRAME-5 | Useful customization affects live output. | CC, debuff, defensive and important-buff regions have independent position, growth, size and appearance, with separate party/raid layouts. Category switches/caps remain shared. Live icons and preview agree. |
-| FRAME-6 | Preview without combat or engine. | Labelled samples use available frames or a fallback; stopping preview restores native auras. |
+| FRAME-6 | Full preview without combat or engine. | All enabled regions show their configured maximum icons simultaneously across module pages. Region selection changes editing only. Crowding alone is not a bug; stopping preview restores native auras. |
 | FRAME-7 | Native display is independent. | Team icons work with engine stopped and logging off; native mode suppresses detached engine bars. |
 | FRAME-8 | Preserve uncertainty. | Aura duration never means ability readiness; missing observations and samples never create readiness claims. |
 | FRAME-9 | Respect supported filters. | Unsupported friendly-debuff spell-ID selection is not advertised as functional. |
@@ -114,13 +114,16 @@ prompts.
 
 ## Current acceptance status
 
-0.7.0 restored native aura icons; the 0.7.2 / addon 0.27.1 change separates four
+0.7.0 restored native aura icons; 0.7.1 / addon 0.27.0 separated four
 regions and party/raid layouts, with eight growth directions and per-region
 appearance. General/module profiles remain the hub. Native mode suppresses detached engine
 rows and does not enable automatic logging. `/lui debug` exposes known provider
 and runtime evidence without claiming engine liveness.
 
-Full replacement, verified teammate readiness, and live combat/frame rendering
-remain open. Automated results and observed limits are in
+The user and screenshot confirm DandersFrames preview attachment. Version
+0.7.3 / addon 0.27.2 restores the original full-capacity preview after the user
+clarified that crowded samples are expected, and retains the ASCII dropdown
+marker. No additional UI feature scope is introduced. Full replacement, verified
+teammate readiness, and real native effects/combat remain open. Automated results and observed limits are in
 [VALIDATION.md](VALIDATION.md). The earlier dungeon error is undiagnosed; removing
 legacy code does not establish its cause or prove it fixed.

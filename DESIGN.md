@@ -1,6 +1,7 @@
 # LamdaUI and engine design
 
-Engine 0.7.2 / addon 0.27.1 uses independently positioned native frame regions.
+Engine 0.7.3 / addon 0.27.2 retains independently positioned native frame regions
+introduced in 0.7.1 / addon 0.27.0.
 [REQUIREMENTS.md](REQUIREMENTS.md) records scope; [VALIDATION.md](VALIDATION.md)
 records evidence and open checks.
 
@@ -35,9 +36,15 @@ Five native groups occupy four independent regions: CC, debuffs, defensives
 layouts, edited inside Frames/Appearance. Anchor, offsets, eight-way growth,
 size, spacing, wrapping, text, timers, stacks, borders, static highlights, swipe/reverse
 and tooltips belong to the selected region/layout. Category switches and caps
-remain shared. Unit/provider/context switches control eligibility. Owned labelled samples preview real
-frames or a fallback; they do not use Blizzard's global sample aura provider or
-record casts.
+remain shared. Unit/provider/context switches control eligibility. Owned labelled
+samples show all enabled regions at their configured capacity on real frames or
+a fallback, consistently across module pages. Editing selection does not filter
+the preview. Full occupancy is the user's preference; crowding by itself is not
+a bug. Samples do not use Blizzard's global provider or record casts.
+
+DandersFrames sample attachment is confirmed by the user and screenshot. Real
+teammate aura effects remain untested. The 0.27.2 correction restores full
+previews and retains the ASCII dropdown marker; it adds no new UI features.
 
 Container creation and structural changes are combat guarded. Unit/groups are
 set before enabling. An initializer creates fresh texture/cooldown/text regions

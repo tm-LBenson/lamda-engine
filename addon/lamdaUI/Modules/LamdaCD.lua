@@ -48,7 +48,6 @@ for _,region in ipairs(regions)do
     end
 end
 LUI.frameLayoutEdit={region="CC",context="Party"}
-LUI.frameLayoutPreviewFocus=false
 local function layoutPrefix()
     local edit=LUI.frameLayoutEdit
     return "native"..edit.region..edit.context
@@ -158,11 +157,7 @@ local function content(parent)
     LUI:OnRefresh(reset,function()reset.confirming=false;reset:SetText("Reset LamdaCD settings")end)
 end
 module.build=function(parent)
-    local function overview()LUI.frameLayoutPreviewFocus=false end
-    local function focus()LUI.frameLayoutPreviewFocus=true end
-    LUI:Tabs(parent,{{id="auras",name="Auras",build=auras,onSelect=overview},
-        {id="frames",name="Frames",build=frames,onSelect=focus},
-        {id="appearance",name="Appearance",build=appearance,onSelect=focus},
-        {id="content",name="Content",build=content,onSelect=overview}})
+    LUI:Tabs(parent,{{id="auras",name="Auras",build=auras},{id="frames",name="Frames",build=frames},
+        {id="appearance",name="Appearance",build=appearance},{id="content",name="Content",build=content}})
 end
 LUI:RegisterModule(module)

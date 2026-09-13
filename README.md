@@ -4,12 +4,13 @@
 Open `/lui` for General settings, then **Modules → LamdaCD** for its controls.
 There is no separate desktop settings application.
 
-Engine **0.7.2** / addon **0.27.1** adds independent frame regions and party/raid layouts:
-crowd control, debuffs, active defensive buffs, and important buffs beside
+Engine **0.7.3** / addon **0.27.2** retains the independent frame regions and
+party/raid layouts introduced in 0.7.1 / 0.27.0: crowd control, debuffs, active
+defensive buffs, and important buffs beside
 DandersFrames or Blizzard frames. Blizzard's native aura containers supply the
 icons and their remaining durations. **This display needs neither the engine nor
-combat logging.** In-game rendering and combat behavior still require live
-validation. Full original MiniCC replacement remains required and unfinished;
+combat logging.** Preview attachment to DandersFrames is confirmed by the user
+and screenshot. Real teammate effects and combat behavior still need live tests. Full original MiniCC replacement remains required and unfinished;
 see [FEATURE-COVERAGE.md](FEATURE-COVERAGE.md).
 
 ## Using LamdaCD
@@ -28,11 +29,13 @@ After updating, `/reload`, then open `/lui`. For a first installation, restart W
 5. **Content** selects DandersFrames or Blizzard, which player/party/raid/pet
    frames to use, and world, dungeon/follower, raid, arena, battleground, or delve visibility.
 
-**Preview on frames** draws labelled samples on available frames, with a sample
-frame when none are available. Frames and Appearance preview only the selected
-region at its configured capacity; Auras and Content show one example per region. Check placement without combat, use **Stop
-preview** to return to real auras, and **Apply & Reload** to persist settings.
-Samples do not represent observed spells or train cooldown estimates.
+**Preview on frames** shows all enabled regions simultaneously at their configured
+icon limits on every module page, with a sample frame when none are available.
+This represents the maximum layout. The user prefers this full preview;
+crowding alone is expected and is not a rendering bug. Selecting a region changes
+which settings you edit, not which samples appear. Use **Stop preview** to return
+to real auras and **Apply & Reload** to persist settings. Samples do not represent
+observed spells or train cooldown estimates.
 
 Icons follow each frame's displayed unit, including frame sorting. A timer on an
 active defensive buff is its **remaining buff duration**, not the time until
@@ -66,7 +69,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -WowPath '
 ```
 
 The script installs missing Git and Go with Windows Package Manager, obtains the
-`v0.7.2` source, runs Go tests, compiles locally, and installs LamdaUI and the
+`v0.7.3` source, runs Go tests, compiles locally, and installs LamdaUI and the
 engine. It requires 64-bit Windows and Windows PowerShell 5.1+, with winget when
 dependencies are missing. Existing Go installations need Go 1.25 or newer.
 No precompiled engine binary is downloaded.
