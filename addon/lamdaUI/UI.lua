@@ -92,14 +92,16 @@ function LUI:Dropdown(parent,x,y,width,items,selected,onSelect)
     menu:SetScript("OnMouseWheel",function(_,delta)offset=offset-delta;draw()end)
     button:SetScript("OnClick",function()if menu:IsShown()then menu:Hide()else offset=0;draw();menu:Show()end end)
     button:SetScript("OnHide",function()menu:Hide()end)
-    self:OnRefresh(button,function()button:SetText(selected().."  ▾")end)
+    self:OnRefresh(button,function()button:SetText(selected().."  v")end)
     menu:Hide();return button
 end
 function LUI:Tabs(parent,definitions)
     local pages,buttons={},{}
     local function select(index)
         for i,page in ipairs(pages) do page:SetShown(i==index);buttons[i]:SetEnabled(i~=index) end
-        parent.selectedTab=definitions[index].id;LUI:RefreshUI()
+        parent.selectedTab=definitions[index].id
+        if definitions[index].onSelect then definitions[index].onSelect() end
+        LUI:RefreshUI()
     end
     for i,definition in ipairs(definitions) do
         local page=CreateFrame("Frame",nil,parent);page:SetPoint("TOPLEFT",0,-44);page:SetSize(620,326)

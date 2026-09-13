@@ -164,6 +164,8 @@ class FrameRuntimeTests(unittest.TestCase):
         for _,h in ipairs(created)do assert(not h.shown)end
         local labels={};for _,sample in ipairs(f.samples)do
           assert(sample:IsShown() and sample.context=="Party" and (sample.target==df1 or sample.target==df2))
+          local count=0;for _,icon in ipairs(sample.icons)do if icon:IsShown()then count=count+1 end end
+          assert(count==1)
           labels[sample.title.text]=true
         end
         assert(labels["LamdaCD preview: CC"] and labels["LamdaCD preview: Debuffs"] and labels["LamdaCD preview: Defensives"] and labels["LamdaCD preview: Important buffs"])
@@ -177,6 +179,35 @@ class FrameRuntimeTests(unittest.TestCase):
         for i=5,8 do assert(not f.samples[i]:IsShown())end
         assert(LUI:ExportProfile()==exported)
         LUI:OpenUI();assert(not f.preview and not f.demo:IsShown())
+        ''')
+
+    def test_layout_preview_focuses_selected_region_without_changing_live_settings(self):
+        lua=frames_runtime();lua.execute('''
+        local f=LUI.FrameAuras;local exported=LUI:ExportProfile()
+        LUI:OpenUI();click("Modules");click("Frames")
+        assert(LUI.frameLayoutPreviewFocus)
+        f:SetPreview(true)
+        local function check(region,expected)
+          local shown=0
+          for _,sample in ipairs(f.samples)do if sample:IsShown()then
+            shown=shown+1;assert(sample.region==region)
+            local count=0;for _,icon in ipairs(sample.icons)do if icon:IsShown()then count=count+1 end end
+            assert(count==expected)
+          end end
+          assert(shown==2)
+        end
+        check("CC",3)
+        LUI.frameLayoutEdit.region="Debuffs";LUI:RefreshUI();f:Update();check("Debuffs",4)
+        click("Appearance");f:Update();check("Debuffs",4)
+        click("Auras");assert(not LUI.frameLayoutPreviewFocus);f:Update()
+        local shown=0;for _,sample in ipairs(f.samples)do if sample:IsShown()then
+          shown=shown+1
+          local count=0;for _,icon in ipairs(sample.icons)do if icon:IsShown()then count=count+1 end end
+          assert(count==1)
+        end end
+        assert(shown==8 and LUI:ExportProfile()==exported)
+        f:SetPreview(false)
+        for _,handle in ipairs(created)do assert(handle.shown)end
         ''')
 
     def test_preview_grid_matches_all_eight_growth_directions(self):

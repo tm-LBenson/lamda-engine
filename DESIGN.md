@@ -1,6 +1,6 @@
 # LamdaUI and engine design
 
-Engine 0.7.1 / addon 0.27.0 uses independently positioned native frame regions.
+Engine 0.7.2 / addon 0.27.1 uses independently positioned native frame regions.
 [REQUIREMENTS.md](REQUIREMENTS.md) records scope; [VALIDATION.md](VALIDATION.md)
 records evidence and open checks.
 

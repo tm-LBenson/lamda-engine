@@ -1,7 +1,7 @@
 # LamdaUI requirements and acceptance criteria
 
-Reviewed against the user conversation on 2026-09-13 for engine 0.7.1 / addon
-0.27.0. This is the accepted product scope, not a completion claim.
+Reviewed against the user conversation on 2026-09-13 for engine 0.7.2 / addon
+0.27.1. This is the accepted product scope, not a completion claim.
 
 ## Product and priority
 
@@ -114,7 +114,7 @@ prompts.
 
 ## Current acceptance status
 
-0.7.0 restored native aura icons; the 0.7.1 / addon 0.27.0 change separates four
+0.7.0 restored native aura icons; the 0.7.2 / addon 0.27.1 change separates four
 regions and party/raid layouts, with eight growth directions and per-region
 appearance. General/module profiles remain the hub. Native mode suppresses detached engine
 rows and does not enable automatic logging. `/lui debug` exposes known provider

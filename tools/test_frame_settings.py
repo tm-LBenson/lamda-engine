@@ -88,8 +88,8 @@ class FrameSettingsTests(unittest.TestCase):
           end
           error("Missing visible button: "..text)
         end
-        visibleClick("Crowd control  ▾");visibleClick("Debuffs")
-        visibleClick("Party & player frames  ▾");visibleClick("Raid frames")
+        visibleClick("Crowd control  v");visibleClick("Debuffs")
+        visibleClick("Party & player frames  v");visibleClick("Raid frames")
         assert(LUI.frameLayoutEdit.region=="Debuffs" and LUI.frameLayoutEdit.context=="Raid")
         local db=LUI:DB();db.nativeDebuffsRaidOffsetX=17
         visibleClick("Left")
@@ -103,7 +103,7 @@ class FrameSettingsTests(unittest.TestCase):
         local tooltip=visibleClick("Tooltips")
         tooltip:SetChecked(false);tooltip.scripts.OnClick(tooltip)
         assert(not db.nativeDebuffsRaidTooltips and db.nativeDebuffsPartyTooltips)
-        visibleClick("Debuffs  ▾");visibleClick("Defensive buffs")
+        visibleClick("Debuffs  v");visibleClick("Defensive buffs")
         visibleClick("Compact")
         assert(db.nativeDefensivesRaidSize==20 and db.nativeDebuffsRaidSize==34)
         assert(db.nativeDefensivesPartySize==30)

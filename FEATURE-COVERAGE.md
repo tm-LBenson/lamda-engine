@@ -11,7 +11,7 @@ runtime reference, not permission to add every new successor module to scope.
 Source behavior and live verification are separate. Keep existing addon features
 you use until their replacements pass the checks in [VALIDATION.md](VALIDATION.md).
 
-## Native frame work — 0.7.1 / addon 0.27.0
+## Native frame work — 0.7.2 / addon 0.27.1
 
 | Feature | Source coverage | Outstanding acceptance |
 | --- | --- | --- |
@@ -22,7 +22,7 @@ you use until their replacements pass the checks in [VALIDATION.md](VALIDATION.m
 | Appearance | Per-region size/spacing/wrapping/font size/timers/stacks/borders/static highlights/swipe/reverse/tooltips | Relative percentage size, exact original glow/dispel coloring, decimals, additional styling |
 | Categories | Shared category switches and icon caps | Original per-context/per-region selection rules, combined budgets and spell selection |
 | Visibility | Player/party/raid/pet and world/dungeon/follower/raid/arena/BG/delve switches | Original separate region enable rules and live transitions |
-| Preview | Labelled samples on actual frames or fallback | Actual WoW rendering, all regions/layouts and safe combat cancellation |
+| Preview | DandersFrames sample attachment confirmed by user/screenshot; focused layout preview and one-icon overview implemented | Updated preview appearance, other providers/layouts, fallback and combat cancellation |
 | Engine independence | Native auras need no engine/log; native mode suppresses detached rows | Persisted installed mode and engine behavior after reload |
 | Migration | Successful native setup retires only the original Lamda display and preserves its preference | Live coexistence without disabling MiniAuras/Danders features |
 | Hub/profiles/install | General/modules, profiles/import-export, source installer and update preferences | Actual Windows installation/update and runtime regression checks |

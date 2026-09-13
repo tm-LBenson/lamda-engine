@@ -1,23 +1,36 @@
-# Validation — 0.7.1 / addon 0.27.0
+# Validation — 0.7.2 / addon 0.27.1
 
 Source implementation, automated checks, and live game behavior are separate
 claims. Native rendering and full replacement are not established by mocked
 API calls.
 
-## Completed for 0.7.1
+## Completed for 0.7.2
 
-- **36 Lua checks pass**: four independent native regions, separate party/raid
+- **37 Lua checks pass**: four independent native regions, separate party/raid
   layouts, all eight growth directions, settings isolation and profile sharing,
   combat/unit/context changes, bounded retries, samples and native API contracts.
 - Go tests with race detection and `go vet` pass. Linux and Windows builds pass.
 - The installed hot-reload bundle compiles under Lua 5.1. All seven addon files
   were checked against their expected contents after installation, with the
   local bundle used for `UI.lua` to support an already running WoW session.
-- Addon 0.27.0 is installed locally. Engine 0.7.1 is running with its detached
+- Addon 0.27.1 is installed locally. Engine 0.7.2 is running with its detached
   overlay disabled. The prior addon directory was backed up before replacement.
 
 These are source, mock and installation checks. Live native aura rendering,
 combat behavior and actual Windows installation remain unverified.
+
+## Confirmed in game on 2026-09-13
+
+The user confirmed that labelled LamdaCD preview icons appear on DandersFrames.
+Their screenshot of addon 0.27.0 also shows the four sample regions attached to
+both displayed unit frames. This establishes sample attachment and ownership;
+it does not establish native aura rendering, combat behavior, or cooldown readiness.
+
+The screenshot exposed crowded preview rows/labels and an unsupported dropdown
+symbol. Addon 0.27.1 focuses Frames/Appearance preview on the selected region,
+limits the Auras/Content overview to one sample per region, and uses an ASCII
+dropdown marker. Those corrections have passed automated checks; their updated
+in-game appearance still needs observation.
 
 ## Prior completed checks for 0.7.0
 
@@ -57,8 +70,8 @@ WoW rendering or ability cooldown readiness.
   placement, growth, wrapping and appearance; selecting one region must not
   overwrite another. Shared category caps stay consistent. Verify fonts,
   swipes/reverse, stacks, borders, static highlights and tooltips.
-- Preview on actual frames, verify fallback samples, stop preview, and confirm
-  real native auras return. Samples remain labelled.
+- DandersFrames sample attachment is confirmed. Verify the updated focused
+  preview, fallback samples, and return to real native auras after stopping preview.
 - Exercise world/follower/delve/raid/arena/BG rules where available; one context
   does not establish all others.
 - Enter combat while editing/previewing, check safe deferral and recovery, and
@@ -69,9 +82,11 @@ WoW rendering or ability cooldown readiness.
   leaves MiniAuras/Danders features alone. Duplicates are not proof that the new
   module rendered an icon.
 
-**These live native-rendering checks are pending.** User reload/preview feedback
-is still needed. Full original MiniCC parity, dependable teammate cooldown
-readiness, and the earlier dungeon error remain open.
+**Real native aura rendering remains unverified.** DandersFrames sample placement
+is confirmed; the updated preview and live teammate effects still need checking.
+The user has not yet tested real teammate effects with preview stopped. Full
+original MiniCC parity, dependable teammate cooldown readiness, and the earlier
+dungeon error remain open.
 
 ## Earlier regression evidence
 

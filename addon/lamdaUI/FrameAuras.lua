@@ -151,7 +151,7 @@ function F:Options(target,regionID,context)
     end
     return options
 end
-function F:DrawSample(target,index,regionID,context)
+function F:DrawSample(target,index,regionID,context,overview)
     local region=regionByID[public(regionID,"string")] or regions[1]
     context=context and contextName(context) or self:LayoutContext(frameUnit(target))
     local options=self:Options(target,region.id,context);local sample=self.samples[index]
@@ -169,6 +169,9 @@ function F:DrawSample(target,index,regionID,context)
     -- Synthetic icons fill the configured capacity. Defensives has separate
     -- native personal/external groups, each with the same per-group maximum.
     local count=group.enabled and group.max*(region.key=="defensives" and 2 or 1) or 0
+    -- Overview shows an example of each category. Only the region being edited
+    -- fills its capacity, so unrelated sample rows do not cover the unit frames.
+    if overview then count=math.min(count,1) end
     local growth=growths[options.growth]
     local primary=math.min(options.perRow,math.max(1,count));local secondary=math.max(1,math.ceil(count/primary))
     local cols=growth.vertical and secondary or primary;local rows=growth.vertical and primary or secondary
@@ -307,6 +310,7 @@ function F:Update()
     for key,binding in pairs(self.bindings)do if not keep[key] then hideBinding(binding)end end
     if self.preview and not combat and enabled then
         local editor=selectedEditor();local previewTargets={}
+        local focus=editor and LUI.frameLayoutPreviewFocus==true
         for _,target in ipairs(discovered)do
             local context=self:LayoutContext(target.unit)
             if not editor or editor.context==context then previewTargets[#previewTargets+1]={frame=target.frame,context=context}end
@@ -317,8 +321,8 @@ function F:Update()
         end
         local index=0
         for _,target in ipairs(previewTargets)do for _,region in ipairs(regions)do
-            if db["native"..region.id]==true and db[region.maximum]>0 then
-                index=index+1;self:DrawSample(target.frame,index,region.id,target.context)
+            if db["native"..region.id]==true and db[region.maximum]>0 and (not focus or editor.region==region.id) then
+                index=index+1;self:DrawSample(target.frame,index,region.id,target.context,not focus)
             end
         end end
     end

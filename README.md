@@ -4,7 +4,7 @@
 Open `/lui` for General settings, then **Modules → LamdaCD** for its controls.
 There is no separate desktop settings application.
 
-Engine **0.7.1** / addon **0.27.0** adds independent frame regions and party/raid layouts:
+Engine **0.7.2** / addon **0.27.1** adds independent frame regions and party/raid layouts:
 crowd control, debuffs, active defensive buffs, and important buffs beside
 DandersFrames or Blizzard frames. Blizzard's native aura containers supply the
 icons and their remaining durations. **This display needs neither the engine nor
@@ -29,7 +29,8 @@ After updating, `/reload`, then open `/lui`. For a first installation, restart W
    frames to use, and world, dungeon/follower, raid, arena, battleground, or delve visibility.
 
 **Preview on frames** draws labelled samples on available frames, with a sample
-frame when none are available. Check placement without combat, use **Stop
+frame when none are available. Frames and Appearance preview only the selected
+region at its configured capacity; Auras and Content show one example per region. Check placement without combat, use **Stop
 preview** to return to real auras, and **Apply & Reload** to persist settings.
 Samples do not represent observed spells or train cooldown estimates.
 
@@ -65,7 +66,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -WowPath '
 ```
 
 The script installs missing Git and Go with Windows Package Manager, obtains the
-`v0.7.1` source, runs Go tests, compiles locally, and installs LamdaUI and the
+`v0.7.2` source, runs Go tests, compiles locally, and installs LamdaUI and the
 engine. It requires 64-bit Windows and Windows PowerShell 5.1+, with winget when
 dependencies are missing. Existing Go installations need Go 1.25 or newer.
 No precompiled engine binary is downloaded.
