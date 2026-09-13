@@ -8,7 +8,7 @@ LamdaUI remains the in-game addon hub. No separate desktop settings application.
 Lamda Engine runs in the background. First feature: lamdaCD teammate defensive
 estimates from disk combat logs. Measure delivery delay before promising live
 tracking. Vision integration and a visual rule editor come later. Defer the
-existing LamdaUI dungeon error investigation; keep Augmentation suspended.
+existing LamdaUI dungeon error investigation; remove legacy class helpers from the public hub while preserving old SavedVariables.
 
 ## Modules and settings
 

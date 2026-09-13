@@ -5,7 +5,7 @@ A background engine for LamdaUI, the in-game addon hub. The first module is
 No desktop settings application. The Windows shortcut starts the engine and its
 click-through overlay; configure it in WoW with `/lui`.
 
-**0.1.0 is an initial preview.** Real-log replay and automated checks pass. Native
+**0.2.0 is a preview.** Real-log replay and automated checks pass. Native
 Windows overlay behavior and actual in-combat log delivery delay still need live
 validation. This is not a confirmed replacement for restricted addon tracking.
 
@@ -24,7 +24,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -WowPath '
 ```
 
 The script installs missing Git and Go using Windows Package Manager, clones the
-`v0.1.0` tag, runs Go tests, compiles locally, and installs LamdaUI and the engine.
+`v0.2.0` tag, runs Go tests, compiles locally, and installs LamdaUI and the engine.
 It requires 64-bit Windows, Windows PowerShell 5.1+, and winget if dependencies are
 missing. An existing Go installation must support Go 1.25 or newer. GitHub source
 access is public. There are no downloaded precompiled engine binaries.
@@ -37,14 +37,17 @@ LamdaUI's LamdaCD tab.
 
 1. Start WoW and open `/lui`.
 2. Configure **LamdaCD** and **Settings**, then **Save & Reload**.
-3. Ensure combat logging is enabled. LamdaUI includes its existing Combat Logging
-   module; `/combatlog` also toggles logging and prints the resulting state.
+3. Ensure combat logging is enabled. LamdaUI Settings includes
+   Combat logging, which enables it when entering a party instance; `/combatlog`
+   also toggles logging and prints the resulting state.
 4. Party with a real player and observe them use a defensive.
 
 The old standalone lamdaCD addon is not required by the engine. The installer
 leaves it installed; disable it if you do not want its separate in-game display.
-The suspended Augmentation module stays suspended. The prior dungeon error has
-not been diagnosed or claimed fixed.
+The public addon contains only LamdaCD and Settings. Legacy class helpers, action-
+bar setup, macros, layouts, training and profile modules have been removed. Old
+SavedVariables are preserved but never interpreted by the new hub. The prior
+dungeon error has not been diagnosed or claimed fixed.
 
 ## What the timers mean
 
@@ -69,8 +72,7 @@ an old recording nor a synthetic arrival test measures WoW's live flush delay.
 
 ## Settings and status
 
-LamdaUI has **LamdaCD** and **Settings** module entries alongside the existing
-helpers. Controls are deliberately minimal. SavedVariables are read only after
+LamdaUI has **LamdaCD** and **Settings** module entries only. Controls are deliberately minimal. SavedVariables are read only after
 WoW persists them; the engine never executes Lua or writes back to those settings.
 A partial/invalid settings snapshot retains the last valid configuration.
 
@@ -114,6 +116,8 @@ checks require `lupa`: `python tools/test_addon.py`. PowerShell parser and mocke
 installer transaction tests can run with PowerShell 7 on Linux. They do not prove
 WPF or winget works on a real Windows machine.
 
-The Go reader/replay core builds on Linux and Windows. The graphical overlay and
-installer currently target Windows. Vision and a visual rule editor are future
-modules; neither is bundled as a working module in this release.
+The Go reader/replay core builds on Linux and Windows. Windows uses the WPF
+overlay. Linux has a Tk/X11 overlay (also usable with XWayland); it requires
+Python 3, tkinter and python-xlib. After building, copy `linux/overlay.py` beside
+the engine binary. Pure Wayland clients without X11 window metadata are not
+supported. Vision and a visual rule editor are future modules.

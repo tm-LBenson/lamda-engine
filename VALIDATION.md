@@ -1,4 +1,4 @@
-# Validation — 0.1.0 preview
+# Validation — 0.2.0 preview
 
 ## Completed locally
 
@@ -26,5 +26,17 @@
 - In-game module controls and protection/taint behavior during combat.
 - Full M+ coverage, talents, charges, and incomplete/missing cast handling.
 
-The original LamdaUI dungeon crash is deferred, not fixed. Augmentation remains
-suspended. No live engine status is displayed in the addon.
+The original LamdaUI dungeon crash is deferred, not fixed. Legacy modules are removed from the current addon; prior SavedVariables remain
+preserved. No live engine status is displayed in the addon.
+
+## 0.2.0 additions
+
+- New standalone five-file addon: exactly LamdaCD and Settings; no legacy module
+  files or third-party/class-specific dependencies are shipped.
+- Lua 5.1 tests cover slash opening, settings, combat reload guard, legacy data
+  preservation and logging enable conditions.
+- Linux Tk/X11 overlay rendered and was visually inspected in an explicitly
+  labelled preview on this laptop. Actual party defensive display remains a live
+  test; follower NPC casts are deliberately excluded.
+- Installed the clean addon locally and restarted the engine with Linux overlay
+  enabled. A copy of the prior addon is outside WoW AddOns for rollback.

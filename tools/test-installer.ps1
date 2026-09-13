@@ -37,7 +37,7 @@ try {
  & "$source/windows/install.ps1" -SourcePath $source -WowPath $wow -Account TEST -InstallRoot $install
  if(-not $global:luiTestShortcutSaved){throw 'Shortcut not created'}
  if(-not(Test-Path "$install/current/lamda-engine.exe")){throw 'Engine not installed'}
- if(-not(Test-Path "$wow/Interface/AddOns/lamdaUI/Modules/Engine.lua")){throw 'Addon not installed'}
+ if(-not(Test-Path "$wow/Interface/AddOns/lamdaUI/Modules/LamdaCD.lua")){throw 'Addon not installed'}
  $config=Get-Content "$env:APPDATA/LamdaUI/install.json" -Raw | ConvertFrom-Json
  if($config.retail -ne $wow){throw 'Incorrect config'}
  Set-Content "$install/current/keep.txt" 'preserve engine'

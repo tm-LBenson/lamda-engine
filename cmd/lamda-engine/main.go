@@ -21,7 +21,7 @@ import (
 	"github.com/tm-LBenson/lamda-engine/internal/engine"
 )
 
-var version = "0.1.0"
+var version = "0.2.0"
 
 type install struct {
 	Retail string `json:"retail"`
@@ -98,22 +98,29 @@ func main() {
 	var overlay *exec.Cmd
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	if runtime.GOOS == "windows" && !*noOverlay {
-		overlay = exec.CommandContext(ctx, "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-STA", "-File", filepath.Join(base, "overlay.ps1"), "-StatePath", statePath, "-EnginePID", fmt.Sprint(os.Getpid()))
-		hideWindow(overlay)
-		overlay.Stdout = logfile
-		overlay.Stderr = logfile
-		if e := overlay.Start(); e != nil {
-			log.Printf("Overlay: %v", e)
-		} else {
-			defer overlay.Process.Kill()
-			go func() {
-				if e := overlay.Wait(); e != nil {
-					log.Printf("Overlay exit: %v", e)
-				}
-			}()
+	if !*noOverlay {
+		if runtime.GOOS == "windows" {
+			overlay = exec.CommandContext(ctx, "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-STA", "-File", filepath.Join(base, "overlay.ps1"), "-StatePath", statePath, "-EnginePID", fmt.Sprint(os.Getpid()))
+		} else if runtime.GOOS == "linux" {
+			overlay = exec.CommandContext(ctx, "python3", filepath.Join(base, "overlay.py"), "--state", statePath, "--engine-pid", fmt.Sprint(os.Getpid()))
+		}
+		if overlay != nil {
+			hideWindow(overlay)
+			overlay.Stdout = logfile
+			overlay.Stderr = logfile
+			if e := overlay.Start(); e != nil {
+				log.Printf("Overlay: %v", e)
+			} else {
+				defer overlay.Process.Kill()
+				go func() {
+					if e := overlay.Wait(); e != nil {
+						log.Printf("Overlay exit: %v", e)
+					}
+				}()
+			}
 		}
 	}
+
 	ticker := time.NewTicker(250 * time.Millisecond)
 	defer ticker.Stop()
 	tick := 0
