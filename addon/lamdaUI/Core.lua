@@ -1,7 +1,7 @@
 local _, LUI = ...
 LUI.modules = {}
 local defaults = {schema=1,cdEnabled=true,checkUpdates=true,notifyUpdates=true,
-    checkDays=1,overlayX=60,overlayY=240,overlayScale=1,autoLog=true,companions=true,preview=false}
+    checkDays=1,overlayX=60,overlayY=240,overlayScale=1,autoLog=true,companions=true,preview=false,anchor=1,grow=1,rowWidth=340,rowHeight=34,rowGap=3,fontSize=14,opacity=95,columns=1,maxRows=12,accent=1,showNames=true,showSpells=true,showTimers=true,border=true,bars=true}
 function LUI:DB()
     if type(LamdaEngineDB)~="table" then LamdaEngineDB={} end
     for k,v in pairs(defaults) do

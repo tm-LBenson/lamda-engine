@@ -1,4 +1,4 @@
-# Validation — 0.3.0 preview
+# Validation — 0.4.0 preview
 
 ## Completed locally
 
@@ -52,3 +52,17 @@ preserved. No live engine status is displayed in the addon.
 - Replayed follower and delve recordings to validate the added mappings.
 - Preview is a labelled presentation mode controlled from the LamdaCD tab.
 - Live player coverage and actual delivery latency are still unverified.
+
+## 0.4.0 additions
+
+- Nine window-relative anchors, signed offsets, row dimensions, spacing, columns,
+  row caps, up/down growth, font/opacity, palette, border/progress and text toggles.
+- Go tests verify grid geometry, anchors, scaling, upward growth, typography bounds,
+  configuration validation and known versus unknown progress duration.
+- The X11 visual smoke check verifies an actual centered two-column preview with
+  an empty input shape. It caught and fixed moving the Tk child instead of its
+  top-level wrapper. The corrected result was visually inspected.
+- All distributed Lua compiles in Lua 5.1; settings/combat guard tests pass.
+- Windows overlay parses; native Windows appearance and DPI behavior still need
+  a live run. Windows engine cross-build and installer rollback checks pass.
+- Full MiniCC/MiniAuras feature coverage is tracked separately, not claimed here.

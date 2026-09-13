@@ -2,7 +2,7 @@
 ## Title: LamdaUI
 ## Notes: Module settings for Lamda Engine
 ## Author: Lewis Benson
-## Version: 0.22.0
+## Version: 0.23.0
 ## SavedVariables: LamdaEngineDB, LamdaUIDB, LamdaUIMigrationDB
 ## IconTexture: Interface\Icons\INV_Misc_Gear_01
 

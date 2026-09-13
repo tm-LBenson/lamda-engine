@@ -5,6 +5,10 @@ Add-Type @'
 using System;
 using System.Runtime.InteropServices;
 public static class LUIWindow {
+ [StructLayout(LayoutKind.Sequential)] public struct Rect {public int Left,Top,Right,Bottom;}
+ [StructLayout(LayoutKind.Sequential)] public struct Point {public int X,Y;}
+ [DllImport("user32.dll")] public static extern bool GetClientRect(IntPtr w,out Rect r);
+ [DllImport("user32.dll")] public static extern bool ClientToScreen(IntPtr w,ref Point p);
  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr w, out uint p);
  [DllImport("user32.dll", EntryPoint="GetWindowLongPtrW")] public static extern IntPtr GetWindowLongPtr(IntPtr w,int n);
@@ -21,7 +25,9 @@ $window.Topmost = $true
 $window.ShowInTaskbar = $false
 $window.ShowActivated = $false
 $window.SizeToContent = 'WidthAndHeight'
-$panel = New-Object Windows.Controls.StackPanel
+$panel = New-Object Windows.Controls.Canvas
+$panel.Background = [Windows.Media.BrushConverter]::new().ConvertFromString('#0f1723')
+$panel.ClipToBounds = $true
 $window.Content = $panel
 $window.Add_SourceInitialized({
  $handle = (New-Object Windows.Interop.WindowInteropHelper($window)).Handle
@@ -42,35 +48,65 @@ $timer.Add_Tick({
   $state = Get-Content -LiteralPath $StatePath -Raw | ConvertFrom-Json
   if ($state.pid -ne $EnginePID) { $window.Hide(); return }
   $now = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()/1000.0
+  $cfg=$state.config; $layout=$state.layout
+  if ($layout.width -le 0 -or $layout.height -le 0) { $window.Hide(); return }
   $panel.Children.Clear()
-  $window.Left = [double]$state.config.x
-  $window.Top = [double]$state.config.y
-  $panel.LayoutTransform = New-Object Windows.Media.ScaleTransform([double]$state.config.scale,[double]$state.config.scale)
-  if ($state.config.preview) {
+  $panel.Width=$layout.width; $panel.Height=$layout.height
+  $window.Opacity=$cfg.opacity/100.0
+  $brushes=[Windows.Media.BrushConverter]::new()
+  $accent=$brushes.ConvertFromString(@('#35bfa7','#3485d5','#9567d8','#d88934')[$cfg.accent-1])
+  $header=0
+  foreach ($caption in @($(if($cfg.preview -and $cfg.enabled){'Preview'}),$(if($state.update){'LamdaUI update available: '+$state.update}))) {
+   if(-not $caption){continue}
    $label=New-Object Windows.Controls.TextBlock
-   $label.Text="Preview"; $label.Foreground=[Windows.Media.Brushes]::Turquoise; $label.Background=[Windows.Media.Brushes]::Black; $label.Padding="10,5"
-   [void]$panel.Children.Add($label)
+   $label.Text=$caption; $label.Foreground=$accent; $label.FontSize=$layout.fontSize; $label.Padding='8,2'
+   [Windows.Controls.Canvas]::SetTop($label,$header*$layout.headerStep)
+   [void]$panel.Children.Add($label);$header++
   }
-  foreach ($row in $state.rows) {
-   $remaining = [int][Math]::Ceiling($row.ends-$now)
-   if ($remaining -le 0 -or -not $state.config.enabled) { continue }
-   $border = New-Object Windows.Controls.Border
-   $border.Background = New-Object Windows.Media.SolidColorBrush([Windows.Media.Color]::FromArgb(210,15,23,35))
-   $border.CornerRadius = '5'; $border.Padding = '10,5'; $border.Margin = '0,0,0,3'
-   $text = New-Object Windows.Controls.TextBlock
-   $text.Foreground = [Windows.Media.Brushes]::White; $text.FontFamily = 'Segoe UI'; $text.FontSize = 14
-   $charge = if ($row.charges) { '*' } else { '' }
-   $text.Text = if ($row.observedOnly) { '{0}  {1}' -f $row.player,$row.name } else { '{0}  {1}  ~{2}s{3}' -f $row.player,$row.name,$remaining,$charge }
-   $border.Child = $text; [void]$panel.Children.Add($border)
+  for($i=0;$i -lt $state.rows.Count;$i++) {
+   $row=$state.rows[$i];$cell=$layout.cells[$i]
+   $remaining=[Math]::Max(0,$row.ends-$now)
+   if($remaining -le 0 -or -not $cfg.enabled){continue}
+   $border=New-Object Windows.Controls.Border
+   $border.Width=$layout.rowWidth;$border.Height=$layout.rowHeight
+   $border.Background=$brushes.ConvertFromString('#142331')
+   if($cfg.border){$border.BorderBrush=$accent;$border.BorderThickness='1'}
+   $grid=New-Object Windows.Controls.Grid
+   $grid.ClipToBounds=$true;$border.Child=$grid
+   if($cfg.bars -and $row.duration -gt 0 -and -not $row.observedOnly) {
+    $fill=New-Object Windows.Shapes.Rectangle
+    $fill.Fill=$accent;$fill.Opacity=0.25;$fill.HorizontalAlignment='Left'
+    $fill.Width=($layout.rowWidth-2)*[Math]::Max(0,[Math]::Min(1,$remaining/$row.duration))
+    [void]$grid.Children.Add($fill)
+   }
+   $timerText=''
+   if($cfg.showTimers -and -not $row.observedOnly){$timerText='~'+[Math]::Ceiling($remaining)+'s'+$(if($row.charges){'*'})}
+   $reserve=0
+   if($timerText) {
+    $timerLabel=New-Object Windows.Controls.TextBlock
+    $timerLabel.Text=$timerText;$timerLabel.FontSize=$layout.fontSize;$timerLabel.Foreground=[Windows.Media.Brushes]::White
+    $timerLabel.VerticalAlignment='Center';$timerLabel.HorizontalAlignment='Right';$timerLabel.Margin='0,0,8,0'
+    $timerLabel.Measure([Windows.Size]::new([double]::PositiveInfinity,[double]::PositiveInfinity));$reserve=$timerLabel.DesiredSize.Width+12
+    [void]$grid.Children.Add($timerLabel)
+   }
+   $parts=@();if($cfg.showNames){$parts+=$row.player};if($cfg.showSpells){$parts+=$row.name}
+   $label=New-Object Windows.Controls.TextBlock
+   $label.Text=$parts -join '  ';$label.FontSize=$layout.fontSize;$label.Foreground=[Windows.Media.Brushes]::White
+   $label.Margin=[Windows.Thickness]::new(8,0,$reserve+8,0);$label.VerticalAlignment='Center';$label.TextTrimming='CharacterEllipsis'
+   [void]$grid.Children.Add($label)
+   [Windows.Controls.Canvas]::SetLeft($border,$cell.x);[Windows.Controls.Canvas]::SetTop($border,$cell.y)
+   [void]$panel.Children.Add($border)
   }
-  if ($state.update) {
-   $notice = New-Object Windows.Controls.TextBlock
-   $notice.Text = 'LamdaUI update available: '+$state.update
-   $notice.Foreground = [Windows.Media.Brushes]::Turquoise
-   $notice.Background = [Windows.Media.Brushes]::Black
-   $notice.Padding = '10,5'; [void]$panel.Children.Add($notice)
-  }
-  if ($panel.Children.Count -gt 0) { $window.Show() } else { $window.Hide() }
+  $handle=[LUIWindow]::GetForegroundWindow()
+  $rect=[LUIWindow+Rect]::new();$point=[LUIWindow+Point]::new()
+  if(-not [LUIWindow]::GetClientRect($handle,[ref]$rect) -or -not [LUIWindow]::ClientToScreen($handle,[ref]$point)){$window.Hide();return}
+  $matrix=[Windows.PresentationSource]::FromVisual($window).CompositionTarget.TransformFromDevice
+  $origin=$matrix.Transform([Windows.Point]::new($point.X,$point.Y))
+  $size=$matrix.Transform([Windows.Point]::new($rect.Right-$rect.Left,$rect.Bottom-$rect.Top))
+  $window.Left=$origin.X+($size.X-$layout.width)*$layout.anchorX+$cfg.x
+  $window.Top=$origin.Y+($size.Y-$layout.height)*$layout.anchorY+$cfg.y
+  $window.Show()
+
  } catch { $window.Hide() }
 })
 $window.Add_Closed({$timer.Stop()})

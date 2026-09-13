@@ -90,6 +90,7 @@ type Row struct {
 	Delay        float64 `json:"delay"`
 	Companion    bool    `json:"companion"`
 	ObservedOnly bool    `json:"observedOnly"`
+	Duration     float64 `json:"duration"`
 }
 type Model struct {
 	Rows             map[string]Row
@@ -123,7 +124,7 @@ func (m *Model) Observe(c Cast, now time.Time) bool {
 		return false
 	}
 	m.Seen[key] = c.At
-	m.Rows[key] = Row{GUID: c.GUID, Player: c.Name, Spell: c.Spell, Name: s.Name, Ends: float64(c.At.UnixMilli())/1000 + s.Cooldown, Charges: s.Charges, Delay: delay}
+	m.Rows[key] = Row{GUID: c.GUID, Player: c.Name, Spell: c.Spell, Name: s.Name, Ends: float64(c.At.UnixMilli())/1000 + s.Cooldown, Charges: s.Charges, Delay: delay, Duration: s.Cooldown}
 	return true
 }
 func (m *Model) Active(now time.Time) []Row {
@@ -146,6 +147,21 @@ func (m *Model) Active(now time.Time) []Row {
 }
 
 type Config struct {
+	Anchor     int     `json:"anchor"`
+	Grow       int     `json:"grow"`
+	Width      int     `json:"width"`
+	Height     int     `json:"height"`
+	Gap        int     `json:"gap"`
+	FontSize   int     `json:"fontSize"`
+	Opacity    int     `json:"opacity"`
+	Columns    int     `json:"columns"`
+	MaxRows    int     `json:"maxRows"`
+	Accent     int     `json:"accent"`
+	ShowNames  bool    `json:"showNames"`
+	ShowSpells bool    `json:"showSpells"`
+	ShowTimers bool    `json:"showTimers"`
+	Border     bool    `json:"border"`
+	Bars       bool    `json:"bars"`
 	Enabled    bool    `json:"enabled"`
 	Companions bool    `json:"companions"`
 	Preview    bool    `json:"preview"`
@@ -158,7 +174,7 @@ type Config struct {
 }
 
 func DefaultConfig() Config {
-	return Config{Enabled: true, Companions: true, Updates: true, Notify: true, Days: 1, X: 60, Y: 240, Scale: 1}
+	return Config{Anchor: 1, Grow: 1, Width: 340, Height: 34, Gap: 3, FontSize: 14, Opacity: 95, Columns: 1, MaxRows: 12, Accent: 1, ShowNames: true, ShowSpells: true, ShowTimers: true, Border: true, Bars: true, Enabled: true, Companions: true, Updates: true, Notify: true, Days: 1, X: 60, Y: 240, Scale: 1}
 }
 
 // Read only a narrow, flat SavedVariables schema. Never execute addon Lua.
@@ -194,7 +210,7 @@ func ReadConfig(path string) (Config, error) {
 		}
 		*p = v == "true"
 	}
-	for k, p := range map[string]*bool{"companions": &c.Companions, "preview": &c.Preview} {
+	for k, p := range map[string]*bool{"companions": &c.Companions, "preview": &c.Preview, "showNames": &c.ShowNames, "showSpells": &c.ShowSpells, "showTimers": &c.ShowTimers, "border": &c.Border, "bars": &c.Bars} {
 		v := field(k)
 		if v != "" {
 			if v != "true" && v != "false" {
@@ -210,6 +226,21 @@ func ReadConfig(path string) (Config, error) {
 		}
 		*p = v
 	}
+	for k, spec := range map[string]struct {
+		p      *int
+		lo, hi int
+	}{
+		"anchor": {&c.Anchor, 1, 9}, "grow": {&c.Grow, 1, 2}, "rowWidth": {&c.Width, 120, 900}, "rowHeight": {&c.Height, 20, 100}, "rowGap": {&c.Gap, 0, 40}, "fontSize": {&c.FontSize, 8, 32}, "opacity": {&c.Opacity, 20, 100}, "columns": {&c.Columns, 1, 4}, "maxRows": {&c.MaxRows, 1, 40}, "accent": {&c.Accent, 1, 4},
+	} {
+		v := field(k)
+		if v != "" {
+			n, e := strconv.Atoi(v)
+			if e != nil || n < spec.lo || n > spec.hi {
+				return c, fmt.Errorf("invalid %s", k)
+			}
+			*spec.p = n
+		}
+	}
 	c.Scale, e = strconv.ParseFloat(field("overlayScale"), 64)
 	if e != nil {
 		return c, e
@@ -217,7 +248,7 @@ func ReadConfig(path string) (Config, error) {
 	if c.Days != 1 && c.Days != 7 {
 		return c, fmt.Errorf("invalid frequency")
 	}
-	if c.X < 0 || c.Y < 0 || c.X > 16000 || c.Y > 16000 || c.Scale < 0.5 || c.Scale > 3 {
+	if c.X < -16000 || c.Y < -16000 || c.X > 16000 || c.Y > 16000 || c.Scale < 0.5 || c.Scale > 3 {
 		return c, fmt.Errorf("invalid layout")
 	}
 	return c, nil

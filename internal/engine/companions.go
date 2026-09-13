@@ -93,13 +93,13 @@ func (m *Model) observeCompanion(c Cast, now time.Time) bool {
 		ends = float64(c.At.UnixMilli())/1000 + h.Estimate
 		observedOnly = false
 	}
-	m.Rows[key] = Row{GUID: c.GUID, Player: c.Name, Spell: c.Spell, Name: name, Ends: ends, Delay: delay, Companion: true, ObservedOnly: observedOnly}
+	m.Rows[key] = Row{GUID: c.GUID, Player: c.Name, Spell: c.Spell, Name: name, Ends: ends, Delay: delay, Companion: true, ObservedOnly: observedOnly, Duration: h.Estimate}
 	return true
 }
 func PreviewRows(now time.Time) []Row {
 	return []Row{
-		{GUID: "preview-1", Player: "Companion", Name: "Barrier", Ends: float64(now.Unix()) + 25},
-		{GUID: "preview-2", Player: "Teammate", Name: "Defensive", Ends: float64(now.Unix()) + 90, Charges: true},
+		{GUID: "preview-1", Player: "Companion", Name: "Barrier", Duration: 40, Ends: float64(now.Unix()) + 25},
+		{GUID: "preview-2", Player: "Teammate", Name: "Defensive", Duration: 120, Ends: float64(now.Unix()) + 90, Charges: true},
 		{GUID: "preview-3", Player: "Companion", Name: "Interrupt", Ends: float64(now.Unix()) + 8, ObservedOnly: true},
 	}
 }

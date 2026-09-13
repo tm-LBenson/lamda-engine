@@ -5,7 +5,7 @@ A background engine for LamdaUI, the in-game addon hub. The first module is
 No desktop settings application. The Windows shortcut starts the engine and its
 click-through overlay; configure it in WoW with `/lui`.
 
-**0.3.0 is a preview.** Real-log replay and automated checks pass. Native
+**0.4.0 is a preview.** Real-log replay and automated checks pass. Native
 Windows overlay behavior and actual in-combat log delivery delay still need live
 validation. This is not a confirmed replacement for restricted addon tracking.
 
@@ -24,7 +24,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -WowPath '
 ```
 
 The script installs missing Git and Go using Windows Package Manager, clones the
-`v0.3.0` tag, runs Go tests, compiles locally, and installs LamdaUI and the engine.
+`v0.4.0` tag, runs Go tests, compiles locally, and installs LamdaUI and the engine.
 It requires 64-bit Windows, Windows PowerShell 5.1+, and winget if dependencies are
 missing. An existing Go installation must support Go 1.25 or newer. GitHub source
 access is public. There are no downloaded precompiled engine binaries.
@@ -92,6 +92,27 @@ memory, and resets with the model on zone/log transitions. Casts delayed more th
 and Scale. Save & Reload applies changes. Preview rows do not train the model,
 count as observations or survive disabling Preview. Follower runs can now exercise
 NPC display and layout, but do not establish real-player event coverage.
+
+## Customizing the cooldown area
+
+`/lui` → LamdaCD has Tracking, Layout and Style pages. Enable Preview under
+Tracking, change options, then Save & Reload. Preview is always labelled.
+
+Layout offers nine anchors relative to the WoW client window, signed X/Y offsets,
+width, height, spacing, columns, a row limit, overall scale and upward/downward
+growth. Positive X moves right; positive Y moves down. Center and right/bottom
+anchors account for the whole region size, including preview/update labels.
+Reset layout restores only placement and dimensions.
+
+Style controls font size, opacity, four accent presets, border, progress bars,
+player names, spell names and timers. Text is truncated to fit the row, and font
+height is bounded by row height. Cast-only companion rows have no progress bar.
+The display remains click-through. Drag placement and live unit-frame attachment
+are still unfinished features.
+
+The replacement target includes the full MiniCC/MiniAuras feature set. See
+[FEATURE-COVERAGE.md](FEATURE-COVERAGE.md) for what is implemented and what still
+needs work. **Do not remove MiniAuras expecting full feature coverage yet.**
 
 ## Settings and status
 

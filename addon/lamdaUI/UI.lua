@@ -5,20 +5,21 @@ function LUI:Button(parent,text,x,y,width,callback)
     b:SetSize(width,26);b:SetPoint("TOPLEFT",x,y);b:SetText(text)
     b:SetScript("OnClick",callback);return b
 end
-function LUI:Checkbox(parent,text,key,y)
+function LUI:Checkbox(parent,text,key,y,x)
     local b=CreateFrame("CheckButton",nil,parent,"UICheckButtonTemplate")
-    b:SetSize(26,26);b:SetPoint("TOPLEFT",0,y)
+    b:SetSize(26,26);b:SetPoint("TOPLEFT",x or 0,y)
     local label=b:CreateFontString(nil,"OVERLAY","GameFontHighlight")
     label:SetPoint("LEFT",b,"RIGHT",4,0);label:SetText(text)
     b:SetScript("OnShow",function(self)self:SetChecked(LUI:DB()[key])end)
     b:SetScript("OnClick",function(self)LUI:DB()[key]=not not self:GetChecked()end)
     return b
 end
-function LUI:Number(parent,text,key,y,min,max)
+function LUI:Number(parent,text,key,y,min,max,x)
+    x=x or 0
     local label=parent:CreateFontString(nil,"OVERLAY","GameFontHighlight")
-    label:SetPoint("TOPLEFT",4,y-5);label:SetText(text)
+    label:SetPoint("TOPLEFT",x+4,y-5);label:SetText(text)
     local b=CreateFrame("EditBox",nil,parent,"InputBoxTemplate")
-    b:SetSize(100,24);b:SetPoint("TOPLEFT",155,y);b:SetAutoFocus(false);b:SetMaxLetters(6)
+    b:SetSize(100,24);b:SetPoint("TOPLEFT",x+155,y);b:SetAutoFocus(false);b:SetMaxLetters(6)
     local function commit()
         local v=tonumber(b:GetText())
         if v and v>=min and v<=max then LUI:DB()[key]=key=="overlayScale" and v or math.floor(v) end
@@ -33,7 +34,7 @@ end
 function LUI:BuildUI()
     if self.frame then return end
     local f=CreateFrame("Frame","LamdaUIFrame",UIParent,"BackdropTemplate")
-    self.frame=f;f:SetSize(410,400);f:SetPoint("CENTER");f:SetFrameStrata("DIALOG")
+    self.frame=f;f:SetSize(660,520);f:SetPoint("CENTER");f:SetFrameStrata("DIALOG")
     f:SetClampedToScreen(true);f:SetMovable(true);f:EnableMouse(true);f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart",function(self)self:StartMoving()end)
     f:SetScript("OnDragStop",function(self)self:StopMovingOrSizing()end)
@@ -47,15 +48,25 @@ function LUI:BuildUI()
         for i,p in ipairs(panels)do p:SetShown(i==index);buttons[i]:SetEnabled(i~=index)end
     end
     for i,m in ipairs(self.modules)do
-        local p=CreateFrame("Frame",nil,f);p:SetPoint("TOPLEFT",20,-90);p:SetSize(370,250);p:Hide()
+        local p=CreateFrame("Frame",nil,f);p:SetPoint("TOPLEFT",20,-90);p:SetSize(620,370);p:Hide()
         panels[i]=p;m.build(p)
         buttons[i]=self:Button(f,m.name,18+(i-1)*124,-48,118,function()selectTab(i)end)
     end
     self.commitInputs=function()for _,commit in ipairs(inputs)do commit()end end
-    local save=self:Button(f,"Save & Reload",18,-358,150,function()LUI:Save()end)
+    local save=self:Button(f,"Save & Reload",18,-478,150,function()LUI:Save()end)
     local function refresh()save:SetEnabled(not InCombatLockdown())end
     f:RegisterEvent("PLAYER_REGEN_DISABLED");f:RegisterEvent("PLAYER_REGEN_ENABLED")
     f:SetScript("OnEvent",refresh);f:SetScript("OnShow",refresh)
     selectTab(1);f:Hide()
     UISpecialFrames=UISpecialFrames or {};table.insert(UISpecialFrames,"LamdaUIFrame")
+end
+
+function LUI:Choice(parent,text,key,choices,y,x)
+    x=x or 0
+    local label=parent:CreateFontString(nil,"OVERLAY","GameFontHighlight")
+    label:SetPoint("TOPLEFT",x+4,y-5);label:SetText(text)
+    local b=self:Button(parent,"",x+145,y,145,function(self)
+        local db=LUI:DB();db[key]=db[key]%#choices+1;self:SetText(choices[db[key]])
+    end)
+    b:SetScript("OnShow",function(self)self:SetText(choices[LUI:DB()[key]] or choices[1])end)
 end

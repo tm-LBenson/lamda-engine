@@ -21,13 +21,14 @@ import (
 	"github.com/tm-LBenson/lamda-engine/internal/engine"
 )
 
-var version = "0.3.0"
+var version = "0.4.0"
 
 type install struct {
 	Retail string `json:"retail"`
 	Config string `json:"config"`
 }
 type state struct {
+	Layout engine.Layout `json:"layout"`
 	PID    int           `json:"pid"`
 	Config engine.Config `json:"config"`
 	Rows   []engine.Row  `json:"rows"`
@@ -191,7 +192,7 @@ func main() {
 			if cfg.Updates && cfg.Notify {
 				shownUpdate = update
 			}
-			if e := engine.WriteJSON(statePath, state{os.Getpid(), cfg, displayRows(model, cfg, now), shownUpdate}); e != nil && tick%40 == 1 {
+			if e := engine.WriteJSON(statePath, buildState(os.Getpid(), cfg, displayRows(model, cfg, now), shownUpdate)); e != nil && tick%40 == 1 {
 				log.Printf("State write: %v", e)
 			}
 		}
@@ -329,7 +330,21 @@ func runReplay(path string) error {
 func displayRows(m *engine.Model, c engine.Config, now time.Time) []engine.Row {
 	rows := m.Active(now)
 	if c.Preview && c.Enabled {
-		return engine.PreviewRows(now)
+		rows = engine.PreviewRows(now)
+	}
+	if len(rows) > c.MaxRows {
+		rows = rows[:c.MaxRows]
 	}
 	return rows
+}
+
+func buildState(pid int, c engine.Config, rows []engine.Row, update string) state {
+	headers := 0
+	if c.Preview && c.Enabled {
+		headers++
+	}
+	if update != "" {
+		headers++
+	}
+	return state{PID: pid, Config: c, Rows: rows, Update: update, Layout: engine.LayoutFor(c, len(rows), headers)}
 }

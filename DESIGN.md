@@ -67,3 +67,11 @@ an explicit diagnostic action when needed.
 
 Do not present a module as functional just because its settings tab or installer
 exists. Engine-generated timers do not directly populate in-game addon frames.
+
+## Full replacement target
+
+The user requires the eventual hub to replace the full MiniCC/MiniAuras feature
+set. FEATURE-COVERAGE.md records the inspected modules and missing behaviors.
+LamdaCD customization is the current deliverable; publishing it does not establish
+full replacement coverage. Preserve the clean generic hub, with no legacy personal
+class setup modules.
