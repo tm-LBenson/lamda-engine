@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
  [string]$Repository = 'https://github.com/tm-LBenson/lamda-engine.git',
- [string]$Ref = 'v0.5.0',
+ [string]$Ref = 'v0.6.0',
  [string]$WowPath,
  [string]$Account,
  [string]$InstallRoot = (Join-Path $env:LOCALAPPDATA 'LamdaUI'),
@@ -26,6 +26,7 @@ function Need-Tool([string]$Name,[string]$Package) {
 }
 if ($env:OS -ne 'Windows_NT') { throw 'This installer is for Windows.' }
 if (-not [Environment]::Is64BitOperatingSystem) { throw '64-bit Windows is required.' }
+if (-not [Environment]::Is64BitProcess) { throw 'Run this script in 64-bit PowerShell.' }
 if (-not $WowPath) {
  $candidates = @('D:\World of Warcraft\_retail_', 'C:\Program Files (x86)\World of Warcraft\_retail_')
  $found = @($candidates | Where-Object { Test-Path (Join-Path $_ 'Wow.exe') })
@@ -74,12 +75,17 @@ try {
  $configDir = Join-Path $env:APPDATA 'LamdaUI'
  New-Item -ItemType Directory -Force -Path $configDir | Out-Null
  $configPath = Join-Path $configDir 'install.json'
- if (Test-Path $configPath) { Copy-Item -LiteralPath $configPath -Destination (Join-Path $backup 'install.json') }
+ $oldConfig = Test-Path -LiteralPath $configPath
+ $desktop = [Environment]::GetFolderPath('Desktop')
+ $shortcutPath = Join-Path $desktop 'lambaUI.lnk'
+ $oldShortcut = Test-Path -LiteralPath $shortcutPath
+ if ($oldShortcut) { Copy-Item -LiteralPath $shortcutPath -Destination (Join-Path $backup 'lambaUI.lnk') }
+ if ($oldConfig) { Copy-Item -LiteralPath $configPath -Destination (Join-Path $backup 'install.json') }
  # Stop only our installed executable, after the replacement has built successfully.
  Get-Process 'lamda-engine' -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq (Join-Path $current 'lamda-engine.exe') } | Stop-Process
  $oldEngine = Test-Path $current
  $oldAddon = Test-Path $addon
- $engineMoved = $false; $addonMoved = $false; $engineWritten = $false; $addonWritten = $false
+ $engineMoved = $false; $addonMoved = $false; $engineWritten = $false; $addonWritten = $false; $configWritten = $false; $shortcutWritten = $false
  try {
   if ($oldEngine) { Move-Item -LiteralPath $current -Destination (Join-Path $backup 'engine'); $engineMoved = $true }
   if ($oldAddon) { Move-Item -LiteralPath $addon -Destination (Join-Path $backup 'lamdaUI'); $addonMoved = $true }
@@ -87,21 +93,29 @@ try {
   Copy-Item -LiteralPath $build -Destination $current -Recurse
   $addonWritten = $true
   Copy-Item -LiteralPath $addonSource -Destination $addon -Recurse
+  $configWritten = $true
   @{retail=$WowPath;config=(Join-Path $accountPath 'SavedVariables\lamdaUI.lua')} | ConvertTo-Json | Set-Content -LiteralPath $configPath -Encoding UTF8
   $shell = New-Object -ComObject WScript.Shell
-  $desktop = [Environment]::GetFolderPath('Desktop')
-  $shortcut = $shell.CreateShortcut((Join-Path $desktop 'lambaUI.lnk'))
+  $shortcut = $shell.CreateShortcut($shortcutPath)
   $shortcut.TargetPath = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
   $shortcut.Arguments = '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "'+(Join-Path $current 'launch.ps1')+'"'
   $shortcut.WorkingDirectory = $current
   $shortcut.IconLocation = (Join-Path $current 'lui.ico')+',0'
+  $shortcutWritten = $true
   $shortcut.Save()
  } catch {
   if ($engineWritten) { Remove-Item -LiteralPath $current -Recurse -Force -ErrorAction SilentlyContinue }
   if ($addonWritten) { Remove-Item -LiteralPath $addon -Recurse -Force -ErrorAction SilentlyContinue }
   if ($engineMoved) { Move-Item -LiteralPath (Join-Path $backup 'engine') -Destination $current }
   if ($addonMoved) { Move-Item -LiteralPath (Join-Path $backup 'lamdaUI') -Destination $addon }
-  if (Test-Path (Join-Path $backup 'install.json')) { Copy-Item -LiteralPath (Join-Path $backup 'install.json') -Destination $configPath -Force }
+  if ($configWritten) {
+   if ($oldConfig) { Copy-Item -LiteralPath (Join-Path $backup 'install.json') -Destination $configPath -Force }
+   else { Remove-Item -LiteralPath $configPath -Force -ErrorAction SilentlyContinue }
+  }
+  if ($shortcutWritten) {
+   if ($oldShortcut) { Copy-Item -LiteralPath (Join-Path $backup 'lambaUI.lnk') -Destination $shortcutPath -Force }
+   else { Remove-Item -LiteralPath $shortcutPath -Force -ErrorAction SilentlyContinue }
+  }
   throw
  }
  Write-Host 'Installed. Launch lambaUI from your desktop. In WoW: /lui'

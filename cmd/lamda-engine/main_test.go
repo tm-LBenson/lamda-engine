@@ -30,3 +30,23 @@ func TestPreviewDoesNotCreateObservations(t *testing.T) {
 		t.Fatal("preview survived disable")
 	}
 }
+
+func TestDisplayDisableAndCompanionFilter(t *testing.T) {
+	m := engine.NewModel()
+	now := time.Now()
+	m.Rows["player"] = engine.Row{GUID: "player", Player: "Teammate", Ends: float64(now.Unix()) + 30}
+	m.Rows["companion"] = engine.Row{GUID: "companion", Companion: true, Ends: float64(now.Unix()) + 30}
+	c := engine.DefaultConfig()
+	c.Companions = false
+	if rows := displayRows(m, c, now); len(rows) != 1 || rows[0].Companion {
+		t.Fatal("disabled companion still shown", rows)
+	}
+	c.Enabled = false
+	c.Preview = true
+	if rows := displayRows(m, c, now); len(rows) != 0 {
+		t.Fatal("disabled module still shows observations or preview", rows)
+	}
+	if len(m.Rows) != 2 {
+		t.Fatal("display filters changed observations")
+	}
+}

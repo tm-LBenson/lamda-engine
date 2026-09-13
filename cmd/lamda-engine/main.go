@@ -21,7 +21,7 @@ import (
 	"github.com/tm-LBenson/lamda-engine/internal/engine"
 )
 
-var version = "0.5.0"
+var version = "0.6.0"
 
 type install struct {
 	Retail string `json:"retail"`
@@ -96,6 +96,7 @@ func main() {
 	cfg := engine.DefaultConfig()
 	model := engine.NewModel()
 	tail := &engine.Tail{}
+	session := &engine.LogSession{}
 	var overlay *exec.Cmd
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
@@ -161,16 +162,20 @@ func main() {
 				nextUpdate = now.Add(time.Duration(cfg.Days) * 24 * time.Hour)
 				go func() { updateResults <- checkUpdate(ctx) }()
 			}
-			oldPath := tail.Path
+			generation := tail.Generation
 			lines, e := tail.Poll(filepath.Join(*retail, "Logs"))
 			if e != nil && tick%40 == 1 {
 				log.Printf("Log read: %v", e)
 			}
-			if oldPath != "" && oldPath != tail.Path {
+			if generation != tail.Generation {
 				model = engine.NewModel()
+				session = &engine.LogSession{}
+				if err := session.Seed(tail.Path, tail.StartOffset); err != nil {
+					log.Printf("Log session metadata: %v", err)
+				}
 			}
 			for _, line := range lines {
-				if strings.Contains(line, "  ZONE_CHANGE,") || strings.Contains(line, "  CHALLENGE_MODE_START,") || strings.Contains(line, "  CHALLENGE_MODE_END,") {
+				if session.ResetFor(line) {
 					model = engine.NewModel()
 					continue
 				}
@@ -329,6 +334,18 @@ func runReplay(path string) error {
 
 func displayRows(m *engine.Model, c engine.Config, now time.Time) []engine.Row {
 	rows := m.Active(now)
+	if !c.Enabled {
+		return []engine.Row{}
+	}
+	if !c.Companions {
+		filtered := make([]engine.Row, 0, len(rows))
+		for _, row := range rows {
+			if !row.Companion {
+				filtered = append(filtered, row)
+			}
+		}
+		rows = filtered
+	}
 	if c.Preview && c.Enabled {
 		rows = engine.PreviewRows(now)
 	}

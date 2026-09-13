@@ -12,9 +12,12 @@ existing LamdaUI dungeon error investigation; remove legacy class helpers from t
 
 ## Modules and settings
 
-Each module registers a LamdaUI tab. Start with LamdaCD, later Vision and other
-modules. A shared Settings tab configures automatic engine update checks,
-frequency, and notifications. Checking does not authorize automatic installation.
+The hub opens on General. General configures engine update checks, frequency,
+notifications, and module profiles. Modules has a list of installed modules and
+opens each module in its own workspace. LamdaCD owns its Appearance, Placement,
+and Tracking controls. Future modules register their own settings and enabled
+state; no placeholders appear before their implementation exists. Checking for
+updates never installs code.
 
 Addon preferences persist via SavedVariables on reload/logout. The engine reads
 completed snapshots without executing Lua. The engine must not modify the same
@@ -52,7 +55,7 @@ failure; a separate watchdog would be required for an independently live warning
 
 ## UI presentation
 
-Keep LamdaUI lightweight: module tabs and necessary controls, with no explanatory
+Keep LamdaUI lightweight: General, Modules, and necessary controls, with no explanatory
 filler, speculative status, or extra information text. Unknown state stays silent.
 Keep technical diagnostics out of the normal interface; expose them only through
 an explicit diagnostic action when needed.

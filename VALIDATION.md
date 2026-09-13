@@ -1,4 +1,4 @@
-# Validation — 0.5.0 preview
+# Validation — 0.6.0 preview
 
 ## Completed locally
 
@@ -79,3 +79,23 @@ preserved. No live engine status is displayed in the addon.
 - Engine receives settings on reload; the editor is not live engine feedback.
 - Native in-game visuals still need user verification. Windows device conversion
   parses but still requires a real DPI test.
+
+## 0.6.0 additions
+
+- Requirements reviewed against the user conversation; General and Modules are
+  separate. Registered modules have independent defaults, validation and enable
+  controls. LamdaCD has Appearance, Placement and Tracking pages.
+- Module profile create/switch/rename/delete and data-only import/export preserve
+  shared engine update preferences and all existing legacy settings.
+- Same-instance room changes preserve cooldowns. Timestamp-ordered Cold Snap
+  handling rejects duplicate/stale resets. Tail generations detect same-name log
+  replacement and truncate/regrowth; initial partial and oversized lines are safe.
+- Friendly raid teammates are accepted; self, hostile and unrelated actors remain
+  excluded. Observation histories are bounded and expire. Invalid optional config
+  values cannot silently turn settings back on.
+- Installer rollback now includes partially written configuration and shortcuts.
+  Mocked early/late failures verify restoration and fresh-file removal.
+- Local live logs have already shown approximately 0.214–26.637 second cast
+  delivery delays. This is an observed limitation. Reliable real-player dungeon/M+
+  coverage, full MiniCC parity and actual Windows UI behavior remain unverified
+  or unfinished; no claim of live readiness or full replacement is made.

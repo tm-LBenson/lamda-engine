@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,6 +20,68 @@ func TestParseParty(t *testing.T) {
 		if _, e := Parse(line); e == nil {
 			t.Fatal("accepted non-party cast", line)
 		}
+	}
+}
+
+func TestPlayerAffiliationAndTimezone(t *testing.T) {
+	if _, err := Parse(strings.Replace(mirror, "0x512", "0x514", 1)); err != nil {
+		t.Fatal("raid teammate rejected", err)
+	}
+	for _, flag := range []string{"0x511", "0x518", "0x542", "0x502", "0x513"} {
+		if _, err := Parse(strings.Replace(mirror, "0x512", flag, 1)); err == nil {
+			t.Fatal("ineligible source accepted", flag)
+		}
+	}
+	for _, offset := range []string{"-24", "+4:99", "+99:00"} {
+		if _, err := Parse(strings.Replace(mirror, "-4  ", offset+"  ", 1)); err == nil {
+			t.Fatal("invalid timezone accepted", offset)
+		}
+	}
+}
+
+func TestColdSnapCannotEraseNewerCastsOrResurrectOlderOnes(t *testing.T) {
+	c, _ := Parse(mirror)
+	c.Spell = 45438
+	reset := c
+	reset.Spell = 235219
+	m := NewModel()
+	m.Observe(c, c.At)
+	for _, at := range []time.Time{c.At.Add(-time.Second), c.At.Add(-11 * time.Minute), c.At.Add(5 * time.Second)} {
+		reset.At = at
+		m.Observe(reset, c.At)
+		if len(m.Active(c.At)) != 1 {
+			t.Fatal("stale or future reset erased current cast", at)
+		}
+	}
+	reset.At = c.At.Add(time.Second)
+	m.Observe(reset, reset.At)
+	if len(m.Active(reset.At)) != 0 {
+		t.Fatal("valid reset did not clear prior cast")
+	}
+	if m.Observe(c, reset.At) {
+		t.Fatal("pre-reset cast was resurrected")
+	}
+	c.At = reset.At.Add(time.Second)
+	m.Observe(c, c.At)
+	m.Observe(reset, c.At)
+	if len(m.Active(c.At)) != 1 {
+		t.Fatal("duplicate reset erased post-reset cast")
+	}
+}
+
+func TestPlayerObservationMemoryBoundAndExpiry(t *testing.T) {
+	c, _ := Parse(mirror)
+	m := NewModel()
+	for i := 0; i < maxPlayerObservations+20; i++ {
+		c.GUID = fmt.Sprintf("Player-%d", i)
+		m.Observe(c, c.At)
+	}
+	if len(m.Seen) > maxPlayerObservations || len(m.Rows) > maxPlayerObservations {
+		t.Fatal("unbounded observations", len(m.Seen), len(m.Rows))
+	}
+	m.Active(c.At.Add(observationRetention + time.Second))
+	if len(m.Seen) != 0 || len(m.Rows) != 0 {
+		t.Fatal("idle observations retained")
 	}
 }
 func TestModelDelayDuplicateAndExpiry(t *testing.T) {
@@ -104,6 +167,19 @@ LamdaEngineDB = {
 		os.WriteFile(p, []byte(bad), 0600)
 		if _, e := ReadConfig(p); e == nil {
 			t.Fatal("accepted invalid settings")
+		}
+	}
+	for _, field := range []string{`["rowWidth"] = "oops",`, `["preview"] = fals,`, `["bars"] = nil,`, `["anchor"] = ,`, `["schema"] = 1,`, `["overlayScale"] = NaN,`} {
+		bad := strings.TrimSuffix(data, "}") + field + "\n}"
+		os.WriteFile(p, []byte(bad), 0600)
+		if _, err := ReadConfig(p); err == nil {
+			t.Fatal("invalid present or duplicate field treated as absent", field)
+		}
+	}
+	for _, invalid := range []string{"NaN", "+Inf", "-Inf"} {
+		os.WriteFile(p, []byte(strings.Replace(data, "1.5", invalid, 1)), 0600)
+		if _, err := ReadConfig(p); err == nil {
+			t.Fatal("nonfinite scale accepted", invalid)
 		}
 	}
 }

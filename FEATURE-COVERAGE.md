@@ -16,7 +16,8 @@ LamdaUI is **not yet a complete replacement**; keep MiniAuras for unfinished fea
 | Row sizing, spacing, columns, count limit and upward/downward growth | Implemented for cooldown rows |
 | Scale, font size, opacity, border, progress bars and color presets | Implemented for cooldown rows |
 | Name, spell and timer visibility | Implemented for cooldown rows |
-| Settings, module enable controls, source-build installer and update checks | Implemented |
+| General/modules hub, module enable controls, source-build installer and update checks | Implemented |
+| Module profiles | Create, rename, switch, save as new, delete, validated import/export; engine preferences remain global |
 
 ## Still required for a full replacement
 
@@ -38,7 +39,7 @@ LamdaUI is **not yet a complete replacement**; keep MiniAuras for unfinished fea
 | Enemy interrupts | Arena interrupt tracking, role filters, identity handling and unknown-event behavior |
 | Enemy alerts | Important/defensive spell regions, split groups, filtering and sounds |
 | Personal auras | Visual editor for triggers, units/spells, conditions, groups, layout, text, textures and sounds |
-| Profiles | Create, rename, clone, switch, delete, import and export validated settings |
+| Profiles | Module settings profiles implemented; broader display/group and future-module coverage awaits those runtimes |
 | Sound | Sound selection, volume/channel controls, TTS and per-trigger playback |
 | Sharing | Module/group import/export, version migrations and validation |
 | Compatibility | Coexistence settings, optional skin/media adapters, combat-safe updates and taint regression testing |

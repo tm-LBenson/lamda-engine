@@ -43,10 +43,8 @@ function LUI:DrawSamples(frame,factor)
     end
 end
 function LUI:RefreshCooldownPreview()
-    if self.inlinePreview then
-        local w,h=self:PreviewGeometry();local f=math.min(0.8,300/w,135/h)
-        self:DrawSamples(self.inlinePreview,f)
-    end
+    local w,h=self:PreviewGeometry();local factor=math.min(0.8,300/w,105/h)
+    for _,preview in ipairs(self.cdPreviews or {}) do self:DrawSamples(preview,factor) end
     if self.cdGuide and self.cdGuide:IsShown() and not self.resizingGuide then self:RefreshGuide() end
 end
 local function screenUnits()
@@ -76,7 +74,7 @@ function LUI:FinishMove(cancel)
     if not self.cdGuide or not self.cdGuide:IsShown() then return end
     self.cdGuide:StopMovingOrSizing();self.resizingGuide=false
     if cancel then for k,v in pairs(self.moveSnapshot or {})do self:DB()[k]=v end else self:RecordGuide() end
-    self.cdGuide:Hide();self.moveControls:Hide();self.frame:Show();self:RefreshCooldownPreview()
+    self.cdGuide:Hide();self.moveControls:Hide();self.frame:Show();self:RefreshUI()
 end
 function LUI:MoveCooldowns()
     if InCombatLockdown() then return end
@@ -117,101 +115,43 @@ function LUI:MoveCooldowns()
     self.frame:Hide();self.cdGuide:Show();self.moveControls:Show();self:RefreshGuide()
 end
 
-local _,LUI=...
-local inputs={}
+LUI.refreshers={}
+function LUI:RefreshUI()
+    for _,refresh in ipairs(self.refreshers) do refresh() end
+    self:RefreshCooldownPreview()
+end
+function LUI:OnRefresh(frame,callback)
+    table.insert(self.refreshers,callback);frame:SetScript("OnShow",callback)
+end
+function LUI:Label(parent,text,x,y,large)
+    local label=parent:CreateFontString(nil,"OVERLAY",large and "GameFontNormalLarge" or "GameFontHighlight")
+    label:SetPoint("TOPLEFT",x,y);label:SetText(text);return label
+end
 function LUI:Button(parent,text,x,y,width,callback)
-    local b=CreateFrame("Button",nil,parent,"UIPanelButtonTemplate")
-    b:SetSize(width,26);b:SetPoint("TOPLEFT",x,y);b:SetText(text)
-    b:SetScript("OnClick",callback);return b
+    local button=CreateFrame("Button",nil,parent,"UIPanelButtonTemplate")
+    button:SetSize(width,26);button:SetPoint("TOPLEFT",x,y);button:SetText(text)
+    button:SetScript("OnClick",callback);return button
 end
 function LUI:Checkbox(parent,text,key,y,x)
-    local b=CreateFrame("CheckButton",nil,parent,"UICheckButtonTemplate")
-    b:SetSize(26,26);b:SetPoint("TOPLEFT",x or 0,y)
-    local label=b:CreateFontString(nil,"OVERLAY","GameFontHighlight")
-    label:SetPoint("LEFT",b,"RIGHT",4,0);label:SetText(text)
-    b:SetScript("OnShow",function(self)self:SetChecked(LUI:DB()[key])end)
-    b:SetScript("OnClick",function(self)LUI:DB()[key]=not not self:GetChecked();LUI:RefreshCooldownPreview()end)
-    return b
+    local button=CreateFrame("CheckButton",nil,parent,"UICheckButtonTemplate")
+    button:SetSize(26,26);button:SetPoint("TOPLEFT",x or 0,y)
+    local label=button:CreateFontString(nil,"OVERLAY","GameFontHighlight")
+    label:SetPoint("LEFT",button,"RIGHT",4,0);label:SetText(text)
+    self:OnRefresh(button,function()button:SetChecked(LUI:DB()[key])end)
+    button:SetScript("OnClick",function(self)LUI:DB()[key]=not not self:GetChecked();LUI:RefreshUI()end)
+    return button
 end
-function LUI:Number(parent,text,key,y,min,max,x)
-    x=x or 0
-    local label=parent:CreateFontString(nil,"OVERLAY","GameFontHighlight")
-    label:SetPoint("TOPLEFT",x+4,y-5);label:SetText(text)
-    local b=CreateFrame("EditBox",nil,parent,"InputBoxTemplate")
-    b:SetSize(100,24);b:SetPoint("TOPLEFT",x+155,y);b:SetAutoFocus(false);b:SetMaxLetters(6)
-    local function commit()
-        local v=tonumber(b:GetText())
-        if v and v>=min and v<=max then LUI:DB()[key]=key=="overlayScale" and v or math.floor(v) end
-        b:SetText(tostring(LUI:DB()[key]))
-    end
-    table.insert(inputs,commit)
-    b:SetScript("OnShow",function(self)self:SetText(tostring(LUI:DB()[key]))end)
-    b:SetScript("OnEnterPressed",function(self)commit();self:ClearFocus()end)
-    b:SetScript("OnEditFocusLost",commit)
-    b:SetScript("OnEscapePressed",function(self)self:SetText(tostring(LUI:DB()[key]));self:ClearFocus()end)
-end
-function LUI:BuildUI()
-    if self.frame then return end
-    local f=CreateFrame("Frame","LamdaUIFrame",UIParent,"BackdropTemplate")
-    self.frame=f;f:SetSize(660,558);f:SetPoint("CENTER");f:SetFrameStrata("DIALOG")
-    f:SetClampedToScreen(true);f:SetMovable(true);f:EnableMouse(true);f:RegisterForDrag("LeftButton")
-    f:SetScript("OnDragStart",function(self)self:StartMoving()end)
-    f:SetScript("OnDragStop",function(self)self:StopMovingOrSizing()end)
-    f:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8",edgeFile="Interface\\Buttons\\WHITE8X8",edgeSize=1})
-    f:SetBackdropColor(0.04,0.07,0.11,0.97);f:SetBackdropBorderColor(0.18,0.26,0.32,1)
-    local title=f:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
-    title:SetPoint("TOPLEFT",18,-16);title:SetText("LamdaUI")
-    local close=CreateFrame("Button",nil,f,"UIPanelCloseButton");close:SetPoint("TOPRIGHT",-3,-3)
-    local general=CreateFrame("Frame",nil,f)
-    general:SetPoint("TOPLEFT",20,-90);general:SetSize(620,410)
-    self:BuildGeneral(general)
-    local modules=CreateFrame("Frame",nil,f)
-    modules:SetPoint("TOPLEFT",20,-90);modules:SetSize(620,410)
-    self.generalPage=general;self.modulesPage=modules
-    local panels,buttons={},{}
-    self.modulePanels=panels
-    local function selectModule(index)
-        for i,p in ipairs(panels)do p:SetShown(i==index);buttons[i]:SetEnabled(i~=index)end
-        LUI.selectedModule=LUI.modules[index] and LUI.modules[index].id
-    end
-    for i,m in ipairs(self.modules)do
-        local p=CreateFrame("Frame",nil,modules);p:SetPoint("TOPLEFT",0,-40);p:SetSize(620,370);p:Hide()
-        panels[i]=p;m.build(p)
-        buttons[i]=self:Button(modules,m.name,(i-1)*124,0,118,function()selectModule(i)end)
-    end
-    local generalButton,modulesButton
-    function self:SelectPage(page)
-        local isGeneral=page=="general"
-        self.selectedPage=isGeneral and "general" or "modules"
-        general:SetShown(isGeneral);modules:SetShown(not isGeneral)
-        generalButton:SetEnabled(not isGeneral);modulesButton:SetEnabled(isGeneral)
-    end
-    generalButton=self:Button(f,"General",18,-48,118,function()LUI:SelectPage("general")end)
-    modulesButton=self:Button(f,"Modules",142,-48,118,function()LUI:SelectPage("modules")end)
-    selectModule(1)
-    self.commitInputs=function()for _,commit in ipairs(inputs)do commit()end end
-    local save=self:Button(f,"Apply & Reload",18,-516,150,function()LUI:Save()end)
-    local function refresh()save:SetEnabled(not InCombatLockdown())end
-    f:RegisterEvent("PLAYER_REGEN_DISABLED");f:RegisterEvent("PLAYER_REGEN_ENABLED")
-    f:SetScript("OnEvent",refresh);f:SetScript("OnShow",function()refresh();LUI:RefreshCooldownPreview()end)
-    self:SelectPage("general");f:Hide()
-    UISpecialFrames=UISpecialFrames or {};table.insert(UISpecialFrames,"LamdaUIFrame")
-end
-
 function LUI:Choice(parent,text,key,choices,y,x)
-    x=x or 0
-    local label=parent:CreateFontString(nil,"OVERLAY","GameFontHighlight")
-    label:SetPoint("TOPLEFT",x+4,y-5);label:SetText(text)
-    local b=self:Button(parent,"",x+145,y,145,function(self)
-        local db=LUI:DB();db[key]=db[key]%#choices+1;self:SetText(choices[db[key]]);LUI:RefreshCooldownPreview()
+    x=x or 0;self:Label(parent,text,x+4,y-5)
+    local button=self:Button(parent,"",x+125,y,135,function(self)
+        local db=LUI:DB();db[key]=db[key]%#choices+1;LUI:RefreshUI()
     end)
-    b:SetScript("OnShow",function(self)self:SetText(choices[LUI:DB()[key]] or choices[1])end)
+    self:OnRefresh(button,function()button:SetText(choices[LUI:DB()[key]] or choices[1])end)
+    return button
 end
-
 function LUI:Slider(parent,text,key,y,min,max,step,x)
     x=x or 0
-    local label=parent:CreateFontString(nil,"OVERLAY","GameFontHighlight")
-    label:SetPoint("TOPLEFT",x+4,y);label:SetText(text)
+    self:Label(parent,text,x+4,y)
     local value=parent:CreateFontString(nil,"OVERLAY","GameFontNormal")
     value:SetPoint("TOPRIGHT",parent,"TOPLEFT",x+260,y)
     local slider=CreateFrame("Slider",nil,parent,"OptionsSliderTemplate")
@@ -224,11 +164,102 @@ function LUI:Slider(parent,text,key,y,min,max,step,x)
         v=math.max(min,math.min(max,math.floor(v/step+0.5)*step));LUI:DB()[key]=v
         value:SetText(step<1 and string.format("%.2f",v) or tostring(v));LUI:RefreshCooldownPreview()
     end)
-    slider:SetScript("OnShow",function(self)refreshing=true;self:SetValue(LUI:DB()[key]);refreshing=false;value:SetText(tostring(LUI:DB()[key]))end)
+    self:OnRefresh(slider,function()
+        refreshing=true;slider:SetValue(LUI:DB()[key]);refreshing=false
+        value:SetText(step<1 and string.format("%.2f",LUI:DB()[key]) or tostring(LUI:DB()[key]))
+    end)
     return slider
 end
-
+-- A compact native menu. Entries are rebuilt when opened so added profiles appear immediately.
+function LUI:Dropdown(parent,x,y,width,items,selected,onSelect)
+    local button=self:Button(parent,"",x,y,width,function()end)
+    local menu=CreateFrame("Frame",nil,button,"BackdropTemplate")
+    menu:SetPoint("TOPLEFT",button,"BOTTOMLEFT",0,-2);menu:SetSize(width,190);menu:SetFrameStrata("TOOLTIP")
+    menu:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8",edgeFile="Interface\\Buttons\\WHITE8X8",edgeSize=1})
+    menu:SetBackdropColor(0.04,0.07,0.11,1);menu:SetBackdropBorderColor(0.18,0.26,0.32,1)
+    local offset=0;local entries={}
+    local function draw()
+        local values=items();offset=math.max(0,math.min(offset,math.max(0,#values-6)))
+        menu:SetHeight(math.min(6,#values)*30+8)
+        for i=1,6 do
+            if not entries[i] then entries[i]=LUI:Button(menu,"",4,-4-(i-1)*30,width-8,function()end) end
+            local entry=entries[i];local value=values[offset+i];entry:SetShown(value~=nil)
+            if value then entry:SetText(value);entry:SetScript("OnClick",function()menu:Hide();onSelect(value);LUI:RefreshUI()end) end
+        end
+    end
+    menu:EnableMouse(true);menu:EnableMouseWheel(true)
+    menu:SetScript("OnMouseWheel",function(_,delta)offset=offset-delta;draw()end)
+    button:SetScript("OnClick",function()if menu:IsShown()then menu:Hide()else offset=0;draw();menu:Show()end end)
+    button:SetScript("OnHide",function()menu:Hide()end)
+    self:OnRefresh(button,function()button:SetText(selected().."  ▾")end)
+    menu:Hide();return button
+end
+function LUI:Tabs(parent,definitions)
+    local pages,buttons={},{}
+    local function select(index)
+        for i,page in ipairs(pages) do page:SetShown(i==index);buttons[i]:SetEnabled(i~=index) end
+        parent.selectedTab=definitions[index].id;LUI:RefreshUI()
+    end
+    for i,definition in ipairs(definitions) do
+        local page=CreateFrame("Frame",nil,parent);page:SetPoint("TOPLEFT",0,-44);page:SetSize(620,326)
+        pages[i]=page;definition.build(page)
+        buttons[i]=self:Button(parent,definition.name,(i-1)*130,0,122,function()select(i)end)
+    end
+    parent.tabPages=pages;parent.selectTab=select;select(1)
+end
+function LUI:BuildUI()
+    if self.frame then return end
+    local frame=CreateFrame("Frame","LamdaUIFrame",UIParent,"BackdropTemplate")
+    self.frame=frame;frame:SetSize(820,590);frame:SetPoint("CENTER");frame:SetFrameStrata("DIALOG")
+    frame:SetClampedToScreen(true);frame:SetMovable(true);frame:EnableMouse(true);frame:RegisterForDrag("LeftButton")
+    frame:SetScript("OnDragStart",function(self)if not InCombatLockdown()then self:StartMoving()end end)
+    frame:SetScript("OnDragStop",function(self)self:StopMovingOrSizing()end)
+    frame:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8",edgeFile="Interface\\Buttons\\WHITE8X8",edgeSize=1})
+    frame:SetBackdropColor(0.04,0.07,0.11,0.97);frame:SetBackdropBorderColor(0.18,0.26,0.32,1)
+    self:Label(frame,"LamdaUI",18,-16,true)
+    local close=CreateFrame("Button",nil,frame,"UIPanelCloseButton");close:SetPoint("TOPRIGHT",-3,-3)
+    local general=CreateFrame("Frame",nil,frame);general:SetPoint("TOPLEFT",20,-98);general:SetSize(780,430)
+    self:BuildGeneral(general)
+    local modules=CreateFrame("Frame",nil,frame);modules:SetPoint("TOPLEFT",20,-98);modules:SetSize(780,430)
+    self.generalPage=general;self.modulesPage=modules
+    local scroll=CreateFrame("ScrollFrame",nil,modules,"UIPanelScrollFrameTemplate")
+    scroll:SetPoint("TOPLEFT",0,0);scroll:SetSize(130,416)
+    local list=CreateFrame("Frame",nil,scroll);list:SetSize(130,math.max(416,#self.modules*36));scroll:SetScrollChild(list)
+    local panels,buttons={},{};self.modulePanels=panels
+    function self:SelectModule(id)
+        for i,module in ipairs(self.modules) do
+            local selected=module.id==id;panels[i]:SetShown(selected);buttons[i]:SetEnabled(not selected)
+            if selected then self.selectedModule=id end
+        end
+        self:RefreshUI()
+    end
+    for i,module in ipairs(self.modules) do
+        local detail=CreateFrame("Frame",nil,modules);detail:SetPoint("TOPLEFT",160,0);detail:SetSize(620,430)
+        panels[i]=detail;self:Label(detail,module.name,4,0,true)
+        if module.enabledKey then self:Checkbox(detail,"Enabled",module.enabledKey,-32) end
+        local content=CreateFrame("Frame",nil,detail);content:SetPoint("TOPLEFT",0,-76);content:SetSize(620,370)
+        detail.content=content;module.build(content)
+        buttons[i]=self:Button(list,module.name,0,-(i-1)*36,130,function()LUI:SelectModule(module.id)end)
+    end
+    local generalButton,modulesButton
+    function self:SelectPage(page)
+        if self.profileDialog then self.profileDialog:Hide() end
+        local isGeneral=page~="modules";self.selectedPage=isGeneral and "general" or "modules"
+        general:SetShown(isGeneral);modules:SetShown(not isGeneral)
+        generalButton:SetEnabled(not isGeneral);modulesButton:SetEnabled(isGeneral);self:RefreshUI()
+    end
+    generalButton=self:Button(frame,"General",18,-52,118,function()LUI:SelectPage("general")end)
+    modulesButton=self:Button(frame,"Modules",142,-52,118,function()LUI:SelectPage("modules")end)
+    if self.modules[1] then self:SelectModule(self.modules[1].id) end
+    local save=self:Button(frame,"Apply & Reload",18,-548,150,function()LUI:Save()end)
+    local function refresh()save:SetEnabled(not InCombatLockdown())end
+    frame:RegisterEvent("PLAYER_REGEN_DISABLED");frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    frame:SetScript("OnEvent",refresh);frame:SetScript("OnShow",function()refresh();LUI:RefreshUI()end)
+    frame:SetScript("OnHide",function()if LUI.profileDialog then LUI.profileDialog:Hide()end end)
+    self:SelectPage("general");frame:Hide()
+    UISpecialFrames=UISpecialFrames or {};table.insert(UISpecialFrames,"LamdaUIFrame")
+end
 function LUI:OpenUI()
-    self:SelectPage("general")
-    self.frame:Show()
+    -- Reopening the hub always ends temporary placement mode first.
+    self:FinishMove(true);self:SelectPage("general");self.frame:Show()
 end

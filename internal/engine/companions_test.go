@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -21,6 +22,29 @@ func TestCompanionSourceFiltering(t *testing.T) {
 		if _, e := Parse(bad); e == nil {
 			t.Fatal("unsupported NPC accepted", bad)
 		}
+	}
+}
+
+func TestCompanionHistoryBoundDoesNotEvictOnExistingCast(t *testing.T) {
+	c, _ := Parse(barrier)
+	m := NewModel()
+	for i := 0; i < 256; i++ {
+		c.GUID = fmt.Sprintf("Vehicle-0-4222-2813-1-209059-%d", i)
+		m.Observe(c, c.At)
+	}
+	c.At = c.At.Add(25 * time.Second)
+	m.Observe(c, c.At)
+	if len(m.CompanionHistory) != 256 {
+		t.Fatal("updating an existing NPC evicted a different NPC", len(m.CompanionHistory))
+	}
+	c.GUID = "Vehicle-0-4222-2813-1-209059-new"
+	m.Observe(c, c.At)
+	if len(m.CompanionHistory) != 256 {
+		t.Fatal("history cap exceeded", len(m.CompanionHistory))
+	}
+	m.Active(c.At.Add(observationRetention + time.Second))
+	if len(m.CompanionHistory) != 0 {
+		t.Fatal("idle learning retained")
 	}
 }
 func TestCompanionLearningAndPulse(t *testing.T) {

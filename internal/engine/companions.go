@@ -68,7 +68,7 @@ func (m *Model) observeCompanion(c Cast, now time.Time) bool {
 	}
 	h.Last = c.At
 	// Bound history independently of visible rows; expired pulses must not erase learning.
-	if len(m.CompanionHistory) >= 256 {
+	if _, exists := m.CompanionHistory[key]; !exists && len(m.CompanionHistory) >= 256 {
 		for k, v := range m.CompanionHistory {
 			if now.Sub(v.Last) > 20*time.Minute {
 				delete(m.CompanionHistory, k)
