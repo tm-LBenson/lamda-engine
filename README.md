@@ -5,7 +5,7 @@ A background engine for LamdaUI, the in-game addon hub. The first module is
 No desktop settings application. The Windows shortcut starts the engine and its
 click-through overlay; configure it in WoW with `/lui`.
 
-**0.4.0 is a preview.** Real-log replay and automated checks pass. Native
+**0.5.0 is a preview.** Real-log replay and automated checks pass. Native
 Windows overlay behavior and actual in-combat log delivery delay still need live
 validation. This is not a confirmed replacement for restricted addon tracking.
 
@@ -24,7 +24,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -WowPath '
 ```
 
 The script installs missing Git and Go using Windows Package Manager, clones the
-`v0.4.0` tag, runs Go tests, compiles locally, and installs LamdaUI and the engine.
+`v0.5.0` tag, runs Go tests, compiles locally, and installs LamdaUI and the engine.
 It requires 64-bit Windows, Windows PowerShell 5.1+, and winget if dependencies are
 missing. An existing Go installation must support Go 1.25 or newer. GitHub source
 access is public. There are no downloaded precompiled engine binaries.
@@ -36,13 +36,13 @@ while WoW is foreground. It is not anchored to DandersFrames; set its position i
 LamdaUI's LamdaCD tab.
 
 1. Start WoW and open `/lui`.
-2. Configure **LamdaCD** and **Settings**, then **Save & Reload**.
+2. Configure **LamdaCD** and **Settings**, then **Apply & Reload**.
 3. Ensure combat logging is enabled. LamdaUI Settings includes
    Combat logging, which enables it when entering a party instance; `/combatlog`
    also toggles logging and prints the resulting state.
 4. Enter a follower dungeon or delve with a supported companion, or party with a
    real player and observe a defensive. For layout work, enable **Preview** under
-   LamdaCD and Save & Reload. Turn Preview off for live observations.
+   LamdaCD and Apply & Reload. Turn Preview off for live observations.
 
 The old standalone lamdaCD addon is not required by the engine. The installer
 leaves it installed; disable it if you do not want its separate in-game display.
@@ -89,26 +89,31 @@ memory, and resets with the model on zone/log transitions. Casts delayed more th
 30 seconds do not generate companion rows.
 
 **Preview** shows labelled sample rows in the real overlay for adjusting Left, Top
-and Scale. Save & Reload applies changes. Preview rows do not train the model,
+and Scale. Apply & Reload applies changes. Preview rows do not train the model,
 count as observations or survive disabling Preview. Follower runs can now exercise
 NPC display and layout, but do not establish real-player event coverage.
 
 ## Customizing the cooldown area
 
-`/lui` → LamdaCD has Tracking, Layout and Style pages. Enable Preview under
-Tracking, change options, then Save & Reload. Preview is always labelled.
+`/lui` → LamdaCD opens **Team cooldown display**, with an always-visible sample
+preview. Compact, Standard and Large presets and width/height/text/spacing/opacity
+sliders update those samples immediately without waiting for the engine.
 
-Layout offers nine anchors relative to the WoW client window, signed X/Y offsets,
-width, height, spacing, columns, a row limit, overall scale and upward/downward
-growth. Positive X moves right; positive Y moves down. Center and right/bottom
-anchors account for the whole region size, including preview/update labels.
-Reset layout restores only placement and dimensions.
+**Move & resize** hides the hub and opens a labelled in-game placement guide. Drag
+its body to move it; drag the bottom-right corner to resize the rows. Apply & Reload
+persists the result for the engine. Cancel restores the previous placement and size.
+Entering combat cancels the guide. This edits the cooldown display, not the hub.
 
-Style controls font size, opacity, four accent presets, border, progress bars,
-player names, spell names and timers. Text is truncated to fit the row, and font
-height is bounded by row height. Cast-only companion rows have no progress bar.
-The display remains click-through. Drag placement and live unit-frame attachment
-are still unfinished features.
+**More options** contains screen pinning, columns, growth, color, visibility,
+progress/border toggles, a row limit, overall scale and persistent engine samples.
+Raw coordinate entry is no longer exposed. Existing offsets remain preserved until
+you move or re-pin the display. Live party-frame attachment is still unfinished.
+
+The editor is a native in-game preview; the external display receives settings on
+reload. It does not claim a live engine acknowledgement or show actual cooldown
+state. Windows rendering now converts physical layout pixels to WPF device units
+so the placement guide and overlay can agree across UI scales; native Windows DPI
+behavior still needs a live check.
 
 The replacement target includes the full MiniCC/MiniAuras feature set. See
 [FEATURE-COVERAGE.md](FEATURE-COVERAGE.md) for what is implemented and what still

@@ -52,6 +52,8 @@ $timer.Add_Tick({
   if ($layout.width -le 0 -or $layout.height -le 0) { $window.Hide(); return }
   $panel.Children.Clear()
   $panel.Width=$layout.width; $panel.Height=$layout.height
+  $matrix=[Windows.PresentationSource]::FromVisual($window).CompositionTarget.TransformFromDevice
+  $panel.LayoutTransform=[Windows.Media.ScaleTransform]::new($matrix.M11,$matrix.M22)
   $window.Opacity=$cfg.opacity/100.0
   $brushes=[Windows.Media.BrushConverter]::new()
   $accent=$brushes.ConvertFromString(@('#35bfa7','#3485d5','#9567d8','#d88934')[$cfg.accent-1])
@@ -103,8 +105,8 @@ $timer.Add_Tick({
   $matrix=[Windows.PresentationSource]::FromVisual($window).CompositionTarget.TransformFromDevice
   $origin=$matrix.Transform([Windows.Point]::new($point.X,$point.Y))
   $size=$matrix.Transform([Windows.Point]::new($rect.Right-$rect.Left,$rect.Bottom-$rect.Top))
-  $window.Left=$origin.X+($size.X-$layout.width)*$layout.anchorX+$cfg.x
-  $window.Top=$origin.Y+($size.Y-$layout.height)*$layout.anchorY+$cfg.y
+  $window.Left=$origin.X+($size.X-$layout.width*$matrix.M11)*$layout.anchorX+$cfg.x*$matrix.M11
+  $window.Top=$origin.Y+($size.Y-$layout.height*$matrix.M22)*$layout.anchorY+$cfg.y*$matrix.M22
   $window.Show()
 
  } catch { $window.Hide() }

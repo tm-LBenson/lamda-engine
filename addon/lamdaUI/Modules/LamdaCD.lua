@@ -1,48 +1,59 @@
 local _,LUI=...
 LUI:RegisterModule({id="cd",name="LamdaCD",build=function(parent)
-    local sections={
-        {name="Tracking",build=function(p)
-            LUI:Checkbox(p,"Enabled","cdEnabled",0)
-            LUI:Checkbox(p,"Companions","companions",-36)
-            LUI:Checkbox(p,"Preview","preview",-72)
-        end},
-        {name="Layout",build=function(p)
-            LUI:Choice(p,"Anchor","anchor",{"Top left","Top","Top right","Left","Center","Right","Bottom left","Bottom","Bottom right"},0)
-            LUI:Number(p,"Offset X","overlayX",-42,-16000,16000)
-            LUI:Number(p,"Offset Y","overlayY",-84,-16000,16000)
-            LUI:Number(p,"Scale","overlayScale",-126,0.5,3)
-            LUI:Number(p,"Columns","columns",-168,1,4)
-            LUI:Choice(p,"Grow","grow",{"Down","Up"},0,310)
-            LUI:Number(p,"Width","rowWidth",-42,120,900,310)
-            LUI:Number(p,"Height","rowHeight",-84,20,100,310)
-            LUI:Number(p,"Spacing","rowGap",-126,0,40,310)
-            LUI:Number(p,"Max rows","maxRows",-168,1,40,310)
-            LUI:Button(p,"Reset layout",4,-220,145,function()
-                if LUI.commitInputs then LUI.commitInputs() end
-                local db=LUI:DB()
-                for k,v in pairs({anchor=1,grow=1,overlayX=60,overlayY=240,overlayScale=1,columns=1,rowWidth=340,rowHeight=34,rowGap=3,maxRows=12}) do db[k]=v end
-                p:Hide();p:Show()
-            end)
-        end},
-        {name="Style",build=function(p)
-            LUI:Number(p,"Font size","fontSize",0,8,32)
-            LUI:Number(p,"Opacity (%)","opacity",-42,20,100)
-            LUI:Choice(p,"Color","accent",{"Teal","Blue","Purple","Orange"},-84)
-            LUI:Checkbox(p,"Border","border",-130)
-            LUI:Checkbox(p,"Player name","showNames",0,310)
-            LUI:Checkbox(p,"Spell name","showSpells",-36,310)
-            LUI:Checkbox(p,"Timer","showTimers",-72,310)
-            LUI:Checkbox(p,"Progress bars","bars",-108,310)
-        end},
+    local display=CreateFrame("Frame",nil,parent);display:SetAllPoints()
+    local advanced=CreateFrame("Frame",nil,parent);advanced:SetAllPoints();advanced:Hide()
+    local function label(p,text,x,y,large)
+        local l=p:CreateFontString(nil,"OVERLAY",large and "GameFontNormalLarge" or "GameFontHighlight")
+        l:SetPoint("TOPLEFT",x,y);l:SetText(text);return l
+    end
+    label(display,"Team cooldown display",4,0,true)
+    LUI:Checkbox(display,"Show teammate cooldowns","cdEnabled",-28)
+    LUI:Checkbox(display,"Include companions","companions",-64)
+    local move=LUI:Button(display,"Move & resize",4,-108,260,function()LUI:MoveCooldowns()end)
+    display:RegisterEvent("PLAYER_REGEN_DISABLED");display:RegisterEvent("PLAYER_REGEN_ENABLED")
+    local function refresh()move:SetEnabled(not InCombatLockdown());LUI:RefreshCooldownPreview()end
+    display:SetScript("OnEvent",refresh);display:SetScript("OnShow",refresh)
+    local presets={
+        {"Compact",260,28,12,2},{"Standard",340,34,14,3},{"Large",420,44,18,5},
     }
-    local panels,buttons={},{}
-    local function select(index)
-        for i,p in ipairs(panels) do p:SetShown(i==index);buttons[i]:SetEnabled(i~=index) end
+    for i,preset in ipairs(presets)do
+        LUI:Button(display,preset[1],4+(i-1)*88,-152,84,function()
+            local d=LUI:DB();d.rowWidth=preset[2];d.rowHeight=preset[3];d.fontSize=preset[4];d.rowGap=preset[5];d.overlayScale=1
+            display:Hide();display:Show();LUI:RefreshCooldownPreview()
+        end)
     end
-    for i,s in ipairs(sections) do
-        local p=CreateFrame("Frame",nil,parent);p:SetPoint("TOPLEFT",0,-42);p:SetSize(620,310);p:Hide()
-        panels[i]=p;s.build(p)
-        buttons[i]=LUI:Button(parent,s.name,(i-1)*108,0,102,function()select(i)end)
+    LUI:Slider(display,"Row width","rowWidth",-204,120,900,1)
+    LUI:Slider(display,"Row height","rowHeight",-258,20,100,1)
+    LUI:Slider(display,"Text size","fontSize",-312,8,32,1)
+    label(display,"Preview",310,0)
+    local sample=CreateFrame("Frame",nil,display);sample:SetPoint("TOPLEFT",310,-36);sample:SetSize(300,145)
+    sample.sampleRows={};LUI.inlinePreview=sample
+    LUI:Slider(display,"Space between cooldowns","rowGap",-204,0,40,1,310)
+    LUI:Slider(display,"Opacity","opacity",-258,20,100,5,310)
+    LUI:Button(display,"More options",310,-322,260,function()display:Hide();advanced:Show()end)
+
+    label(advanced,"Cooldown display options",4,0,true)
+    LUI:Button(advanced,"Back",510,0,90,function()advanced:Hide();display:Show()end)
+    label(advanced,"Pin display to",4,-40)
+    local anchors={"Top left","Top","Top right","Left","Center","Right","Bottom left","Bottom","Bottom right"}
+    local anchorButtons={}
+    local function anchorRefresh()for i,b in ipairs(anchorButtons)do b:SetEnabled(i~=LUI:DB().anchor)end end
+    for i,name in ipairs(anchors)do
+        anchorButtons[i]=LUI:Button(advanced,name,4+((i-1)%3)*88,-66-math.floor((i-1)/3)*30,84,function()
+            local d=LUI:DB();d.anchor=i;d.overlayX=0;d.overlayY=0;anchorRefresh();LUI:RefreshCooldownPreview()
+        end)
     end
-    select(1)
+    advanced:SetScript("OnShow",anchorRefresh)
+    LUI:Choice(advanced,"Color","accent",{"Teal","Blue","Purple","Orange"},-180)
+    LUI:Choice(advanced,"Grow","grow",{"Down","Up"},-222)
+    LUI:Choice(advanced,"Columns","columns",{"1","2","3","4"},-264)
+    LUI:Slider(advanced,"Maximum shown","maxRows",-310,1,40,1)
+    LUI:Checkbox(advanced,"Player names","showNames",-44,310)
+    LUI:Checkbox(advanced,"Spell names","showSpells",-80,310)
+    LUI:Checkbox(advanced,"Timers","showTimers",-116,310)
+    LUI:Checkbox(advanced,"Progress bars","bars",-152,310)
+    LUI:Checkbox(advanced,"Borders","border",-188,310)
+    LUI:Checkbox(advanced,"Show samples in game","preview",-234,310)
+    LUI:Slider(advanced,"Overall scale","overlayScale",-300,0.5,3,0.05,310)
+    LUI:RefreshCooldownPreview()
 end})

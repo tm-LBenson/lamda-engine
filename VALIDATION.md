@@ -1,4 +1,4 @@
-# Validation — 0.4.0 preview
+# Validation — 0.5.0 preview
 
 ## Completed locally
 
@@ -66,3 +66,16 @@ preserved. No live engine status is displayed in the addon.
 - Windows overlay parses; native Windows appearance and DPI behavior still need
   a live run. Windows engine cross-build and installer rollback checks pass.
 - Full MiniCC/MiniAuras feature coverage is tracked separately, not claimed here.
+
+## 0.5.0 additions
+
+- Replaced the coordinate-first interface with Team cooldown display, inline samples,
+  size presets, live sliders, Move & resize, and secondary More options.
+- Native placement guide supports dragging, corner resizing, Apply & Reload and
+  Cancel; it closes on combat entry and restores cancelled edits.
+- Lua 5.1 checks exercise anchor round-trips at non-default UI scale, movement,
+  resize math, cancellation restoration, combat guards and preservation of exact
+  values when sliders are initialized. All addon files compile.
+- Engine receives settings on reload; the editor is not live engine feedback.
+- Native in-game visuals still need user verification. Windows device conversion
+  parses but still requires a real DPI test.

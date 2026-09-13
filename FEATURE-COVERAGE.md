@@ -11,7 +11,7 @@ LamdaUI is **not yet a complete replacement**; keep MiniAuras for unfinished fea
 | --- | --- |
 | Teammate defensive estimates from disk logs | Implemented; live coverage/latency still need validation |
 | Follower/delve companions | Five mapped NPCs; observed casts and isolated reuse estimates |
-| Layout preview | Implemented, labelled and isolated from observations |
+| Layout preview | Inline live samples and native drag/resize guide, labelled and isolated from observations |
 | Window anchors and signed offsets | Nine anchors implemented for cooldown area |
 | Row sizing, spacing, columns, count limit and upward/downward growth | Implemented for cooldown rows |
 | Scale, font size, opacity, border, progress bars and color presets | Implemented for cooldown rows |
@@ -22,7 +22,7 @@ LamdaUI is **not yet a complete replacement**; keep MiniAuras for unfinished fea
 
 | Area | Required behavior |
 | --- | --- |
-| Positioning | Drag/unlock placement, live unit-frame attachment, supported third-party frames and per-unit layouts |
+| Positioning | Live unit-frame attachment, supported third-party frames and per-unit layouts (native drag/resize placement guide now implemented) |
 | Icon presentation | Spell icons, icon sizing/padding, cooldown swipes, reverse swipes, stack placement, tooltips, glow and skin integration |
 | Text and colors | Font selection, custom colors, category/class/dispel colors, text offsets and decimal thresholds |
 | Display rules | Self filters; separate rules for world, dungeon, raid, arena and battleground contexts |
