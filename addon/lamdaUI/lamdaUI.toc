@@ -2,7 +2,7 @@
 ## Title: lamdaUI
 ## Notes: A hub for custom helpers, combat logging, and learned action-bar setups
 ## Author: lamdaUI contributors
-## Version: 0.20.0-alpha.1
+## Version: 0.20.0-alpha.2
 ## SavedVariables: LamdaUIDB, LamdaUIMigrationDB, LamdaEngineDB
 ## OptionalDeps: LewisUI, MiniAuras, DevouringDevMacros
 ## AllowAddOnTableAccess: 1

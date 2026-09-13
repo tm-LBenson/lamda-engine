@@ -104,7 +104,7 @@ try {
   if (Test-Path (Join-Path $backup 'install.json')) { Copy-Item -LiteralPath (Join-Path $backup 'install.json') -Destination $configPath -Force }
   throw
  }
- Write-Host 'Installed. Launch lambaUI from your desktop. In WoW: /lui hub'
+ Write-Host 'Installed. Launch lambaUI from your desktop. In WoW: /lui'
 } finally {
  Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
 }

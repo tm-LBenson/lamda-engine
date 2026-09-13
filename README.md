@@ -3,7 +3,7 @@
 A background engine for LamdaUI, the in-game addon hub. The first module is
 **LamdaCD**: estimated teammate defensive cooldowns from WoW's disk combat log.
 No desktop settings application. The Windows shortcut starts the engine and its
-click-through overlay; configure it in WoW with `/lui hub`.
+click-through overlay; configure it in WoW with `/lui`.
 
 **0.1.0 is an initial preview.** Real-log replay and automated checks pass. Native
 Windows overlay behavior and actual in-combat log delivery delay still need live
@@ -35,7 +35,7 @@ WoW must use windowed or borderless mode for the external overlay. It appears on
 while WoW is foreground. It is not anchored to DandersFrames; set its position in
 LamdaUI's LamdaCD tab.
 
-1. Start WoW and open `/lui hub`.
+1. Start WoW and open `/lui`.
 2. Configure **LamdaCD** and **Settings**, then **Save & Reload**.
 3. Ensure combat logging is enabled. LamdaUI includes its existing Combat Logging
    module; `/combatlog` also toggles logging and prints the resulting state.

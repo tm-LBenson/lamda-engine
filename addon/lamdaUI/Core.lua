@@ -1,7 +1,7 @@
 local addonName, Addon = ...
 
 Addon.name = addonName
-Addon.version = "0.20.0-alpha.1"
+Addon.version = "0.20.0-alpha.2"
 
 Addon.profile = {
     id = "local-action-map",
@@ -555,7 +555,7 @@ local function handleSlash(message)
         return
     end
     message = strtrim((message or ""):lower())
-    if message == "hub" or message == "addons" or message == "custom" then
+    if message == "" or message == "hub" or message == "addons" or message == "custom" then
         Addon:Show("custom")
     elseif message == "aug" then
         Addon:AugmentationCommand("")
