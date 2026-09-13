@@ -1,0 +1,27 @@
+## Interface: 120100
+## Title: lamdaUI
+## Notes: A hub for custom helpers, combat logging, and learned action-bar setups
+## Author: lamdaUI contributors
+## Version: 0.20.0-alpha.1
+## SavedVariables: LamdaUIDB, LamdaUIMigrationDB, LamdaEngineDB
+## OptionalDeps: LewisUI, MiniAuras, DevouringDevMacros
+## AllowAddOnTableAccess: 1
+## IconTexture: Interface\Icons\INV_Misc_Key_14
+## AddonCompartmentFunc: LamdaUI_OnAddonCompartmentClick
+
+Core.lua
+Modules\CustomHub.lua
+Modules\Augmentation.lua
+Modules\DevastationMacros.lua
+Modules\CombatLogging.lua
+Modules\MiniAurasSetup.lua
+Modules\Keybinds.lua
+Modules\Destinations.lua
+Modules\Spellbook.lua
+Modules\Training.lua
+Modules\Layout.lua
+Modules\Portable.lua
+Modules\Addons.lua
+Modules\Profile.lua
+Modules\Engine.lua
+UI.lua

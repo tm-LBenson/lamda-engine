@@ -1,0 +1,30 @@
+# Validation — 0.1.0 preview
+
+## Completed locally
+
+- Go tests with race detector: party filtering, timestamps/time zones, delayed
+  casts, duplicates, separate players, timer expiry, partial lines, truncation,
+  rotation, data-only settings parsing, and release-tag selection.
+- End-to-end Linux engine process: appended synthetic cast becomes a timer based
+  on the original cast timestamp; saved module disable clears the display state.
+- Lua 5.1: all distributed Lua files compile. Engine module defaults, persistence,
+  registration, and combat guard on Save & Reload pass mocked runtime checks.
+- PowerShell syntax checks for launcher, installer and overlay.
+- Mocked installer deployment and rollback after a failed addon copy. Uses real
+  temporary filesystem operations; mocks Windows dependency tools and shortcut COM.
+- Windows amd64 cross-compilation of the Go engine.
+- Local replay of the desktop's 2026-09-13 combat log detected 97 real teammate
+  defensive casts, including the 01:35:24.767 Mirror Image record, Blur and Anti-
+  Magic Shell. No user combat logs, names, GUIDs or SavedVariables are distributed
+  as test fixtures.
+
+## Still requires a live Windows run
+
+- Native WPF appearance, click-through, focus behavior, scaling and multiple monitors.
+- Real winget dependency installation, UAC behavior, shortcut and update installation.
+- Actual time between a teammate cast and its appearance on disk in a dungeon.
+- In-game module controls and protection/taint behavior during combat.
+- Full M+ coverage, talents, charges, and incomplete/missing cast handling.
+
+The original LamdaUI dungeon crash is deferred, not fixed. Augmentation remains
+suspended. No live engine status is displayed in the addon.
