@@ -21,7 +21,7 @@ import (
 	"github.com/tm-LBenson/lamda-engine/internal/engine"
 )
 
-var version = "0.2.0"
+var version = "0.3.0"
 
 type install struct {
 	Retail string `json:"retail"`
@@ -148,7 +148,7 @@ func main() {
 				}
 				if p != "" {
 					if c, e := engine.ReadConfig(p); e == nil {
-						if cfg.Enabled != c.Enabled {
+						if cfg.Enabled != c.Enabled || cfg.Companions != c.Companions {
 							model = engine.NewModel()
 						}
 						cfg = c
@@ -180,6 +180,9 @@ func main() {
 				if e != nil {
 					continue
 				}
+				if c.Companion && !cfg.Companions {
+					continue
+				}
 				if model.Observe(c, now) {
 					log.Printf("Observed spell=%d delivery=%.3fs", c.Spell, now.Sub(c.At).Seconds())
 				}
@@ -188,7 +191,7 @@ func main() {
 			if cfg.Updates && cfg.Notify {
 				shownUpdate = update
 			}
-			if e := engine.WriteJSON(statePath, state{os.Getpid(), cfg, model.Active(now), shownUpdate}); e != nil && tick%40 == 1 {
+			if e := engine.WriteJSON(statePath, state{os.Getpid(), cfg, displayRows(model, cfg, now), shownUpdate}); e != nil && tick%40 == 1 {
 				log.Printf("State write: %v", e)
 			}
 		}
@@ -304,12 +307,29 @@ func runReplay(path string) error {
 			continue
 		}
 		s, ok := engine.Catalog[c.Spell]
+		if c.Companion {
+			name, known := engine.CompanionSpell(c.GUID, c.Spell)
+			s = engine.Spell{Name: name}
+			ok = known
+		}
 		if !ok {
 			continue
 		}
 		count++
-		enc.Encode(map[string]any{"at": c.At, "player": c.Name, "spell": c.Spell, "name": s.Name, "estimatedCooldown": s.Cooldown})
+		record := map[string]any{"at": c.At, "player": c.Name, "spell": c.Spell, "name": s.Name, "companion": c.Companion}
+		if !c.Companion {
+			record["estimatedCooldown"] = s.Cooldown
+		}
+		enc.Encode(record)
 	}
-	fmt.Fprintf(os.Stderr, "Matched %d teammate defensive casts\n", count)
+	fmt.Fprintf(os.Stderr, "Matched %d supported casts\n", count)
 	return scan.Err()
+}
+
+func displayRows(m *engine.Model, c engine.Config, now time.Time) []engine.Row {
+	rows := m.Active(now)
+	if c.Preview && c.Enabled {
+		return engine.PreviewRows(now)
+	}
+	return rows
 }

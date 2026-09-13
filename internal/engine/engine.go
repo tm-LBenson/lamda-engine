@@ -23,6 +23,7 @@ type Cast struct {
 	At         time.Time
 	GUID, Name string
 	Spell      int
+	Companion  bool
 }
 
 var stamp = regexp.MustCompile(`^(\d+/\d+/\d+ \d+:\d+:\d+\.\d+)([+-]\d{1,2}(?::\d{2})?)?\s+(.+)$`)
@@ -61,32 +62,48 @@ func Parse(line string) (Cast, error) {
 		return Cast{}, fmt.Errorf("not cast")
 	}
 	flags, e := strconv.ParseUint(f[3], 0, 64)
-	if e != nil || flags&2 == 0 || !strings.HasPrefix(f[1], "Player-") {
-		return Cast{}, fmt.Errorf("not party player")
+	if e != nil {
+		return Cast{}, e
 	}
 	id, e := strconv.Atoi(f[9])
 	if e != nil {
 		return Cast{}, e
 	}
-	return Cast{At: at, GUID: f[1], Name: f[2], Spell: id}, nil
+	if strings.HasPrefix(f[1], "Player-") && flags&2 != 0 {
+		return Cast{At: at, GUID: f[1], Name: f[2], Spell: id}, nil
+	}
+	if flags&3 != 0 && flags&0x10 != 0 && flags&0x40 == 0 {
+		if _, ok := CompanionSpell(f[1], id); ok {
+			return Cast{At: at, GUID: f[1], Name: f[2], Spell: id, Companion: true}, nil
+		}
+	}
+	return Cast{}, fmt.Errorf("not a supported party member or companion")
 }
 
 type Row struct {
-	GUID    string  `json:"guid"`
-	Player  string  `json:"player"`
-	Spell   int     `json:"spell"`
-	Name    string  `json:"name"`
-	Ends    float64 `json:"ends"`
-	Charges bool    `json:"charges"`
-	Delay   float64 `json:"delay"`
+	GUID         string  `json:"guid"`
+	Player       string  `json:"player"`
+	Spell        int     `json:"spell"`
+	Name         string  `json:"name"`
+	Ends         float64 `json:"ends"`
+	Charges      bool    `json:"charges"`
+	Delay        float64 `json:"delay"`
+	Companion    bool    `json:"companion"`
+	ObservedOnly bool    `json:"observedOnly"`
 }
 type Model struct {
-	Rows map[string]Row
-	Seen map[string]time.Time
+	Rows             map[string]Row
+	Seen             map[string]time.Time
+	CompanionHistory map[string]companionHistory
 }
 
-func NewModel() *Model { return &Model{Rows: map[string]Row{}, Seen: map[string]time.Time{}} }
+func NewModel() *Model {
+	return &Model{Rows: map[string]Row{}, Seen: map[string]time.Time{}, CompanionHistory: map[string]companionHistory{}}
+}
 func (m *Model) Observe(c Cast, now time.Time) bool {
+	if c.Companion {
+		return m.observeCompanion(c, now)
+	}
 	if c.Spell == 235219 {
 		key := fmt.Sprintf("%s/%d", c.GUID, 45438)
 		delete(m.Rows, key)
@@ -106,7 +123,7 @@ func (m *Model) Observe(c Cast, now time.Time) bool {
 		return false
 	}
 	m.Seen[key] = c.At
-	m.Rows[key] = Row{c.GUID, c.Name, c.Spell, s.Name, float64(c.At.UnixMilli())/1000 + s.Cooldown, s.Charges, delay}
+	m.Rows[key] = Row{GUID: c.GUID, Player: c.Name, Spell: c.Spell, Name: s.Name, Ends: float64(c.At.UnixMilli())/1000 + s.Cooldown, Charges: s.Charges, Delay: delay}
 	return true
 }
 func (m *Model) Active(now time.Time) []Row {
@@ -129,16 +146,20 @@ func (m *Model) Active(now time.Time) []Row {
 }
 
 type Config struct {
-	Enabled bool    `json:"enabled"`
-	Updates bool    `json:"updates"`
-	Notify  bool    `json:"notify"`
-	Days    int     `json:"days"`
-	X       int     `json:"x"`
-	Y       int     `json:"y"`
-	Scale   float64 `json:"scale"`
+	Enabled    bool    `json:"enabled"`
+	Companions bool    `json:"companions"`
+	Preview    bool    `json:"preview"`
+	Updates    bool    `json:"updates"`
+	Notify     bool    `json:"notify"`
+	Days       int     `json:"days"`
+	X          int     `json:"x"`
+	Y          int     `json:"y"`
+	Scale      float64 `json:"scale"`
 }
 
-func DefaultConfig() Config { return Config{true, true, true, 1, 60, 240, 1} }
+func DefaultConfig() Config {
+	return Config{Enabled: true, Companions: true, Updates: true, Notify: true, Days: 1, X: 60, Y: 240, Scale: 1}
+}
 
 // Read only a narrow, flat SavedVariables schema. Never execute addon Lua.
 func ReadConfig(path string) (Config, error) {
@@ -172,6 +193,15 @@ func ReadConfig(path string) (Config, error) {
 			return c, fmt.Errorf("missing %s", k)
 		}
 		*p = v == "true"
+	}
+	for k, p := range map[string]*bool{"companions": &c.Companions, "preview": &c.Preview} {
+		v := field(k)
+		if v != "" {
+			if v != "true" && v != "false" {
+				return c, fmt.Errorf("invalid %s", k)
+			}
+			*p = v == "true"
+		}
 	}
 	for k, p := range map[string]*int{"checkDays": &c.Days, "overlayX": &c.X, "overlayY": &c.Y} {
 		v, e := strconv.Atoi(field(k))

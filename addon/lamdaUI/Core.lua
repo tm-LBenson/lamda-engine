@@ -1,7 +1,7 @@
 local _, LUI = ...
 LUI.modules = {}
 local defaults = {schema=1,cdEnabled=true,checkUpdates=true,notifyUpdates=true,
-    checkDays=1,overlayX=60,overlayY=240,overlayScale=1,autoLog=true}
+    checkDays=1,overlayX=60,overlayY=240,overlayScale=1,autoLog=true,companions=true,preview=false}
 function LUI:DB()
     if type(LamdaEngineDB)~="table" then LamdaEngineDB={} end
     for k,v in pairs(defaults) do
@@ -25,7 +25,7 @@ end
 function LUI:EnsureLogging()
     if not self:DB().autoLog or not self:DB().cdEnabled then return end
     local inside,kind=IsInInstance()
-    if not inside or kind~="party" then return end
+    if not inside or (kind~="party" and kind~="scenario") then return end
     if type(LoggingCombat)=="function" then pcall(LoggingCombat,true) end
 end
 local events=CreateFrame("Frame")

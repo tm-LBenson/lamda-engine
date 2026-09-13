@@ -64,13 +64,14 @@ def update():
             return
         cfg = state['config']
         lines = []
-        if args.preview:
+        if args.preview or cfg.get("preview", False):
             lines.append('Preview')
         for row in state['rows']:
             remaining = int(__import__('math').ceil(row['ends'] - time.time()))
             if remaining > 0 and cfg['enabled']:
                 charge = '*' if row['charges'] else ''
-                lines.append(f"{row['player']}  {row['name']}  ~{remaining}s{charge}")
+                suffix = "" if row.get("observedOnly") else f"  ~{remaining}s{charge}"
+                lines.append(f"{row['player']}  {row['name']}{suffix}")
         if state.get('update'):
             lines.append('LamdaUI update available: ' + state['update'])
         if not lines:

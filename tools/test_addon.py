@@ -40,7 +40,7 @@ class AddonTests(unittest.TestCase):
         assert(#LUI.modules==2 and LUI.modules[1].name=="LamdaCD" and LUI.modules[2].name=="Settings")
         frames[1].scripts.OnEvent(nil,"PLAYER_LOGIN")
         SlashCmdList.LAMDAUI("");assert(LUI.frame.shown)
-        assert(LamdaEngineDB.schema==1 and LamdaEngineDB.cdEnabled)
+        assert(LamdaEngineDB.schema==1 and LamdaEngineDB.cdEnabled and LamdaEngineDB.companions and not LamdaEngineDB.preview)
         LamdaEngineDB.cdEnabled=false;assert(LUI:DB().cdEnabled==false)
         combat=true;LUI:Save();assert(reloads==0)
         combat=false;LUI:Save();assert(reloads==1)

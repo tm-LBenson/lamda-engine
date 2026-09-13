@@ -5,7 +5,7 @@ A background engine for LamdaUI, the in-game addon hub. The first module is
 No desktop settings application. The Windows shortcut starts the engine and its
 click-through overlay; configure it in WoW with `/lui`.
 
-**0.2.0 is a preview.** Real-log replay and automated checks pass. Native
+**0.3.0 is a preview.** Real-log replay and automated checks pass. Native
 Windows overlay behavior and actual in-combat log delivery delay still need live
 validation. This is not a confirmed replacement for restricted addon tracking.
 
@@ -24,7 +24,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -WowPath '
 ```
 
 The script installs missing Git and Go using Windows Package Manager, clones the
-`v0.2.0` tag, runs Go tests, compiles locally, and installs LamdaUI and the engine.
+`v0.3.0` tag, runs Go tests, compiles locally, and installs LamdaUI and the engine.
 It requires 64-bit Windows, Windows PowerShell 5.1+, and winget if dependencies are
 missing. An existing Go installation must support Go 1.25 or newer. GitHub source
 access is public. There are no downloaded precompiled engine binaries.
@@ -40,7 +40,9 @@ LamdaUI's LamdaCD tab.
 3. Ensure combat logging is enabled. LamdaUI Settings includes
    Combat logging, which enables it when entering a party instance; `/combatlog`
    also toggles logging and prints the resulting state.
-4. Party with a real player and observe them use a defensive.
+4. Enter a follower dungeon or delve with a supported companion, or party with a
+   real player and observe a defensive. For layout work, enable **Preview** under
+   LamdaCD and Save & Reload. Turn Preview off for live observations.
 
 The old standalone lamdaCD addon is not required by the engine. The installer
 leaves it installed; disable it if you do not want its separate in-game display.
@@ -51,10 +53,10 @@ dungeon error has not been diagnosed or claimed fixed.
 
 ## What the timers mean
 
-Only successful casts by party-affiliated player GUIDs are accepted. Your own
-casts, NPC followers, enemies, aura-only records and raid-only affiliations are
-excluded. Follower dungeons can test the UI but cannot validate this module's
-real-player tracking.
+Successful casts by party-affiliated players and explicitly supported friendly
+companions are accepted. Your own player casts, enemies, unrelated NPCs, pets,
+aura-only records and raid-only affiliations are excluded. **Companions** is on by
+default and can be disabled in the LamdaCD tab.
 
 Timers use the original event timestamp, not the time the file reader receives
 it. `~` means estimated; `*` marks an ability that may have additional charges.
@@ -69,6 +71,27 @@ It does not reconstruct the active party roster from logs, so leaving party
 members can remain until their observed timer expires. Reloading does not magically
 recover missed casts. Delivery delay is recorded in the diagnostic log; neither
 an old recording nor a synthetic arrival test measures WoW's live flush delay.
+
+## Followers, delves and preview
+
+Supported NPCs currently include Captain Garrick, Meredy Huntswell, Shuja Grimaxe,
+Austin Huxworth and Valeera Sanguinar. Their defensive, interrupt and selected
+support spell IDs were verified in local recordings. Other companions, including
+Brann, need their own verified mapping; this is not universal NPC support.
+
+NPC variants never borrow player cooldown values. An observed cast first appears
+as a plain name/spell row for eight seconds after arrival. It has **no countdown**
+when the reuse time is unknown. After three casts with two sufficiently similar
+intervals, the engine can display an approximate reuse timer. This measures NPC
+behavior, not an authoritative cooldown. A contradictory shorter interval clears
+the estimate. Learning is separate for each NPC GUID and ability, bounded in
+memory, and resets with the model on zone/log transitions. Casts delayed more than
+30 seconds do not generate companion rows.
+
+**Preview** shows labelled sample rows in the real overlay for adjusting Left, Top
+and Scale. Save & Reload applies changes. Preview rows do not train the model,
+count as observations or survive disabling Preview. Follower runs can now exercise
+NPC display and layout, but do not establish real-player event coverage.
 
 ## Settings and status
 

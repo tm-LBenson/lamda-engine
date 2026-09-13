@@ -33,7 +33,7 @@ end
 function LUI:BuildUI()
     if self.frame then return end
     local f=CreateFrame("Frame","LamdaUIFrame",UIParent,"BackdropTemplate")
-    self.frame=f;f:SetSize(410,330);f:SetPoint("CENTER");f:SetFrameStrata("DIALOG")
+    self.frame=f;f:SetSize(410,400);f:SetPoint("CENTER");f:SetFrameStrata("DIALOG")
     f:SetClampedToScreen(true);f:SetMovable(true);f:EnableMouse(true);f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart",function(self)self:StartMoving()end)
     f:SetScript("OnDragStop",function(self)self:StopMovingOrSizing()end)
@@ -47,12 +47,12 @@ function LUI:BuildUI()
         for i,p in ipairs(panels)do p:SetShown(i==index);buttons[i]:SetEnabled(i~=index)end
     end
     for i,m in ipairs(self.modules)do
-        local p=CreateFrame("Frame",nil,f);p:SetPoint("TOPLEFT",20,-90);p:SetSize(370,185);p:Hide()
+        local p=CreateFrame("Frame",nil,f);p:SetPoint("TOPLEFT",20,-90);p:SetSize(370,250);p:Hide()
         panels[i]=p;m.build(p)
         buttons[i]=self:Button(f,m.name,18+(i-1)*124,-48,118,function()selectTab(i)end)
     end
     self.commitInputs=function()for _,commit in ipairs(inputs)do commit()end end
-    local save=self:Button(f,"Save & Reload",18,-288,150,function()LUI:Save()end)
+    local save=self:Button(f,"Save & Reload",18,-358,150,function()LUI:Save()end)
     local function refresh()save:SetEnabled(not InCombatLockdown())end
     f:RegisterEvent("PLAYER_REGEN_DISABLED");f:RegisterEvent("PLAYER_REGEN_ENABLED")
     f:SetScript("OnEvent",refresh);f:SetScript("OnShow",refresh)

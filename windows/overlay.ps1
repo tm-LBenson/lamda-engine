@@ -46,6 +46,11 @@ $timer.Add_Tick({
   $window.Left = [double]$state.config.x
   $window.Top = [double]$state.config.y
   $panel.LayoutTransform = New-Object Windows.Media.ScaleTransform([double]$state.config.scale,[double]$state.config.scale)
+  if ($state.config.preview) {
+   $label=New-Object Windows.Controls.TextBlock
+   $label.Text="Preview"; $label.Foreground=[Windows.Media.Brushes]::Turquoise; $label.Background=[Windows.Media.Brushes]::Black; $label.Padding="10,5"
+   [void]$panel.Children.Add($label)
+  }
   foreach ($row in $state.rows) {
    $remaining = [int][Math]::Ceiling($row.ends-$now)
    if ($remaining -le 0 -or -not $state.config.enabled) { continue }
@@ -55,7 +60,7 @@ $timer.Add_Tick({
    $text = New-Object Windows.Controls.TextBlock
    $text.Foreground = [Windows.Media.Brushes]::White; $text.FontFamily = 'Segoe UI'; $text.FontSize = 14
    $charge = if ($row.charges) { '*' } else { '' }
-   $text.Text = '{0}  {1}  ~{2}s{3}' -f $row.player,$row.name,$remaining,$charge
+   $text.Text = if ($row.observedOnly) { '{0}  {1}' -f $row.player,$row.name } else { '{0}  {1}  ~{2}s{3}' -f $row.player,$row.name,$remaining,$charge }
    $border.Child = $text; [void]$panel.Children.Add($border)
   }
   if ($state.update) {

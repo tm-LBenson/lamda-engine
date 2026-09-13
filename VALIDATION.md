@@ -1,4 +1,4 @@
-# Validation — 0.2.0 preview
+# Validation — 0.3.0 preview
 
 ## Completed locally
 
@@ -40,3 +40,15 @@ preserved. No live engine status is displayed in the addon.
   test; follower NPC casts are deliberately excluded.
 - Installed the clean addon locally and restarted the engine with Linux overlay
   enabled. A copy of the prior addon is outside WoW AddOns for rollback.
+
+## 0.3.0 additions
+
+- Explicit NPC GUID/spell allowlist supports four recorded follower NPCs and
+  Valeera. Friendly group/mine affiliation required; enemies and unrelated NPCs
+  are rejected. Player spell baselines are never applied to NPC variants.
+- Tests cover source filtering, unknown-reuse pulses, duplicate suppression,
+  learning across pulse expiry, contradictory intervals, separate identities,
+  stale arrivals and preview isolation.
+- Replayed follower and delve recordings to validate the added mappings.
+- Preview is a labelled presentation mode controlled from the LamdaCD tab.
+- Live player coverage and actual delivery latency are still unverified.
