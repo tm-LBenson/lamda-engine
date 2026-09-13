@@ -19,6 +19,17 @@ local function bounded(value, fallback, minimum, maximum)
 end
 local points = { TOPLEFT=true, TOP=true, TOPRIGHT=true, LEFT=true, CENTER=true, RIGHT=true,
     BOTTOMLEFT=true, BOTTOM=true, BOTTOMRIGHT=true }
+-- {vertical primary axis, grow left, grow up}; indexes are persisted settings.
+local growthDirections={
+    {false,false,false}, -- Right, then down.
+    {false,true,false},  -- Left, then down.
+    {false,false,true},  -- Right, then up.
+    {false,true,true},   -- Left, then up.
+    {true,false,false},  -- Down, then right.
+    {true,false,true},   -- Up, then right.
+    {true,true,false},   -- Down, then left.
+    {true,true,true},    -- Up, then left.
+}
 local function anchor(value, fallback)
     if secret(value) or type(value) ~= "string" or not points[value] then return fallback end
     return value
@@ -40,6 +51,7 @@ local function normalize(options, parent)
     local result = {
         size=bounded(options.size,26,12,80), spacing=bounded(options.spacing,2,0,24),
         perRow=bounded(options.perRow,6,1,20), fontSize=bounded(options.fontSize,12,8,32),
+        growth=bounded(options.growth,0,0,8),
         offsetX=bounded(options.offsetX,6,-2000,2000), offsetY=bounded(options.offsetY,0,-2000,2000),
         anchorPoint=anchor(options.anchorPoint,"LEFT"), relativePoint=anchor(options.relativePoint,"RIGHT"),
         relativeFrame=safeFrame(options.relativeFrame) and options.relativeFrame or parent,
@@ -101,6 +113,11 @@ local function edge(button, point, relativePoint, x, y, width, height, color)
     return texture
 end
 
+local highlightColors={
+    cc={1,0.3,0.15,0.8}, debuffs={0.75,0.35,1,0.8},
+    defensives={0.2,0.65,1,0.8}, buffs={1,0.78,0.12,0.8},
+}
+
 local function initializeButton(button, options, category)
     -- This callback runs before access restrictions are applied. Never install
     -- addon scripts here, reparent an existing region, or keep aura button data.
@@ -158,10 +175,10 @@ local function initializeButton(button, options, category)
             })
         end
     end
-    if options.glow and (category=="cc" or category=="buffs") then
+    if options.glow then
         -- A fixed highlight inherits the native aura button's visibility. No
         -- secret-dependent animation, visibility query, or timer is required.
-        local color=category=="cc" and {1,0.3,0.15,0.8} or {1,0.78,0.12,0.8}
+        local color=highlightColors[category]
         edge(button,"TOPLEFT","TOPLEFT",-2,2,options.size+4,2,color)
         edge(button,"BOTTOMLEFT","BOTTOMLEFT",-2,-2,options.size+4,2,color)
         edge(button,"TOPLEFT","TOPLEFT",-2,2,2,options.size+4,color)
@@ -188,8 +205,19 @@ function Handle:_Place()
     self.container:ClearAllPoints()
     self.container:SetPoint(options.anchorPoint,self.frame,"CENTER",0,0)
     local direction=AnchorUtil.FlowDirection
-    local fromRight=options.anchorPoint:find("RIGHT")~=nil
-    local fromBottom=options.anchorPoint:find("BOTTOM")~=nil
+    -- SetFlowLayoutGrowthDirection always takes physical horizontal, vertical
+    -- directions. On the Vertical axis the vertical direction becomes primary
+    -- and horizontal becomes the direction of the next column (AnchorUtil).
+    local selected=growthDirections[options.growth]
+    local vertical,fromRight,fromBottom
+    if selected then
+        vertical,fromRight,fromBottom=selected[1],selected[2],selected[3]
+    else
+        vertical=false
+        fromRight=options.anchorPoint:find("RIGHT")~=nil
+        fromBottom=options.anchorPoint:find("BOTTOM")~=nil
+    end
+    self.container:SetFlowLayoutAxis(vertical and AnchorUtil.FlowLayoutAxis.Vertical or AnchorUtil.FlowLayoutAxis.Horizontal)
     -- Flow uses a corner even when the whole group attaches by LEFT/RIGHT/CENTER.
     -- Starting flow at CENTER would put later rows outside its measured bounds.
     self.container:SetFlowLayoutAnchorPoint((fromBottom and "BOTTOM" or "TOP")..(fromRight and "RIGHT" or "LEFT"))
@@ -209,7 +237,6 @@ function Handle:_Build()
     if container.SetMouseMotionEnabled then container:SetMouseMotionEnabled(false) end
     container:SetFrameStrata("MEDIUM")
     container:SetFrameLevel(40)
-    container:SetFlowLayoutAxis(AnchorUtil.FlowLayoutAxis.Horizontal)
     container:SetFlowLayoutPadding(0,0,0,0)
     local options=self.options
     container:SetFlowLayoutMaximumLineSize(options.perRow*options.size+(options.perRow-1)*options.spacing)

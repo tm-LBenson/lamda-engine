@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
  [string]$Repository = 'https://github.com/tm-LBenson/lamda-engine.git',
- [string]$Ref = 'v0.7.0',
+ [string]$Ref = 'v0.7.1',
  [string]$WowPath,
  [string]$Account,
  [string]$InstallRoot = (Join-Path $env:LOCALAPPDATA 'LamdaUI'),

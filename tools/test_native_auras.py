@@ -19,7 +19,7 @@ function issecretvalue(value)return value==secretObject end
 function getSecret()return secretObject end
 AuraContainerSortMethod={Default=0,BigDefensive=1,UnitFrameDebuff=2,ImportantOnly=3}
 AuraContainerSortDirection={Normal=0,Reverse=1}
-AnchorUtil={FlowDirection={Left=0,Right=1,Up=2,Down=3},FlowLayoutAxis={Horizontal=0,Vertical=1}}
+AnchorUtil={FlowDirection={Left=-1,Right=1,Up=1,Down=-1},FlowLayoutAxis={Horizontal=0,Vertical=1}}
 Enum={CustomAuraButtonDispelTypeTextureStyle={Border=0}}
 AuraUtil={IsValidFilterString=function(filter)return not invalidFilter end}
 local Frame={}
@@ -146,6 +146,31 @@ class NativeAuraTests(unittest.TestCase):
         h:Refresh();assert(c.refreshes==1)
         ''')
 
+    def test_static_highlight_applies_to_every_aura_category(self):
+        lua = runtime()
+        lua.execute('''
+        h=create({glow=true,borders=false,timers=false,stacks=false,swipe=false})
+        local colors={}
+        for _,group in ipairs(h.container.groups)do
+          for _,button in ipairs(group.buttons)do
+            assert(#button.regions==5 and next(button.scripts)==nil)
+            -- Icon plus four fixed edges; no callbacks read aura state.
+            for i=2,5 do
+              local edge=button.regions[i];assert(edge.color and edge.color[4]==0.8)
+              assert(edge.width==2 or edge.height==2)
+            end
+            colors[group.key]=table.concat(button.regions[2].color,",")
+          end
+        end
+        assert(colors.cc~=colors.debuffs and colors.debuffs~=colors.defensives)
+        assert(colors.defensives~=colors.buffs and colors.cc~=colors.buffs)
+        assert(colors.external==colors.defensives)
+        assert(h:Configure({glow=false,borders=false,timers=false,stacks=false,swipe=false}))
+        for _,group in ipairs(h.container.groups)do for _,button in ipairs(group.buttons)do
+          assert(#button.regions==1)
+        end end
+        ''')
+
     def test_placement_changes_reuse_native_buttons(self):
         lua = runtime()
         lua.execute('''
@@ -161,6 +186,47 @@ class NativeAuraTests(unittest.TestCase):
         for _,group in ipairs(h.container.groups)do for _,button in ipairs(group.buttons)do
           assert(button.icon and not button.cooldown and not button.count and not button.durationText and not button.border)
         end end
+        ''')
+
+    def test_eight_growth_directions_are_independent_of_attachment(self):
+        lua = runtime()
+        lua.execute('''
+        local expected={
+          {0,1,-1,"TOPLEFT"}, {0,-1,-1,"TOPRIGHT"},
+          {0,1,1,"BOTTOMLEFT"}, {0,-1,1,"BOTTOMRIGHT"},
+          {1,1,-1,"TOPLEFT"}, {1,1,1,"BOTTOMLEFT"},
+          {1,-1,-1,"TOPRIGHT"}, {1,-1,1,"BOTTOMRIGHT"},
+        }
+        for growth,case in ipairs(expected)do
+          local h=create({growth=growth,anchorPoint="BOTTOMRIGHT",relativePoint="TOPLEFT",size=30,spacing=3,perRow=2})
+          local c=h.container
+          assert(c.axis==case[1] and c.growth[1]==case[2] and c.growth[2]==case[3] and c.layoutPoint==case[4])
+          assert(c.point[1]=="BOTTOMRIGHT" and h.frame.point[3]=="TOPLEFT")
+          assert(c.lineSize==63 and h.options.growth==growth)
+          -- Moving the strip's outer anchor does not change explicit flow.
+          local count=#containers
+          assert(h:Configure({growth=growth,anchorPoint="TOPLEFT",relativePoint="BOTTOMRIGHT",size=30,spacing=3,perRow=2}))
+          assert(#containers==count and h.container==c)
+          assert(c.axis==case[1] and c.growth[1]==case[2] and c.growth[2]==case[3] and c.layoutPoint==case[4])
+        end
+        ''')
+
+    def test_growth_zero_preserves_anchor_flow_and_growth_change_rebuilds(self):
+        lua = runtime()
+        lua.execute('''
+        h=create({anchorPoint="BOTTOMRIGHT"});local c=h.container;local count=#containers
+        assert(h.options.growth==0 and c.axis==0 and c.layoutPoint=="BOTTOMRIGHT")
+        assert(c.growth[1]==-1 and c.growth[2]==1)
+        assert(h:Configure({growth=0,anchorPoint="LEFT"}))
+        assert(#containers==count and h.container==c and c.axis==0 and c.layoutPoint=="TOPLEFT")
+        assert(c.growth[1]==1 and c.growth[2]==-1)
+        assert(h:Configure({growth=7,anchorPoint="LEFT"}))
+        assert(#containers==count+1 and not c.enabled and not c.shown)
+        assert(h.container.axis==1 and h.container.growth[1]==-1 and h.container.growth[2]==-1)
+        assert(h.container.layoutPoint=="TOPRIGHT" and h.container.point[1]=="LEFT")
+        combat=true;local changed=h.container;assert(not h:Configure({growth=6,anchorPoint="LEFT"}))
+        assert(not changed.enabled and not changed.shown);regen()
+        assert(h.options.growth==6 and h.container.axis==1 and h.container.layoutPoint=="BOTTOMLEFT")
         ''')
 
     def test_combat_changes_suspend_immediately_and_coalesce(self):
@@ -228,15 +294,24 @@ class NativeAuraTests(unittest.TestCase):
             lua.execute('local f=assert(loadstring(...));f("lamdaUI",LUI)', (addon / name).read_text())
         lua.execute('''
         local runtime=LUI.FrameAuras;runtime:Update()
-        local binding=runtime.bindings[partyFrame];assert(binding and binding.handle.container.enabled)
-        assert(binding.handle.container.groups[2].filter=="HARMFUL|!CROWD_CONTROL")
-        assert(binding.handle.options.relativeFrame==partyFrame and binding.handle.options.offsetX==6)
-        assert(binding.handle.container.point[1]=="LEFT" and binding.handle.container.layoutPoint=="TOPLEFT")
+        local binding=runtime.bindings[partyFrame];assert(binding and binding.regions)
+        local cc=binding.regions.CC.handle;local debuffs=binding.regions.Debuffs.handle
+        assert(cc.container.enabled and debuffs.container.enabled and #containers==4)
+        assert(#cc.container.groups==1 and cc.container.groups[1].filter=="HARMFUL|CROWD_CONTROL")
+        assert(#debuffs.container.groups==1 and debuffs.container.groups[1].filter=="HARMFUL|!CROWD_CONTROL")
+        assert(cc.options.relativeFrame==partyFrame and debuffs.options.relativeFrame==partyFrame)
+        assert(cc.options.size==db.nativeCCPartySize and debuffs.options.size==db.nativeDebuffsPartySize)
+        assert(cc.container.point[1]=="LEFT" and cc.container.layoutPoint=="TOPLEFT")
         combat=true;partyFrame.unit="party2";runtime:Update()
-        assert(not binding.handle.container.enabled and not binding.handle.container.shown)
-        combat=false;runtime:Update();assert(binding.unit=="party2" and binding.handle.container.enabled)
-        db.nativeSize=34;runtime:RequestRefresh();runtime:Update();assert(binding.handle.options.size==34)
-        partyFrame.available=false;runtime:Update();assert(not binding.handle.container.enabled)
+        for _,entry in pairs(binding.regions)do assert(not entry.handle.container.enabled and not entry.handle.container.shown)end
+        combat=false;runtime:Update();assert(binding.unit=="party2" and cc.container.enabled and debuffs.container.enabled)
+        local debuffContainer=debuffs.container
+        db.nativeCCPartySize=34;db.nativeCCPartyGrowth=7;runtime:RequestRefresh();runtime:Update()
+        assert(cc.options.size==34 and cc.options.growth==7 and cc.container.axis==1)
+        assert(cc.container.layoutPoint=="TOPRIGHT" and cc.container.point[1]=="LEFT")
+        assert(debuffs.container==debuffContainer and debuffs.options.size==db.nativeDebuffsPartySize)
+        partyFrame.available=false;runtime:Update()
+        for _,entry in pairs(binding.regions)do assert(not entry.handle.container.enabled)end
         ''')
 
     def test_safe_diagnostics_preserve_errors_and_bound_output(self):

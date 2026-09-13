@@ -4,12 +4,12 @@
 Open `/lui` for General settings, then **Modules → LamdaCD** for its controls.
 There is no separate desktop settings application.
 
-Engine **0.7.0** / addon **0.26.0** restores the intended frame-based direction:
+Engine **0.7.1** / addon **0.27.0** adds independent frame regions and party/raid layouts:
 crowd control, debuffs, active defensive buffs, and important buffs beside
 DandersFrames or Blizzard frames. Blizzard's native aura containers supply the
 icons and their remaining durations. **This display needs neither the engine nor
 combat logging.** In-game rendering and combat behavior still require live
-validation. Full MiniCC/MiniAuras replacement remains required and unfinished;
+validation. Full original MiniCC replacement remains required and unfinished;
 see [FEATURE-COVERAGE.md](FEATURE-COVERAGE.md).
 
 ## Using LamdaCD
@@ -19,12 +19,14 @@ After updating, `/reload`, then open `/lui`. For a first installation, restart W
 1. **General** contains engine update preferences and module profiles.
 2. **Modules → LamdaCD → Auras** selects crowd control, debuffs, defensive buffs,
    and important buffs, with separate icon limits.
-3. **Frames** selects Automatic, DandersFrames, or Blizzard, and player, party,
-   raid, or supported pet frames. Choose a frame anchor and distance from it.
-4. **Appearance** controls icon size, spacing, icons per row, text size, timers,
-   stacks, borders, static glow, and cooldown swipes.
-5. **Content** selects world, dungeon/follower dungeon, raid, arena, battleground,
-   and delve visibility.
+3. **Frames** controls the selected region's layout. Choose a party or raid layout and the CC,
+   Debuffs, Defensives, or Important buffs region, then set its anchor, distance,
+   adjustments, and growth direction. Each region has its own position.
+4. **Appearance** edits the chosen region in the party or raid layout: icon size,
+   spacing, icons per line, text size, timers, stacks, borders, static highlights,
+   swipes/reverse, and tooltips. Category switches and limits on Auras are shared.
+5. **Content** selects DandersFrames or Blizzard, which player/party/raid/pet
+   frames to use, and world, dungeon/follower, raid, arena, battleground, or delve visibility.
 
 **Preview on frames** draws labelled samples on available frames, with a sample
 frame when none are available. Check placement without combat, use **Stop
@@ -63,7 +65,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -WowPath '
 ```
 
 The script installs missing Git and Go with Windows Package Manager, obtains the
-`v0.7.0` source, runs Go tests, compiles locally, and installs LamdaUI and the
+`v0.7.1` source, runs Go tests, compiles locally, and installs LamdaUI and the
 engine. It requires 64-bit Windows and Windows PowerShell 5.1+, with winget when
 dependencies are missing. Existing Go installations need Go 1.25 or newer.
 No precompiled engine binary is downloaded.
@@ -92,6 +94,14 @@ engine status stays silent.** Reload saves settings; it is not proof that an
 engine is running or received them. Native aura display is independent of that
 status. The engine reads saved settings without executing Lua or writing back
 to the SavedVariables file.
+
+## Cooldown tracking remains unfinished
+
+Original MiniCC had a friendly cooldown tracker as well as active-aura icons.
+The 12.1 successor removed that tracker. Lamda still needs useful teammate
+cooldown observations; displaying buff duration does not complete that work.
+[Original tracker settings](https://github.com/Verubato/mini-auras/blob/4.6.3/src/Config/FriendlyCooldownTracker.lua),
+[12.1 changes](https://github.com/Verubato/mini-auras/blob/5.0.0/changelog.md).
 
 ## Existing log reader
 
@@ -147,5 +157,6 @@ frame renderer.
 Build source release assets from a clean committed tree with
 `python3 tools/package.py`. Requirements are in [REQUIREMENTS.md](REQUIREMENTS.md),
 and architecture is in [DESIGN.md](DESIGN.md). Vision integration and a broader
-WeakAuras-like rule editor are later modules. Full MiniCC replacement is part of
-the current accepted scope.
+WeakAuras-like rule editor are later modules. Full original MiniCC replacement
+plus the explicitly requested team debuffs are current scope. The generic
+Personal Auras editor added by the successor is not silently added to that scope.

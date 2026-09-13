@@ -1,18 +1,34 @@
-# Validation — 0.7.0 / addon 0.26.0
+# Validation — 0.7.1 / addon 0.27.0
 
 Source implementation, automated checks, and live game behavior are separate
 claims. Native rendering and full replacement are not established by mocked
 API calls.
 
-## Completed for 0.7.0
+## Completed for 0.7.1
+
+- **36 Lua checks pass**: four independent native regions, separate party/raid
+  layouts, all eight growth directions, settings isolation and profile sharing,
+  combat/unit/context changes, bounded retries, samples and native API contracts.
+- Go tests with race detection and `go vet` pass. Linux and Windows builds pass.
+- The installed hot-reload bundle compiles under Lua 5.1. All seven addon files
+  were checked against their expected contents after installation, with the
+  local bundle used for `UI.lua` to support an already running WoW session.
+- Addon 0.27.0 is installed locally. Engine 0.7.1 is running with its detached
+  overlay disabled. The prior addon directory was backed up before replacement.
+
+These are source, mock and installation checks. Live native aura rendering,
+combat behavior and actual Windows installation remain unverified.
+
+## Prior completed checks for 0.7.0
 
 - **27 Lua checks pass**, including native Blizzard API contracts, frame/provider
   integration, sorting/reassignment, combat handling, out-of-world visibility,
   failed-initialization retries, and profile/settings UI behavior.
 - Go tests pass with race detection; `go vet` passes.
 - Linux and Windows engine builds pass.
-- The local reload bundle compiles. Addon 0.26.0 is installed locally and engine
-  0.7.0 is running with its external overlay disabled.
+- The 0.26.0 reload bundle compiled and was installed locally, with engine 0.7.0
+  started without an external overlay. The user had not reloaded into that build
+  at the last visual check; the older standalone icon display was still present.
 
 Relevant commands (Lua checks require `lupa`):
 
@@ -37,8 +53,10 @@ WoW rendering or ability cooldown readiness.
   debuffs, and defensive buffs on DandersFrames and Blizzard frames.
 - Verify frame movement/sorting, unit reassignment, party/raid transitions, and
   supported pets preserve attribution.
-- Check category caps, anchors, spacing/wrapping, fonts, swipes/reverse, stacks,
-  borders, static glow, and tooltips.
+- Check all four regions independently, including separate party/raid size,
+  placement, growth, wrapping and appearance; selecting one region must not
+  overwrite another. Shared category caps stay consistent. Verify fonts,
+  swipes/reverse, stacks, borders, static highlights and tooltips.
 - Preview on actual frames, verify fallback samples, stop preview, and confirm
   real native auras return. Samples remain labelled.
 - Exercise world/follower/delve/raid/arena/BG rules where available; one context
@@ -52,7 +70,7 @@ WoW rendering or ability cooldown readiness.
   module rendered an icon.
 
 **These live native-rendering checks are pending.** User reload/preview feedback
-is still needed. Full MiniCC/MiniAuras parity, dependable teammate cooldown
+is still needed. Full original MiniCC parity, dependable teammate cooldown
 readiness, and the earlier dungeon error remain open.
 
 ## Earlier regression evidence
@@ -100,7 +118,9 @@ Unknown engine status remains silent.
 ## API review
 
 Original lamdaCD 0.2.1 supplies the existing frame-attachment design. Installed
-MiniCC is a settings bridge; MiniAuras supplies the runtime feature reference.
+MiniCC is now a settings bridge; versioned MiniCC 4.6.3 supplies the original
+feature baseline. MiniAuras supplies a current native API reference, not an
+automatic expansion to all successor features.
 Danders public lookup/sorting contracts were inspected without modifying its
 unit frames. The new module is original code using supported APIs.
 
@@ -114,3 +134,12 @@ bindings, and identity-filter restrictions:
 Friendly harmful auras cannot be filtered by spell-ID candidate maps. Settings
 and coverage claims must retain this boundary. Source review establishes API
 intent; live tests establish compatibility.
+
+The scope audit compared versioned original CC/active-indicator/cooldown settings
+and the 5.0/5.23 successor changelog. Original cooldown tracking remains required;
+generic Personal Auras editing is a later ambition rather than an inferred
+current requirement.
+
+- [Original CC anchors](https://github.com/Verubato/mini-auras/blob/4.6.3/src/Modules/CrowdControlModule.lua)
+- [Original cooldown settings](https://github.com/Verubato/mini-auras/blob/4.6.3/src/Config/FriendlyCooldownTracker.lua)
+- [Successor feature history](https://github.com/Verubato/mini-auras/blob/5.40.0/changelog.md)

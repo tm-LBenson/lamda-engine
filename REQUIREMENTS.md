@@ -1,7 +1,7 @@
 # LamdaUI requirements and acceptance criteria
 
-Reviewed against the user conversation on 2026-09-13 for engine 0.7.0 / addon
-0.26.0. This is the accepted product scope, not a completion claim.
+Reviewed against the user conversation on 2026-09-13 for engine 0.7.1 / addon
+0.27.0. This is the accepted product scope, not a completion claim.
 
 ## Product and priority
 
@@ -17,8 +17,9 @@ satisfy the request.
 
 The original standalone lamdaCD 0.2.1 already had frame attachment. Inspection
 also confirmed that installed MiniCC is a saved-settings bridge and MiniAuras
-supplies the current CC functionality. Build on the intended frame behavior and
-cover the active successor's feature set.
+supplies the current CC functionality. The audited original baseline is MiniCC
+4.6.3, before 12.1. Its features remain required; the full evolving successor
+inventory must not silently expand the request.
 
 Teammate cooldown readiness and active aura duration are separate requirements.
 Native aura icons address current effects on teammates; they do not resolve
@@ -48,7 +49,7 @@ WeakAuras-like editor are explicitly later modules.
 | FRAME-2 | Frame identity is authoritative. | Public unit bindings determine identity; slot number never substitutes for identity. Hidden, forbidden, secret, or conflicting targets are safe. |
 | FRAME-3 | Show team CC, debuffs, defensives, and important auras. | Native groups show real effects during restricted encounters; own auras do not stand in for teammate validation. |
 | FRAME-4 | Support pets and content rules. | Player/party/raid/pet toggles and world/dungeon/raid/arena/BG/delve rules control supported regions. |
-| FRAME-5 | Useful customization affects live output. | Anchors, distance/adjustments, size, spacing, wrapping, category caps, text, swipes/reverse, stacks, borders, glow, and tooltips work in display and preview. |
+| FRAME-5 | Useful customization affects live output. | CC, debuff, defensive and important-buff regions have independent position, growth, size and appearance, with separate party/raid layouts. Category switches/caps remain shared. Live icons and preview agree. |
 | FRAME-6 | Preview without combat or engine. | Labelled samples use available frames or a fallback; stopping preview restores native auras. |
 | FRAME-7 | Native display is independent. | Team icons work with engine stopped and logging off; native mode suppresses detached engine bars. |
 | FRAME-8 | Preserve uncertainty. | Aura duration never means ability readiness; missing observations and samples never create readiness claims. |
@@ -70,19 +71,34 @@ dependable live readiness. Native aura containers do not cure that separate
 problem. Addon-message sharing also remains unverified in restricted encounters;
 readable own casts do not establish permitted or reliable send/receive delivery.
 
-## Complete replacement acceptance
+## Complete original MiniCC replacement acceptance
 
-[FEATURE-COVERAGE.md](FEATURE-COVERAGE.md) is mandatory scope: friendly/raid/pet
-CC, important auras, frame buffs/debuffs, healer warnings, nameplates, portraits,
-arena trinkets, ally/enemy interrupts, enemy alerts, personal aura groups,
-profiles, sounds/TTS, sharing, adapters, and their appearance/filter controls.
+[FEATURE-COVERAGE.md](FEATURE-COVERAGE.md) records the audited MiniCC 4.6.3
+baseline and mandatory remaining work. This includes separate CC and active
+indicator regions, friendly and enemy cooldown estimates, talent/charge/reset
+handling, per-spell selection, pet CC, healer warnings, nameplates, portraits,
+trinkets, interrupt effects/timers, enemy alerts, sounds/TTS, the original
+Precognition/Nullifying Shroud helper, profiles, and provider/customization parity.
+Team debuffs are additionally explicit in the user's request.
 
-Each feature needs settings, runtime behavior, persistence, supported restriction
-handling, and live checks. Empty tabs, copied labels, or generic bars do not meet
-acceptance. If the current API cannot support original behavior, record the
-specific limitation rather than inventing an equivalent. MiniAuras is All
-Rights Reserved; Lamda uses original code and public Blizzard/provider APIs,
-not wholesale copied source.
+The original frame controls include separate default versus raid layouts,
+left/right/center/up/down growth, offset adjustments, relative icon sizing,
+rows/columns, tooltip and decimal controls, and dispel/glow styling.
+[Original CC controls](https://github.com/Verubato/mini-auras/blob/4.6.3/src/Config/CrowdControl.lua),
+[original cooldown controls](https://github.com/Verubato/mini-auras/blob/4.6.3/src/Config/FriendlyCooldownTracker.lua).
+
+The successor added a generic Personal Auras editor in 5.0 and a general
+Blizzard Frame Auras replacement in 5.23. Those whole modules are not automatically
+mandatory. Team debuffs remain required, while the broader WeakAuras-style
+editor and Vision integration stay deferred as requested.
+[Versioned successor history](https://github.com/Verubato/mini-auras/blob/5.40.0/changelog.md).
+
+Each original feature needs working settings, runtime behavior, persistence,
+restriction handling, and live checks. Where the current API prevents the old
+behavior, record the exact limit and retain the unfulfilled requirement. Native
+buff durations do not satisfy cooldown readiness. Empty tabs or generic bars do
+not establish parity. Lamda uses original code and public Blizzard/provider
+APIs, not wholesale copied All Rights Reserved MiniAuras source.
 
 ## Distribution acceptance
 
@@ -98,8 +114,9 @@ prompts.
 
 ## Current acceptance status
 
-0.7.0 replaces the bar-centric module page with native frame auras and controls.
-General/module profiles remain the hub. Native mode suppresses detached engine
+0.7.0 restored native aura icons; the 0.7.1 / addon 0.27.0 change separates four
+regions and party/raid layouts, with eight growth directions and per-region
+appearance. General/module profiles remain the hub. Native mode suppresses detached engine
 rows and does not enable automatic logging. `/lui debug` exposes known provider
 and runtime evidence without claiming engine liveness.
 

@@ -29,21 +29,24 @@ function LUI:Button(parent,text,x,y,width,callback)
     button:SetSize(width,26);button:SetPoint("TOPLEFT",x,y);button:SetText(text)
     button:SetScript("OnClick",callback);return button
 end
+local function settingKey(key)
+    return type(key)=="function" and key() or key
+end
 function LUI:Checkbox(parent,text,key,y,x)
     local button=CreateFrame("CheckButton",nil,parent,"UICheckButtonTemplate")
     button:SetSize(26,26);button:SetPoint("TOPLEFT",x or 0,y)
     local label=button:CreateFontString(nil,"OVERLAY","GameFontHighlight")
     label:SetPoint("LEFT",button,"RIGHT",4,0);label:SetText(text)
-    self:OnRefresh(button,function()button:SetChecked(LUI:DB()[key])end)
-    button:SetScript("OnClick",function(self)LUI:DB()[key]=not not self:GetChecked();LUI:RefreshUI()end)
+    self:OnRefresh(button,function()button:SetChecked(LUI:DB()[settingKey(key)])end)
+    button:SetScript("OnClick",function(self)LUI:DB()[settingKey(key)]=not not self:GetChecked();LUI:RefreshUI()end)
     return button
 end
 function LUI:Choice(parent,text,key,choices,y,x)
     x=x or 0;self:Label(parent,text,x+4,y-5)
     local button=self:Button(parent,"",x+125,y,135,function(self)
-        local db=LUI:DB();db[key]=db[key]%#choices+1;LUI:RefreshUI()
+        local db=LUI:DB();local current=settingKey(key);db[current]=db[current]%#choices+1;LUI:RefreshUI()
     end)
-    self:OnRefresh(button,function()button:SetText(choices[LUI:DB()[key]] or choices[1])end)
+    self:OnRefresh(button,function()button:SetText(choices[LUI:DB()[settingKey(key)]] or choices[1])end)
     return button
 end
 function LUI:Slider(parent,text,key,y,min,max,step,x)
@@ -58,12 +61,13 @@ function LUI:Slider(parent,text,key,y,min,max,step,x)
     local refreshing=false
     slider:SetScript("OnValueChanged",function(_,v)
         if refreshing then return end
-        v=math.max(min,math.min(max,math.floor(v/step+0.5)*step));LUI:DB()[key]=v
+        v=math.max(min,math.min(max,math.floor(v/step+0.5)*step));LUI:DB()[settingKey(key)]=v
         value:SetText(step<1 and string.format("%.2f",v) or tostring(v));LUI:RefreshCooldownPreview()
     end)
     self:OnRefresh(slider,function()
-        refreshing=true;slider:SetValue(LUI:DB()[key]);refreshing=false
-        value:SetText(step<1 and string.format("%.2f",LUI:DB()[key]) or tostring(LUI:DB()[key]))
+        local current=settingKey(key)
+        refreshing=true;slider:SetValue(LUI:DB()[current]);refreshing=false
+        value:SetText(step<1 and string.format("%.2f",LUI:DB()[current]) or tostring(LUI:DB()[current]))
     end)
     return slider
 end

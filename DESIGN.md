@@ -1,6 +1,6 @@
 # LamdaUI and engine design
 
-Engine 0.7.0 / addon 0.26.0 makes native frame icons the primary gameplay display.
+Engine 0.7.1 / addon 0.27.0 uses independently positioned native frame regions.
 [REQUIREMENTS.md](REQUIREMENTS.md) records scope; [VALIDATION.md](VALIDATION.md)
 records evidence and open checks.
 
@@ -30,9 +30,12 @@ frames. Slot order never substitutes for identity. Danders public lookups and
 sorting callbacks provide discovery; Blizzard uses supported frame targets.
 Hidden, forbidden, secret, or conflicting bindings never become guessed matches.
 
-Five native groups cover CC, other debuffs, big defensives, external defensives,
-and important buffs. Controls select categories/caps, units/contexts, anchors,
-size, spacing, wrapping, and appearance. Owned labelled samples preview real
+Five native groups occupy four independent regions: CC, debuffs, defensives
+(big and external), and important buffs. Each has separate party and raid
+layouts, edited inside Frames/Appearance. Anchor, offsets, eight-way growth,
+size, spacing, wrapping, text, timers, stacks, borders, static highlights, swipe/reverse
+and tooltips belong to the selected region/layout. Category switches and caps
+remain shared. Unit/provider/context switches control eligibility. Owned labelled samples preview real
 frames or a fallback; they do not use Blizzard's global sample aura provider or
 record casts.
 
@@ -88,9 +91,14 @@ notify on confirmed newer releases and never install code automatically.
 
 ## Replacement scope
 
-Full MiniCC/MiniAuras behavior is current required scope, tracked in
-[FEATURE-COVERAGE.md](FEATURE-COVERAGE.md). Native frame auras implement part of
-it; the remaining modules/controls remain acceptance work. Lamda uses original
+Full original MiniCC behavior, audited at pre-12.1 version 4.6.3, plus explicit
+team debuffs is required scope: [FEATURE-COVERAGE.md](FEATURE-COVERAGE.md).
+This includes the original friendly/enemy cooldown trackers, not merely active
+buffs. Native frame auras implement only part of that requirement. Generic
+Personal Auras and Frame Auras editors added later by the successor do not
+automatically expand scope.
+[Original tracker](https://github.com/Verubato/mini-auras/blob/4.6.3/src/Config/FriendlyCooldownTracker.lua),
+[successor changes](https://github.com/Verubato/mini-auras/blob/5.0.0/changelog.md). Lamda uses original
 code and public APIs, not wholesale copied All Rights Reserved MiniAuras source.
 
 Vision and a broader visual rule editor are later modules. The earlier dungeon
