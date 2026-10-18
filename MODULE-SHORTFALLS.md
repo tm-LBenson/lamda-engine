@@ -169,9 +169,18 @@ keep protections, a read-only preview, bounded sale retries and repairs.
 | VENDOR-001 | P1 · Investigate | Adventure gear was reported unsold while the module said Waiting. The specific item's blocking condition was not captured. | Reproduce with the exact item variant and active rules; inspect Preview's reason and merchant state. Verify intended sell/keep behavior without weakening unknown-data protections. |
 | VENDOR-002 | P2 · Open | The merchant summary groups bags, locks and retries into one waiting count. Preview has item-level reasons, but the summary does not identify the blocker. | Provide a concise route from Waiting to the blocked items/reasons; distinguish unavailable metadata from locked items and exhausted retries. |
 | VENDOR-003 | P2 · Limited | Upgrade tracks are recognized from readable English names. Localized, trackless, crafted or unknown labels cannot safely satisfy a track rule. | Support stable client track identifiers where available, otherwise tested locale mappings. Test readable Adventure gear plus unknown labels; keep unknowns unsold. |
+| VENDOR-004 | P1 · Open | In 1.3.0, gear-selling permission and general rules are account-wide. An unconfigured alt can sell Champion gear after another character enables the shared rule; only slot overrides are character-specific. Reproduced with a second character in the merchant regression. | Release the per-character settings/opt-in correction, then verify an unconfigured alt retains its gear in game. Preserve existing rules and protections, require explicit gear-selling permission on each character, and test migration, resets and reload. |
 
 Evidence: `Lamda/UIAddon/Modules/Vendor.lua` (`Track`, `Matches`, `Evaluate`,
 `Tick`, Preview); `VENDOR.md`. A fresh merchant acceptance check remains required.
+
+VENDOR-004 follow-up: addon **0.69.1** is the locally validated correction
+(47 Vendor scenarios and both full UI suites); it is not part of the linked
+1.3.0 public release. The old data has no reliable
+record of which character enabled gear selling, so migration retains rules but
+starts gear selling off for every character. The module Enabled switch remains
+account-wide. Until the corrected addon is loaded, holding Shift while opening
+a merchant skips automation for that visit.
 
 ## LamdaKBB
 
