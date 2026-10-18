@@ -1,5 +1,10 @@
 # Original MiniCC replacement coverage
 
+> **Historical inventory:** this file describes the 0.7.3 / 0.27.2 baseline.
+> Use [MODULE-SHORTFALLS.md](MODULE-SHORTFALLS.md) for the October 18, 2026 review
+> of all modules. Original requirements remain; SHARED-002 tracks reconciling
+> them with features delivered since this inventory was written.
+
 **Complete original MiniCC replacement remains required and unfinished.** The
 concrete audited baseline is MiniCC 4.6.3, before the 12.1 restrictions, plus the
 user's explicit team-debuff request. Installed MiniAuras is the successor and

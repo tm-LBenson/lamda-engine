@@ -1,5 +1,10 @@
 # LamdaUI and Lamda Engine
 
+> **Current release:** [LamdaUI 1.3.0](https://github.com/tm-LBenson/lamda-engine/releases/tag/v1.3.0).
+> See the [module shortfalls tracker](MODULE-SHORTFALLS.md) for all ten modules,
+> priorities and outstanding checks. The older source/installation overview
+> below has not yet been brought up to date with the release assets.
+
 **LamdaUI is an in-game addon hub. LamdaCD puts aura icons on your unit frames.**
 Open `/lui` for General settings, then **Modules → LamdaCD** for its controls.
 There is no separate desktop settings application.
