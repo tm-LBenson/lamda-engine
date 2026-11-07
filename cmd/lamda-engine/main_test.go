@@ -1,7 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/tm-LBenson/lamda-engine/internal/engine"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -22,12 +26,45 @@ func TestPreviewDoesNotCreateObservations(t *testing.T) {
 	c := engine.DefaultConfig()
 	c.Preview = true
 	rows := displayRows(m, c, time.Now())
-	if len(rows) != 3 || len(m.Rows) != 0 || len(m.Seen) != 0 {
+	if len(rows) != 3 || len(m.Rows) != 0 || len(m.Seen) != 0 || len(m.Snapshot(time.Now()).Cooldowns) != 0 {
 		t.Fatal("preview polluted observations")
 	}
 	c.Preview = false
 	if len(displayRows(m, c, time.Now())) != 0 {
 		t.Fatal("preview survived disable")
+	}
+}
+
+func TestNativeDisplayKeepsSelfInferenceAndAuditReportsSimulatedTime(t *testing.T) {
+	line := `9/13/2026 01:35:24.767-4  SPELL_CAST_SUCCESS,Player-1-TEST,"Test-Realm",0x511,0x0,0000000000000000,nil,0x80000000,0x0,55342,"Mirror Image",0x40`
+	c, _ := engine.Parse(line)
+	m := engine.NewModel()
+	cfg := engine.DefaultConfig()
+	cfg.Enabled = false
+	if cfg.TrackingEnabled {
+		m.Ingest(line, c.At, cfg.Companions)
+	}
+	if len(displayRows(m, cfg, c.At)) != 0 || len(m.Snapshot(c.At).Cooldowns) != 1 || !m.Snapshot(c.At).Cooldowns[0].Self {
+		t.Fatal("hidden display stopped inference")
+	}
+	path := filepath.Join(t.TempDir(), "replay.txt")
+	if err := os.WriteFile(path, []byte(line+"\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	var output bytes.Buffer
+	if err := runAudit(path, 15*time.Second, &output); err != nil {
+		t.Fatal(err)
+	}
+	var report struct {
+		Mode  string  `json:"mode"`
+		Delay float64 `json:"simulatedDeliverySeconds"`
+		engine.InferenceSnapshot
+	}
+	if err := json.Unmarshal(output.Bytes(), &report); err != nil {
+		t.Fatal(err)
+	}
+	if report.Mode != "replay" || report.Delay != 15 || report.Diagnostics.Gaps["missing_build"].Count != 1 || report.Cooldowns[0].DeliverySeconds != 15 {
+		t.Fatal(report)
 	}
 }
 

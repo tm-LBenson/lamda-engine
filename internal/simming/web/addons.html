@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LamdaUI · Browse Addons</title>
+<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/addons.css"><script src="/addons.js" defer></script>
+</head>
+<body>
+<aside>
+<a class="brand" href="/">LamdaUI <small>Engine</small></a>
+<nav aria-label="Workspace"><a href="/addons" aria-current="page">Browse Addons</a><a href="/">Simulation</a><a href="/kbb">Planner</a><a href="/overlays/">Overlays</a></nav>
+</aside>
+<main>
+<header><div><h1>Browse Addons</h1><p id="client" class="store-client"></p></div><span id="connection">Connecting…</span></header>
+<div id="message" role="status" aria-live="polite"></div>
+<section class="store-tools">
+<div class="store-tabs" role="tablist"><button data-tab="browse" class="active">Browse</button><button data-tab="installed">Installed</button><button data-tab="updates">Updates <span id="update-count"></span></button></div>
+<label class="store-search"><span class="sr-only">Search addons</span><input id="search" type="search" placeholder="Search addons" maxlength="80"></label>
+<button id="update-all" hidden>Update all</button>
+</section>
+<section id="addons" class="addon-grid" aria-live="polite"></section>
+</main>
+</body>
+</html>

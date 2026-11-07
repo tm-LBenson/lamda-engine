@@ -1,0 +1,681 @@
+{
+  "1022": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 300.0,
+    "name": "Blessing of Protection"
+  },
+  "102342": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Ironbark"
+  },
+  "104773": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Unending Resolve"
+  },
+  "106839": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 15.0,
+    "lockout": 5.0,
+    "name": "Skull Bash"
+  },
+  "107079": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Quaking Palm"
+  },
+  "108271": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Astral Shift"
+  },
+  "108416": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 60.0,
+    "name": "Dark Pact"
+  },
+  "109304": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Exhilaration"
+  },
+  "110959": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Greater Invisibility"
+  },
+  "115203": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 360.0,
+    "name": "Fortifying Brew"
+  },
+  "116705": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 15.0,
+    "lockout": 5.0,
+    "name": "Spear Hand Strike"
+  },
+  "116849": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 120.0,
+    "name": "Life Cocoon"
+  },
+  "118038": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Die by the Sword"
+  },
+  "121093": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Gift of the Naaru"
+  },
+  "122470": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Touch of Karma"
+  },
+  "129597": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "12975": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Last Stand"
+  },
+  "147362": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 24.0,
+    "lockout": 5.0,
+    "name": "Counter Shot"
+  },
+  "15487": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 30.0,
+    "name": "Silence"
+  },
+  "155145": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "1766": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 15.0,
+    "lockout": 6.0,
+    "name": "Kick"
+  },
+  "183752": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 15.0,
+    "lockout": 5.0,
+    "name": "Disrupt"
+  },
+  "184364": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Enraged Regeneration"
+  },
+  "186265": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Aspect of the Turtle"
+  },
+  "187707": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 15.0,
+    "lockout": 5.0,
+    "name": "Muzzle"
+  },
+  "187827": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 120.0,
+    "name": "Metamorphosis"
+  },
+  "19236": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Desperate Prayer"
+  },
+  "19647": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 24.0,
+    "lockout": 7.0,
+    "name": "Spell Lock"
+  },
+  "196718": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 300.0,
+    "name": "Darkness"
+  },
+  "198589": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 60.0,
+    "name": "Blur"
+  },
+  "202168": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 25.0,
+    "name": "Impending Victory"
+  },
+  "202719": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "204021": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 60.0,
+    "name": "Fiery Brand"
+  },
+  "20549": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "War Stomp"
+  },
+  "20572": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Blood Fury"
+  },
+  "20589": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 60.0,
+    "name": "Escape Artist"
+  },
+  "20594": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Stoneform"
+  },
+  "2139": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 25.0,
+    "lockout": 7.0,
+    "name": "Counterspell"
+  },
+  "22812": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 60.0,
+    "name": "Barkskin"
+  },
+  "232633": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "23920": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 25.0,
+    "name": "Spell Reflection"
+  },
+  "25046": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "255647": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 150.0,
+    "name": "Light's Judgment"
+  },
+  "255654": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Bull Rush"
+  },
+  "2565": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 16.0,
+    "name": "Shield Block"
+  },
+  "256948": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Spatial Rift"
+  },
+  "260364": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Arcane Pulse"
+  },
+  "26297": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Berserking"
+  },
+  "264735": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 90.0,
+    "name": "Survival of the Fittest"
+  },
+  "265221": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Fireblood"
+  },
+  "274738": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Ancestral Call"
+  },
+  "28730": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "287712": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 150.0,
+    "name": "Haymaker"
+  },
+  "28880": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Gift of the Naaru"
+  },
+  "291944": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Regeneratin'"
+  },
+  "31224": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Cloak of Shadows"
+  },
+  "312411": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Bag of Tricks"
+  },
+  "31850": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Ardent Defender"
+  },
+  "33206": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 180.0,
+    "name": "Pain Suppression"
+  },
+  "33697": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Blood Fury"
+  },
+  "33702": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Blood Fury"
+  },
+  "351338": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 20.0,
+    "lockout": 6.0,
+    "name": "Quell"
+  },
+  "357170": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 60.0,
+    "name": "Time Dilation"
+  },
+  "357214": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Wing Buffet"
+  },
+  "363534": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 240.0,
+    "name": "Rewind"
+  },
+  "363916": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 90.0,
+    "name": "Obsidian Scales"
+  },
+  "368970": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Tail Swipe"
+  },
+  "374227": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Zephyr"
+  },
+  "436344": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Azerite Surge"
+  },
+  "45438": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 240.0,
+    "name": "Ice Block"
+  },
+  "47528": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 15.0,
+    "lockout": 5.0,
+    "name": "Mind Freeze"
+  },
+  "47585": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Dispersion"
+  },
+  "47788": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Guardian Spirit"
+  },
+  "48707": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 60.0,
+    "name": "Anti-Magic Shell"
+  },
+  "48792": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Icebound Fortitude"
+  },
+  "49028": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Dancing Rune Weapon"
+  },
+  "49039": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Lichborne"
+  },
+  "498": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 60.0,
+    "name": "Divine Protection"
+  },
+  "50613": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "51052": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 240.0,
+    "name": "Anti-Magic Zone"
+  },
+  "5277": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Evasion"
+  },
+  "55233": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Vampiric Blood"
+  },
+  "55342": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Mirror Image"
+  },
+  "57994": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 12.0,
+    "lockout": 4.0,
+    "name": "Wind Shear"
+  },
+  "58984": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Shadowmeld"
+  },
+  "59542": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Gift of the Naaru"
+  },
+  "59543": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Gift of the Naaru"
+  },
+  "59544": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Gift of the Naaru"
+  },
+  "59545": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Gift of the Naaru"
+  },
+  "59547": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Gift of the Naaru"
+  },
+  "59548": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Gift of the Naaru"
+  },
+  "59752": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Will to Survive"
+  },
+  "61336": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 180.0,
+    "name": "Survival Instincts"
+  },
+  "62618": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Power Word: Barrier"
+  },
+  "633": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 600.0,
+    "name": "Lay on Hands"
+  },
+  "642": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 300.0,
+    "name": "Divine Shield"
+  },
+  "6552": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 15.0,
+    "lockout": 5.0,
+    "name": "Pummel"
+  },
+  "68992": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Darkflight"
+  },
+  "69041": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Rocket Barrage"
+  },
+  "69070": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 90.0,
+    "name": "Rocket Jump"
+  },
+  "69179": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "6940": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 120.0,
+    "name": "Blessing of Sacrifice"
+  },
+  "7744": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Will of the Forsaken"
+  },
+  "78675": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 60.0,
+    "name": "Solar Beam"
+  },
+  "80483": {
+    "category": 4,
+    "charges": false,
+    "cooldown": 120.0,
+    "name": "Arcane Torrent"
+  },
+  "86659": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 180.0,
+    "name": "Guardian of Ancient Kings"
+  },
+  "871": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 180.0,
+    "name": "Shield Wall"
+  },
+  "89766": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 30.0,
+    "name": "Axe Toss"
+  },
+  "96231": {
+    "category": 1,
+    "charges": false,
+    "cooldown": 15.0,
+    "lockout": 5.0,
+    "name": "Rebuke"
+  },
+  "97462": {
+    "category": 2,
+    "charges": false,
+    "cooldown": 180.0,
+    "name": "Rallying Cry"
+  },
+  "98008": {
+    "category": 2,
+    "charges": true,
+    "cooldown": 180.0,
+    "name": "Spirit Link Totem"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "interrupts": {
+    "1766": "Kick",
+    "2139": "Counterspell",
+    "6552": "Pummel",
+    "72": "Shield Bash",
+    "15487": "Silence",
+    "19647": "Spell Lock",
+    "8042": "Earth Shock"
+  },
+  "defensives": {
+    "871": "Shield Wall",
+    "2565": "Shield Block",
+    "12975": "Last Stand",
+    "5277": "Evasion",
+    "1856": "Vanish",
+    "1022": "Blessing of Protection",
+    "498": "Divine Protection",
+    "642": "Divine Shield",
+    "633": "Lay on Hands",
+    "22812": "Barkskin",
+    "22842": "Frenzied Regeneration",
+    "19236": "Desperate Prayer",
+    "586": "Fade",
+    "17": "Power Word: Shield",
+    "7744": "Will of the Forsaken",
+    "20594": "Stoneform",
+    "6229": "Shadow Ward",
+    "7812": "Sacrifice",
+    "45438": "Ice Block",
+    "11426": "Ice Barrier",
+    "543": "Fire Ward",
+    "6143": "Frost Ward",
+    "19263": "Deterrence",
+    "5384": "Feign Death"
+  }
+}

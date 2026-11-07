@@ -1,0 +1,559 @@
+{
+  "game": "12.1.0",
+  "build": 69814,
+  "hotfix": "2026-09-15",
+  "specializationBaselineSource": "https://worldofwarcraft.blizzard.com/en-gb/news/24244455",
+  "specializationBaselines": {"264": {"57994": 30}},
+  "source": "https://github.com/simulationcraft/simc/tree/midnight/engine/dbc/generated",
+  "inputSHA256": {
+    "sc_spell_data.inc": "22956e2b81b88a7bb49759d0b7c80ae8118a5cc6758ea8ab361591ad68605cf2",
+    "trait_data.inc": "eeb817819f1e87d4ee92b5d4d0ad8a118b87e4060e815d87741592d345992d07",
+    "client_data_version.inc": "c894267ac461ec7ff8f5f0fe8c2618458ef08395299ff65b348675cf5ad9f054"
+  },
+  "nonTalentSpells": {
+    "498": true,
+    "642": true,
+    "1766": true,
+    "2139": true,
+    "2565": true,
+    "6552": true,
+    "12975": true,
+    "15487": true,
+    "19647": true,
+    "22812": true,
+    "47585": true,
+    "48707": true,
+    "49039": true,
+    "89766": true,
+    "104773": true,
+    "109304": true,
+    "115203": true,
+    "122470": true,
+    "183752": true,
+    "186265": true,
+    "187827": true,
+    "198589": true
+  },
+  "rules": [
+    {
+      "talent": 114154,
+      "name": "Unbreakable Spirit",
+      "spell": 498,
+      "mode": "percent",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 127297
+    },
+    {
+      "talent": 114154,
+      "name": "Unbreakable Spirit",
+      "spell": 633,
+      "mode": "percent",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 127297
+    },
+    {
+      "talent": 114154,
+      "name": "Unbreakable Spirit",
+      "spell": 642,
+      "mode": "percent",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 127297
+    },
+    {
+      "talent": 114154,
+      "name": "Unbreakable Spirit",
+      "spell": 31850,
+      "mode": "percent",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 127297
+    },
+    {
+      "talent": 202424,
+      "name": "Chrysalis",
+      "spell": 116849,
+      "mode": "seconds",
+      "value": -45.0,
+      "maxRank": 1,
+      "effect": 298412
+    },
+    {
+      "talent": 203965,
+      "name": "Survival of the Fittest",
+      "spell": 22812,
+      "mode": "percent",
+      "value": -12.0,
+      "maxRank": 2,
+      "effect": 300978
+    },
+    {
+      "talent": 205727,
+      "name": "Anti-Magic Barrier",
+      "spell": 48707,
+      "mode": "seconds",
+      "value": -20.0,
+      "maxRank": 1,
+      "effect": 303981
+    },
+    {
+      "talent": 210476,
+      "name": "Master of Escape",
+      "spell": 110959,
+      "mode": "seconds",
+      "value": -60.0,
+      "maxRank": 1,
+      "effect": 311684
+    },
+    {
+      "talent": 266921,
+      "name": "Born To Be Wild",
+      "spell": 186265,
+      "mode": "seconds",
+      "value": -15.0,
+      "maxRank": 2,
+      "effect": 713188
+    },
+    {
+      "talent": 270581,
+      "name": "Natural Mending",
+      "spell": 109304,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 2,
+      "effect": 720204
+    },
+    {
+      "talent": 288733,
+      "name": "Intangibility",
+      "spell": 47585,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 752639
+    },
+    {
+      "talent": 373035,
+      "name": "Protector of the Frail",
+      "spell": 33206,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1045218
+    },
+    {
+      "talent": 374383,
+      "name": "Assimilation",
+      "spell": 51052,
+      "mode": "seconds",
+      "value": -60.0,
+      "maxRank": 1,
+      "effect": 1000205
+    },
+    {
+      "talent": 375406,
+      "name": "Obsidian Bulwark",
+      "spell": 363916,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1001807
+    },
+    {
+      "talent": 376204,
+      "name": "Just in Time",
+      "spell": 357170,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1003091
+    },
+    {
+      "talent": 376204,
+      "name": "Just in Time",
+      "spell": 357170,
+      "mode": "seconds",
+      "value": -10.0,
+      "maxRank": 1,
+      "effect": 1237458
+    },
+    {
+      "talent": 377637,
+      "name": "Insatiable Blade",
+      "spell": 49028,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 1005589
+    },
+    {
+      "talent": 378425,
+      "name": "Uther's Counsel",
+      "spell": 633,
+      "mode": "percent",
+      "value": -15.0,
+      "maxRank": 1,
+      "effect": 1006821
+    },
+    {
+      "talent": 378425,
+      "name": "Uther's Counsel",
+      "spell": 642,
+      "mode": "percent",
+      "value": -15.0,
+      "maxRank": 1,
+      "effect": 1006821
+    },
+    {
+      "talent": 381647,
+      "name": "Planes Traveler",
+      "spell": 108271,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 1012616
+    },
+    {
+      "talent": 381922,
+      "name": "Temporal Artificer",
+      "spell": 363534,
+      "mode": "seconds",
+      "value": -60.0,
+      "maxRank": 1,
+      "effect": 1013058
+    },
+    {
+      "talent": 382424,
+      "name": "Winter's Protection",
+      "spell": 45438,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 2,
+      "effect": 1013746
+    },
+    {
+      "talent": 382552,
+      "name": "Improved Ironbark",
+      "spell": 102342,
+      "mode": "seconds",
+      "value": -20.0,
+      "maxRank": 1,
+      "effect": 1013942
+    },
+    {
+      "talent": 384820,
+      "name": "Sacrifice of the Just",
+      "spell": 6940,
+      "mode": "seconds",
+      "value": -60.0,
+      "maxRank": 1,
+      "effect": 1017694
+    },
+    {
+      "talent": 384909,
+      "name": "Improved Blessing of Protection",
+      "spell": 1022,
+      "mode": "seconds",
+      "value": -60.0,
+      "maxRank": 1,
+      "effect": 1017827
+    },
+    {
+      "talent": 386659,
+      "name": "Dark Accord",
+      "spell": 104773,
+      "mode": "seconds",
+      "value": -45.0,
+      "maxRank": 1,
+      "effect": 1020893
+    },
+    {
+      "talent": 386686,
+      "name": "Frequent Donor",
+      "spell": 108416,
+      "mode": "seconds",
+      "value": -15,
+      "maxRank": 1,
+      "effect": 1020935
+    },
+    {
+      "talent": 388813,
+      "name": "Expeditious Fortification",
+      "spell": 115203,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 1024732
+    },
+    {
+      "talent": 389682,
+      "name": "Unholy Endurance",
+      "spell": 49039,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 1259894
+    },
+    {
+      "talent": 389732,
+      "name": "Down in Flames",
+      "spell": 204021,
+      "mode": "seconds",
+      "value": -12.0,
+      "maxRank": 1,
+      "effect": 1026172
+    },
+    {
+      "talent": 389732,
+      "name": "Down in Flames",
+      "spell": 204021,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1033067
+    },
+    {
+      "talent": 389783,
+      "name": "Pitch Black",
+      "spell": 196718,
+      "mode": "seconds",
+      "value": -120.0,
+      "maxRank": 1,
+      "effect": 1026251
+    },
+    {
+      "talent": 391271,
+      "name": "Honed Reflexes",
+      "spell": 871,
+      "mode": "percent",
+      "value": -10.0,
+      "maxRank": 1,
+      "effect": 1028651
+    },
+    {
+      "talent": 391271,
+      "name": "Honed Reflexes",
+      "spell": 6552,
+      "mode": "percent",
+      "value": -10.0,
+      "maxRank": 1,
+      "effect": 1028651
+    },
+    {
+      "talent": 391271,
+      "name": "Honed Reflexes",
+      "spell": 23920,
+      "mode": "percent",
+      "value": -10.0,
+      "maxRank": 1,
+      "effect": 1028651
+    },
+    {
+      "talent": 391271,
+      "name": "Honed Reflexes",
+      "spell": 118038,
+      "mode": "percent",
+      "value": -10.0,
+      "maxRank": 1,
+      "effect": 1028651
+    },
+    {
+      "talent": 391271,
+      "name": "Honed Reflexes",
+      "spell": 184364,
+      "mode": "percent",
+      "value": -10.0,
+      "maxRank": 1,
+      "effect": 1028651
+    },
+    {
+      "talent": 397103,
+      "name": "Defender's Aegis",
+      "spell": 871,
+      "mode": "seconds",
+      "value": -60.0,
+      "maxRank": 1,
+      "effect": 1039070
+    },
+    {
+      "talent": 397103,
+      "name": "Defender's Aegis",
+      "spell": 871,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1039071
+    },
+    {
+      "talent": 414720,
+      "name": "Tirion's Devotion",
+      "spell": 633,
+      "mode": "percent",
+      "value": -40.0,
+      "maxRank": 1,
+      "effect": 1084066
+    },
+    {
+      "talent": 437122,
+      "name": "Death's Messenger",
+      "spell": 49039,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 1128872
+    },
+    {
+      "talent": 457574,
+      "name": "Unyielding Will",
+      "spell": 48707,
+      "mode": "seconds",
+      "value": 20.0,
+      "maxRank": 1,
+      "effect": 1162886
+    },
+    {
+      "talent": 459450,
+      "name": "Padded Armor",
+      "spell": 264735,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1166242
+    },
+    {
+      "talent": 1244025,
+      "name": "Improved Conjuration",
+      "spell": 55342,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 2,
+      "effect": 1244557
+    },
+    {
+      "talent": 1244110,
+      "name": "Glacial Bulwark",
+      "spell": 45438,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1244686
+    },
+    {
+      "talent": 1244110,
+      "name": "Glacial Bulwark",
+      "spell": 45438,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 1244696
+    },
+    {
+      "talent": 1246481,
+      "name": "Empyrean Authority",
+      "spell": 86659,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1248039
+    },
+    {
+      "talent": 1258485,
+      "name": "Improved Aspect of the Turtle",
+      "spell": 186265,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 1267167
+    },
+    {
+      "talent": 1265517,
+      "name": "Permafrost Bauble",
+      "spell": 45438,
+      "mode": "seconds",
+      "value": -30.0,
+      "maxRank": 1,
+      "effect": 1277318
+    },
+    {
+      "talent": 1266307,
+      "name": "Demonic Resilience",
+      "spell": 198589,
+      "mode": "charges",
+      "value": 1.0,
+      "maxRank": 1,
+      "effect": 1278663
+    }
+  ],
+  "charges": {
+    "498": 1,
+    "633": 1,
+    "642": 1,
+    "871": 1,
+    "1022": 1,
+    "1766": 1,
+    "2139": 1,
+    "2565": 1,
+    "5277": 1,
+    "6552": 1,
+    "6940": 1,
+    "12975": 1,
+    "15487": 1,
+    "19236": 1,
+    "19647": 1,
+    "22812": 1,
+    "23920": 1,
+    "31224": 1,
+    "31850": 1,
+    "33206": 1,
+    "45438": 1,
+    "47528": 1,
+    "47585": 1,
+    "47788": 1,
+    "48707": 1,
+    "48792": 1,
+    "49028": 1,
+    "49039": 1,
+    "51052": 1,
+    "55233": 1,
+    "55342": 1,
+    "57994": 1,
+    "61336": 1,
+    "62618": 1,
+    "78675": 1,
+    "86659": 1,
+    "89766": 1,
+    "96231": 1,
+    "97462": 1,
+    "98008": 1,
+    "102342": 1,
+    "104773": 1,
+    "106839": 1,
+    "108271": 1,
+    "108416": 1,
+    "109304": 1,
+    "110959": 1,
+    "115203": 1,
+    "116705": 1,
+    "116849": 1,
+    "118038": 1,
+    "122470": 1,
+    "147362": 1,
+    "183752": 1,
+    "184364": 1,
+    "186265": 1,
+    "187707": 1,
+    "187827": 1,
+    "196718": 1,
+    "198589": 1,
+    "202168": 1,
+    "204021": 1,
+    "264735": 1,
+    "351338": 1,
+    "357170": 1,
+    "363534": 1,
+    "363916": 1,
+    "374227": 1
+  }
+}

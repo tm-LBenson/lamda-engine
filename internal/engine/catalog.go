@@ -25,6 +25,7 @@ var Catalog = map[int]Spell{
 	110959: {Name: "Greater Invisibility", Cooldown: 120, Charges: false},
 	45438:  {Name: "Ice Block", Cooldown: 240, Charges: true},
 	55342:  {Name: "Mirror Image", Cooldown: 120, Charges: false},
+	342245: {Name: "Alter Time", Cooldown: 60, Charges: false},
 	115203: {Name: "Fortifying Brew", Cooldown: 360, Charges: false},
 	116849: {Name: "Life Cocoon", Cooldown: 120, Charges: true},
 	122470: {Name: "Touch of Karma", Cooldown: 90, Charges: false},
@@ -49,5 +50,12 @@ var Catalog = map[int]Spell{
 	118038: {Name: "Die by the Sword", Cooldown: 120, Charges: false},
 	184364: {Name: "Enraged Regeneration", Cooldown: 120, Charges: false},
 	97462:  {Name: "Rallying Cry", Cooldown: 180, Charges: false},
-	871:    {Name: "Shield Wall", Cooldown: 162, Charges: true},
+	871:    {Name: "Shield Wall", Cooldown: 180, Charges: true},
+	2565:   {Name: "Shield Block", Cooldown: 16, Charges: true},
+	12975:  {Name: "Last Stand", Cooldown: 180, Charges: false},
+	23920:  {Name: "Spell Reflection", Cooldown: 25, Charges: true},
+	202168: {Name: "Impending Victory", Cooldown: 25, Charges: false},
+	// Rage/absorb availability cannot be inferred from a cast or the short
+	// anti-spam lockout. Record possession without creating a recharge timer.
+	190456: {Name: "Ignore Pain", Cooldown: 0, Charges: false},
 }

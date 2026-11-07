@@ -1,0 +1,16 @@
+## Interface: 16001, 120100, 120105
+## Title: LamdaExport
+## Notes: Copy a complete character snapshot for personal help with /export.
+## Author: Lewis Benson
+## Version: 0.1.1
+## SavedVariablesPerCharacter: LamdaExportDB
+## IconTexture: Interface\Icons\INV_Misc_Note_01
+
+Bootstrap.lua
+JSON.lua
+Character.lua
+Inventory.lua
+Progress.lua
+Collections.lua
+UI.lua
+Core.lua

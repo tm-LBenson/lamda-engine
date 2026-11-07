@@ -1,0 +1,44 @@
+## Interface: 120100
+## Title: LamdaUI
+## Notes: Module settings for Lamda Engine
+## Author: Lewis Benson
+## Version: 0.45.4-dev
+## SavedVariables: LamdaEngineDB, LamdaUIDB, LamdaUIMigrationDB
+## OptionalDeps: Simulationcraft
+## IconTexture: Interface\Icons\INV_Misc_Gear_01
+
+Core.lua
+SpellLists.lua
+Modules\LamdaCD.lua
+Modules\LamdaKick.lua
+Modules\Settings.lua
+Performance.lua
+Modules\Performance.lua
+Gladius.lua
+Modules\Gladius.lua
+ObservationCatalog.lua
+Observations.lua
+InspectTalents.lua
+LookupEvents.lua
+FrameBridge.lua
+Kick.lua
+SelfCooldowns.lua
+NativeAuras.lua
+ArenaTracking.lua
+FrameAuras.lua
+Modules\Vendor.lua
+KBBData.lua
+Modules\KBB.lua
+Modules\KBBUI.lua
+Modules\KBBSync.lua
+Modules\Drawer.lua
+SimResults.lua
+Modules\Sim.lua
+Modules\SimUI.lua
+OverlaysData.lua
+Modules\Overlays.lua
+AugmentationResults.lua
+Augmentation.lua
+Modules\Augmentation.lua
+Modules\Queue.lua
+UI.lua

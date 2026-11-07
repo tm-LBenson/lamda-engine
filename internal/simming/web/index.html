@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LamdaUI · Sim</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+<aside>
+<a class="brand" href="/">LamdaUI <small>Sim</small></a>
+<nav aria-label="Sim">
+<a href="/addons">Browse Addons</a>
+<a href="/kbb">Planner</a>
+<a href="/overlays/">Overlays</a>
+<button data-tab="overview" class="active">Simulation</button><button data-tab="gear">Gear</button>
+<button data-tab="talents">Talents</button><button data-tab="vault">Great Vault</button><button data-tab="healing">Healing</button>
+<button data-tab="plan">Upgrades</button><button data-tab="history">History</button>
+<button data-tab="audit">Data</button><button data-tab="about">About</button>
+</nav>
+</aside>
+<main>
+<header><h1 id="title">Simulation</h1><div class="connection"><span id="client"></span><span id="connection">Connecting…</span></div></header>
+<div id="message" role="status" aria-live="polite"></div>
+<section class="card character" id="character-panel">
+<div><h2 id="character">No character loaded</h2><p id="character-info">In WoW: /lsim → Run Sim.</p><p id="import-status" class="import-status"></p></div>
+<div><label for="snapshot">Snapshot</label><select id="snapshot"><option value="">No snapshots</option></select><button id="show-import" class="quiet">Import</button></div>
+</section>
+<section class="card support" id="support-panel" hidden><h2 id="support-title"></h2><p id="support-message"></p><div id="related-results" class="result-links"></div></section>
+<section id="import-panel" class="card" hidden><label for="import-text">Paste snapshot</label><textarea id="import-text" rows="5" maxlength="131072" spellcheck="false"></textarea><button id="import">Import</button><button id="hide-import" class="quiet">Close</button></section>
+<section class="tab" id="overview">
+<div class="columns">
+<section class="card"><h2>Settings</h2><p id="scenario-note">Stationary targets · Full raid buffs</p><div id="healer-controls" hidden><label>Model<select id="healing-mode"><option value="raid">Raid</option><option value="dungeon">Dungeon</option></select></label></div>
+<div id="augmentation-controls" hidden><label>Group<select id="augmentation-mode"><option value="dungeon">Dungeon</option><option value="raid">Raid</option></select></label><details><summary>Simulated allies</summary><p>Fixed allies, not your current party. Their gear and performance stay the same across comparisons.</p><div class="fields ally-fields"><label>Ally item level<input id="ally-item-level" type="number" min="1" max="1000" value="328" required></label><label>Ally performance (%)<input id="ally-skill" type="number" min="1" max="100" step="1" value="90" required></label></div></details></div>
+<div class="fields" id="damage-controls"><label>Targets<input id="targets" type="number" min="1" max="8" value="1"></label><label>Duration (s)<input id="seconds" type="number" min="30" max="600" value="300"></label><label>Iterations<input id="iterations" type="number" min="100" max="20000" value="1000"></label></div>
+<button id="run">Run sim</button><button id="cancel" class="quiet" hidden>Cancel</button><p id="capability" class="note"></p><p id="progress" aria-live="polite"></p></section>
+<section class="card"><h2>Result</h2><div id="result"><p>No results yet.</p></div></section>
+</div>
+<section class="card" id="warnings-panel" hidden><h2>Notes</h2><ul id="warnings"></ul></section>
+<details class="card" id="capture-details" hidden><summary id="capture-summary">Capture details</summary><ul id="capture-warnings"></ul></details>
+</section>
+<section class="tab card" id="gear" hidden><h2>Bag items</h2><p id="gear-status">Choose up to 8 items.</p><label>Compare<select id="compare-mode"><option value="individual">Individual items</option><option value="topgear">Complete sets</option></select></label><div id="gear-list"></div><button class="compare" data-source="owned">Compare</button></section>
+<section class="tab card" id="vault" hidden><h2>Rewards</h2><p id="vault-status">Missing choices? Open the Vault in WoW, then export again.</p><div id="vault-list"></div><button class="compare" data-source="vault">Compare</button></section>
+<section class="tab card" id="talents" hidden><h2>Talent builds</h2><p id="talent-note">Compare against equipped gear.</p><div id="talent-list"></div><label>Import build<textarea id="talent-code" rows="2" maxlength="2048" spellcheck="false"></textarea></label><button id="run-talents">Compare builds</button></section>
+<section class="tab card" id="healing" hidden><h2>Healing</h2><p id="healing-status"></p><button id="open-healing">Set up calculation</button><div id="healing-result"></div></section>
+<section class="tab card" id="plan" hidden><h2>Upgrades</h2>
+<div class="fields" id="upgrade-settings"><label>Raid<select id="raid-difficulty"><option value="0">Raid Finder</option><option value="1">Normal</option><option value="2" selected>Heroic</option><option value="3">Mythic</option></select></label><label>Dungeon<select id="key-level"><option value="0">M0</option><option value="1">+2/3</option><option value="2">+4</option><option value="3">+5</option><option value="4">+6</option><option value="5">+7</option><option value="6">+8/9</option><option value="7" selected>+10</option></select></label></div>
+<button id="find-upgrades">Find upgrades</button><p id="upgrade-status"></p>
+<div class="fields" id="upgrade-views"><label>View<select id="upgrade-view"><option value="drop">Drop now</option><option value="max">Upgraded</option><option value="bonus">Bonus reward cap</option><option value="crafted">Crafted</option></select></label><label>Rank<select id="upgrade-sort"><option value="gain">Item gain</option><option value="farm">Farm value</option><option value="reroll">Reroll value</option></select></label></div>
+<details id="planning-controls"><summary>Planning assumptions</summary><div class="fields"><label>Gear drop chance (%)<input id="drop-chance" type="number" min="0" max="100" value="40"></label><label>Minutes per run<input id="run-minutes" type="number" min="1" max="240" value="35"></label><label>Reroll gear chance (%)<input id="reroll-chance" type="number" min="0" max="100" value="100"></label><label>Reroll cost<input id="reroll-cost" type="number" min="1" max="1000" value="1"></label></div><p>Equipment rewards only. Equal item weights by default. Trade loot and future Vault choices are excluded.</p><label class="item"><input id="bonus-pool-assumption" type="checkbox"> Use journal pool for rerolls (assumption)</label><div class="fields"><label>Currency<select id="roll-currency"></select></label><label>Recorded roll pool<select id="roll-history"></select></label></div><label class="item"><input id="history-confirmed" type="checkbox"> This history matches the shown reward pool</label><label>Exclude item IDs from rerolls<input id="reroll-exclude" placeholder="12345, 67890"></label><label>Item weights<textarea id="item-weights" rows="2" placeholder="source/itemID=weight" maxlength="16000"></textarea></label></details><button id="save-plan" class="quiet" hidden>Save plan</button>
+<div id="upgrade-results"><p>No upgrade run yet.</p></div><h2 id="target-title">Target set</h2><div id="target-set"><p>No target set yet.</p></div></section>
+<section class="tab card" id="audit" hidden><button id="audit-now">Check for updates</button><div id="audit-results"></div><p>Source changes need review before use.</p><h2>Review notes</h2><label>Evidence for selected snapshot<textarea id="review-notes" rows="3" maxlength="4000"></textarea></label><button id="save-review">Save note</button><div id="review-list"></div></section>
+<section class="tab card" id="history" hidden><div id="history-list"></div></section>
+<section class="tab card" id="about" hidden>
+<h2>Calculator</h2><p id="provider"></p><p>Powered by <a href="https://www.simulationcraft.org/" target="_blank" rel="noopener noreferrer">SimulationCraft</a> and <a href="https://questionablyepic.com/live/" target="_blank" rel="noopener noreferrer">Questionably Epic</a>.</p>
+<h2>Results</h2><p>Forever compares captured item stats. Combat calculations are unavailable.</p><p>DPS uses the selected snapshot and scenario. Augmentation reports Group DPS with fixed simulated allies, not your personal DPS or live party. Healing uses Questionably Epic's preset models and reports a healing score. The preset may differ from your talents, casts and group buffs.</p><p>Unreviewed models haven't been checked for the character's build and spec. Export again after changing gear or talents.</p>
+<h2>Data</h2><p>Snapshots and results stay on this computer. Source versions are checked on GitHub daily while the engine runs. Calculators aren't updated automatically.</p>
+</section>
+</main>
+</body>
+</html>

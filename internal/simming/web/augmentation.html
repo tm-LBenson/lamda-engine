@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LamdaMeters · My support</title><link rel="stylesheet" href="/augmentation.css"><script src="/augmentation.js" defer></script></head>
+<body><main>
+<nav><a href="/">Lamda Engine</a><a href="/addons">Browse Addons</a></nav>
+<header><p class="eyebrow">AUGMENTATION EVOKER</p><h1>LamdaMeters — Augmentation</h1><p>Your teammates' damage minus your logged enhancements. Your damage plus the enhancements you supplied.</p></header>
+<section class="status" aria-live="polite"><strong id="status">Connecting…</strong><p id="freshness"></p></section>
+<div class="filters"><label>Character<select id="character"></select></label><label>Session<select id="session"></select></label></div>
+<section id="empty"><h2>Ready for your next run</h2><p>Install LamdaMeters in Browse Addons, enable it on your Augmentation Evoker, then save and reload once. Start a new boss or key with advanced combat logging enabled.</p><p>Fight records appear when WoW writes them to disk. Joining a fight halfway through leaves it incomplete.</p></section>
+<section id="review" hidden>
+<h2 id="name"></h2><p id="context"></p>
+<section id="damage-meter" hidden>
+<p id="damage-status" class="note"></p>
+<div id="damage-bars"></div>
+<div class="table-scroll"><table><thead><tr><th>Player</th><th>Recorded</th><th>Moved to you</th><th>Added support</th><th>Reattributed</th><th>DPS</th></tr></thead><tbody id="damage-rows"></tbody></table></div>
+<p id="damage-total"></p><p>Only this Aug's contribution moves. Other external buffs remain with their recipients. DPS uses the same whole-session timer for everyone; Details may use a different timer.</p>
+</section>
+<h3>Support execution</h3>
+<div class="metrics"><article><span>Ebon self uptime</span><strong id="ebon"></strong><small>Recorded aura intervals over whole session</small></article><article><span>Prescience coverage</span><strong id="prescience"></strong><small>Average observed buffed targets</small></article><article><span>Breath of Eons</span><strong id="eons"></strong><small>Successful casts in the log</small></article></div>
+<p id="comparison"></p>
+<section class="support"><h3>Bombardments proc detail</h3><strong id="damage"></strong><p>Bombardments only · partial contribution</p><p>This supplementary value covers Bombardments only. The reattributed damage meter above also uses your other recorded damage-support hooks.</p></section>
+<h3>Execution detail</h3><dl id="detail"></dl>
+<p id="note" class="note"></p>
+</section>
+<footer>Review support execution alongside your Warcraft Logs report. These measurements are not a percentile or a personal-DPS ranking.</footer>
+</main></body></html>

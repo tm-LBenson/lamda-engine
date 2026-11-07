@@ -1,0 +1,98 @@
+(function(root){
+ 'use strict';
+ const M=root.OverlayModel,V=M.Values,esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const choices=(values,value)=>Object.entries(values).map(([k,label])=>`<option value="${esc(k)}"${String(k)===String(value)?' selected':''}>${esc(label)}</option>`).join('');
+ const field=(label,html)=>`<label>${esc(label)}${html}</label>`;
+ const sourceFields={none:['character','realm','unitName','role'],health:['percent','name','unitName'],resource:['current','max','percent','name'],buff:['stacks','remaining','duration','percent','name'],debuff:['stacks','remaining','duration','percent','name'],spell:['remaining','duration','charges','maxCharges','recharge','percent','name'],item:['remaining','duration','percent','name'],slot:['remaining','duration','percent','name'],gcd:['remaining','duration','percent','name'],casting:['remaining','duration','percent','name'],talent:['rank','spellID','name'],learned:['rank','spellID','name'],bossTimer:['remaining','duration','percent','count','timerID','spellID','name','provider'],bossStage:['stage','stageTotal','provider'],encounter:['elapsed','encounterID','difficulty','groupSize','name'],trigger:Object.keys(M.dataTokens),affected:Object.keys(M.dataTokens)};
+ class Editor{
+  constructor(options){Object.assign(this,options);this.mode='values';this.selected=null;this.author=null;this.checkPath=null;this.ruleID=null;this.host.addEventListener('click',e=>this.click(e));this.host.addEventListener('change',e=>this.change(e));}
+  value(){return V.named(this.getRule()?.logic,this.selected);}
+  expr(path=''){let e=this.value()?.expr;for(const i of path.split('.').filter(Boolean))e=e?.args?.[+i];return e;}
+  check(){const rule=this.getRule();if(this.checkPath==='@remember'&&this.value()?.remember?.check)return {id:'remember-'+rule.id+'-'+this.selected,props:this.value().remember.check};const e=this.checkPath!==null?this.expr(this.checkPath):null;return rule?.id===this.ruleID&&e?.kind==='predicate'?{id:'value-'+rule.id+'-'+this.selected+'-'+this.checkPath,props:e.check}:null;}
+  result(key){return M.valueEvaluation(this.getRule()?.logic,{...this.sample(),overlayMemory:this.sample().overlayMemories?.get(this.getRule()?.id)}).value(key);}
+  render(){
+   const rule=this.getRule();if(!rule){this.host.replaceChildren();this.onMemory?.(null);return;}
+   if(this.ruleID!==rule.id){this.ruleID=rule.id;this.selected=null;this.author=null;this.checkPath=null;}
+   const l=rule.logic||{},vs=l.values||[],os=l.options||[];if(!this.value())this.selected=vs[0]?.key||null;
+   this.host.innerHTML=`<div class="values-toolbar"><div class="values-tabs"><button class="button ${this.mode==='values'?'primary':''}" data-value-mode="values">Values</button><button class="button ${this.mode==='options'?'primary':''}" data-value-mode="options">Settings</button></div><button class="button" data-value-add="${this.mode}" ${(this.mode==='values'?vs:os).length>=16?'disabled':''}>+ ${this.mode==='values'?'Value':'Setting'}</button></div>`+(this.mode==='values'?`<div class="values-list">${vs.map(v=>`<button class="value-list-item ${v.key===this.selected?'active':''}" data-value-select="${v.key}"><span>${esc(v.name)}</span><output data-value-result="${v.key}">${esc(V.display(this.result(v.key)))}</output></button>`).join('')}</div>${this.value()?this.definition():''}`:`<div class="value-options">${os.map(o=>this.setting(o)).join('')}</div>`);
+   this.onMemory?.(this.host.querySelector('[data-saved-memory]'),rule.id,this.selected);
+  }
+  refresh(){for(const el of this.host.querySelectorAll('[data-value-result]'))el.textContent=V.display(this.result(el.dataset.valueResult));}
+  definition(){const v=this.value();return `<section class="value-definition"><div class="value-definition-heading">${field('Name',`<input data-value-name value="${esc(v.name)}" maxlength="60" aria-label="Value name">`)}<button class="button danger" data-value-delete="${v.key}">Delete</button></div>${field('Mode',`<select data-value-mode-kind>${choices({calculated:'Calculated',remembered:'Remembered'},v.remember?'remembered':'calculated')}</select>`)}${v.remember?this.remember(v):''}${this.expression(v.expr,'')}<details class="value-key"><summary>Reference</summary><input readonly value="{value:${v.key}}" aria-label="Value reference"></details></section>`;}
+  remember(v){
+   const c=v.remember,type=typeof c.initial;
+   const initial=type==='boolean'?`<select data-memory="initial">${choices({true:'True',false:'False'},String(c.initial))}</select>`:`<input data-memory="initial" type="${type==='number'?'number':'text'}" ${type==='number'?`step="any" min="-${V.limit}" max="${V.limit}"`:'maxlength="512"'} value="${esc(c.initial)}">`;
+   return `<div class="remember-settings"><div class="two-fields">${field('Type',`<select data-memory="type">${choices({number:'Number',string:'Text',boolean:'True / false'},type)}</select>`)}${field('Initial',initial)}</div>${field('Reset',`<select data-memory="reset">${choices({loaded:'When unloaded',combat:'When combat starts',encounter:'When an encounter starts',saved:'Keep between sessions'},c.reset)}</select>`)}<div class="remember-when">${this.whenFields({id:'remember-'+v.key,type:'when',props:c.when})}</div><div class="remember-condition"><button class="button" data-remember-check>${c.check?esc(this.summary(c.check)):'Condition…'}</button>${c.check?'<button class="text-button" data-remember-clear aria-label="Remove update condition">×</button>':''}<button class="text-button" data-remember-counter>Count events</button></div>${c.reset==='saved'?'<details data-saved-memory><summary>Saved history</summary><div data-history-body></div></details>':''}</div>`;
+  }
+  select(label,prop,values,value){return field(label,`<select data-expression="${prop}">${choices(values,value)}</select>`);}
+  expression(e,path){
+   const l=this.getRule().logic||{},vs=Object.fromEntries((l.values||[]).filter(v=>v.key!==this.selected||this.value()?.remember).map(v=>[v.key,v.name])),os=Object.fromEntries((l.options||[]).map(o=>[o.key,o.name]));
+   const kinds={literal:'Fixed value',data:'Game data',...(Object.keys(vs).length?{value:'Value'}:{}),...(Object.keys(os).length?{option:'Setting'}:{}),op:'Calculation',predicate:'Condition'};
+   let html=this.select('Use','kind',kinds,e.kind);
+   if(e.kind==='literal'){const type=typeof e.value;html+=this.select('Type','literalType',{number:'Number',string:'Text',boolean:'True / false'},type);html+=type==='boolean'?this.select('Value','literal',{true:'True',false:'False'},String(e.value)):field('Value',`<input data-expression="literal" type="${type==='number'?'number':'text'}" ${type==='number'?`step="any" min="-${V.limit}" max="${V.limit}"`:'maxlength="512"'} value="${esc(e.value)}">`);}
+   if(e.kind==='value')html+=this.select('Value','key',vs,e.key);
+   if(e.kind==='option')html+=this.select('Setting','key',os,e.key);
+   if(e.kind==='data')html+=this.data(e);
+   if(e.kind==='predicate')html+=`<button class="button" data-value-check="${path}">${esc(this.summary(e.check))}</button>`;
+   if(e.kind==='op'){html+=this.select('Operation','op',V.operators,e.op);const [min,max]=V.arity(e.op);html+=`<div class="expression-arguments">${e.args.map((a,i)=>`<div class="expression-argument">${e.op==='choose'?`<span class="expression-argument-label">${['When','Then','Otherwise'][i]}</span>`:''}${this.expression(a,path?path+'.'+i:String(i))}${e.args.length>min?`<button class="text-button" data-expression-remove="${i}" aria-label="Remove input">×</button>`:''}</div>`).join('')}${e.args.length<max?'<button class="text-button" data-expression-add>+ Input</button>':''}</div>`;}
+   return `<div class="value-expression" data-expression-path="${path}"><div class="expression-fields">${html}</div></div>`;
+  }
+  data(e){
+   const p=e.source,kind=p.dataSource,kinds=Object.fromEntries(Object.entries(M.dataKinds).filter(([k])=>!['auto','value'].includes(k)).map(([k,v])=>[k,k==='none'?'Character':v]));let html=this.select('Source','source',kinds,kind);
+   if(['health','resource','buff','debuff','casting'].includes(kind))html+=this.select('Unit','dataUnit',M.unitChoices,p.dataUnit||'player');
+   if(kind==='resource')html+=this.select('Resource','dataResource',M.resources,p.dataResource||'primary');
+   if(kind==='talent')html+=this.select('Type','dataTalentKind',M.talentKinds,p.dataTalentKind||'spell');
+   if(['talent','learned','buff','debuff','spell','item','slot'].includes(kind))html+=kind==='slot'?this.select('Slot','dataID',M.equipmentSlots,p.dataID||'13'):field(kind==='item'?'Item ID':kind==='talent'&&['hero','entry'].includes(p.dataTalentKind)?'ID':'Spell ID',`<span class="spell-field"><input data-expression="dataID" value="${esc(p.dataID||'')}" maxlength="7" inputmode="numeric">${kind!=='item'&&!(kind==='talent'&&['hero','entry'].includes(p.dataTalentKind))?'<button class="button" data-value-search>Search</button>':''}</span>`);
+   if(['bossTimer','bossStage'].includes(kind)){html+=this.select('Provider','dataProvider',kind==='bossStage'?{auto:'Automatic',dbm:'DBM',bigwigs:'BigWigs'}:M.bossProviders,p.dataProvider||'auto');if(kind==='bossTimer')html+=field('Spell ID',`<span class="spell-field"><input data-expression="dataID" value="${esc(p.dataID||'')}" maxlength="7" placeholder="Any spell"><button class="button" data-value-search>Search</button></span>`)+field('Text contains',`<input data-expression="dataText" maxlength="80" value="${esc(p.dataText||'')}">`)+this.select('Kind','dataKind',M.bossKinds,p.dataKind||'any')+(p.dataProvider==='blizzard'?this.select('Timeline source','dataTimelineSource',M.timelineSources,p.dataTimelineSource||'any'):'');}
+   const fs=sourceFields[kind]||Object.keys(M.dataTokens);html+=this.select('Field','field',Object.fromEntries([...new Set([...fs,e.field])].map(k=>[k,M.dataTokens[k]||k])),e.field);return html;
+  }
+  setting(o){
+   const input=(prop,value)=>o.type==='boolean'?`<select data-option="${prop}">${choices({true:'True',false:'False'},String(value))}</select>`:o.type==='choice'?`<select data-option="${prop}">${choices(Object.fromEntries(o.choices.map(v=>[v,v])),value)}</select>`:`<input data-option="${prop}" type="${o.type==='number'?'number':'text'}" ${o.type==='number'?`step="any" min="${o.min??-V.limit}" max="${o.max??V.limit}"`:'maxlength="120"'} value="${esc(value)}">`;
+   return `<section class="value-option" data-option-key="${o.key}"><div class="option-user">${field(o.name,input('value',o.value??o.default))}<button class="button" data-option-reset ${o.value===undefined?'disabled':''}>Reset</button><button class="button" data-option-edit>Edit</button></div>${this.author===o.key?`<div class="option-author">${this.getRule().pack?field('Scope',`<select data-option="scope">${choices({local:'Each overlay',shared:'Entire pack'},o.shared?'shared':'local')}</select>`):''}${field('Name',`<input data-option="name" maxlength="60" value="${esc(o.name)}">`)}${field('Type',`<select data-option="type">${choices({number:'Number',boolean:'True / false',text:'Text',choice:'Choice'},o.type)}</select>`)}${field('Default',input('default',o.default))}${o.type==='number'?`<div class="two-fields">${['min','max'].map(k=>field(k==='min'?'Minimum':'Maximum',`<input data-option="${k}" type="number" step="any" min="-${V.limit}" max="${V.limit}" value="${o[k]??''}">`)).join('')}</div>`:''}${o.type==='choice'?field('Choices',`<textarea rows="4" data-option="choices">${esc(o.choices.join('\n'))}</textarea>`):''}<button class="button danger" data-option-delete>Delete setting</button></div>`:''}</section>`;
+  }
+  click(event){
+   const b=event.target.closest('button');if(!b)return;
+   if(b.closest('.remember-when')){event.stopPropagation();if(b.classList.contains('spell-find')){const prop=b.dataset.spellTarget==='combat-extraSpell'?'extraSpell':'spell',c=this.value().remember,key=this.selected,ruleID=this.ruleID;this.search({id:c.when[prop],kind:'all',focus:()=>this.host.querySelector('.remember-when .spell-find'),choose:spell=>{if(this.ruleID!==ruleID||this.selected!==key)return false;return this.changeRule(()=>this.value().remember.when[prop]=String(spell.id));}});}return;}
+   if(b.hasAttribute('data-remember-check')){this.checkPath='@remember';if(!this.value().remember.check)this.changeRule(()=>this.value().remember.check={condition:'group',mode:'all',tests:[this.defaults('health')]});this.onCheck();return;}
+   if(b.hasAttribute('data-remember-clear')){this.changeRule(()=>{delete this.value().remember.check;this.checkPath=null;});return;}
+   if(b.hasAttribute('data-remember-counter')){this.changeRule(()=>{const v=this.value();v.remember.initial=0;v.expr={kind:'op',op:'add',args:[{kind:'value',key:v.key},V.literal(1)]};});return;}
+   if(b.dataset.valueMode){this.mode=b.dataset.valueMode;this.checkPath=null;this.render();this.onCheck();return;}
+   if(b.dataset.valueSelect){this.selected=b.dataset.valueSelect;this.checkPath=null;this.render();this.onCheck();return;}
+   if(b.dataset.valueAdd){this.changeRule(()=>{const l=this.getRule().logic||={};const list=l[b.dataset.valueAdd]||=[];let n=1,key;do{key=(b.dataset.valueAdd==='values'?'value':'setting')+n++;}while(list.some(v=>v.key===key));if(b.dataset.valueAdd==='values'){list.push({key,name:'New value',expr:V.literal(0)});this.selected=key;}else{list.push({key,name:'New setting',type:'number',default:20,min:0,max:100});this.author=key;}});return;}
+   if(b.dataset.valueDelete){const key=b.dataset.valueDelete;if(this.used('value',key)){this.notify('This value is still in use.');return;}this.changeRule(()=>{this.getRule().logic.values=this.getRule().logic.values.filter(v=>v.key!==key);this.checkPath=null;});return;}
+   if(b.hasAttribute('data-value-check')){this.checkPath=b.dataset.valueCheck;const e=this.expr(this.checkPath);if(e.check.condition!=='group')this.changeRule(()=>{e.check={condition:'group',mode:'all',tests:[e.check]};});this.onCheck();return;}
+   const path=b.closest('[data-expression-path]')?.dataset.expressionPath;
+   if(b.hasAttribute('data-expression-add')){this.changeRule(()=>this.expr(path).args.push(V.literal(0)));return;}
+   if(b.hasAttribute('data-expression-remove')){const parent=b.closest('.expression-argument').parentElement.closest('[data-expression-path]').dataset.expressionPath;this.changeRule(()=>this.expr(parent).args.splice(+b.dataset.expressionRemove,1));return;}
+   if(b.hasAttribute('data-value-search')){const p=this.expr(path).source,ruleID=this.ruleID,key=this.selected;this.search({id:p.dataID,kind:['buff','debuff'].includes(p.dataSource)?'auras':'all',focus:()=>this.host.querySelector(`[data-expression-path="${path}"] [data-value-search]`),choose:spell=>{if(this.ruleID!==ruleID||this.selected!==key)return false;return this.changeRule(()=>this.expr(path).source.dataID=String(spell.id));}});return;}
+   const key=b.closest('[data-option-key]')?.dataset.optionKey;if(!key)return;
+   if(b.hasAttribute('data-option-edit')){this.author=this.author===key?null:key;this.render();return;}
+   if(b.hasAttribute('data-option-reset')){this.changeRule(()=>delete V.option(this.getRule().logic,key).value);return;}
+   if(b.hasAttribute('data-option-delete')){if(this.used('option',key)){this.notify('This setting is still in use.');return;}this.changeRule(()=>{this.getRule().logic.options=this.getRule().logic.options.filter(o=>o.key!==key);});}
+  }
+  used(kind,key){
+   const rules=kind==='option'&&V.option(this.getRule().logic,key)?.shared?this.getPackMembers():[this.getRule()];
+   const walk=e=>e.kind===kind&&e.key===key||(e.args||[]).some(walk);
+   return rules.some(rule=>{const refs=V.refs(rule);return refs[kind==='value'?'values':'options'].has(key)||(rule.logic?.values||[]).some(v=>!(kind==='value'&&v.key===key)&&walk(v.expr));});
+  }
+
+  change(event){
+   const el=event.target;if(!el.checkValidity()){el.reportValidity();return;}
+   if(el.hasAttribute('data-value-mode-kind')){this.changeRule(()=>{if(el.value==='remembered')this.value().remember={initial:0,when:{event:'ability'},reset:'loaded'};else delete this.value().remember;this.checkPath=null;});return;}
+   if(el.hasAttribute('data-memory')){this.changeRule(()=>{const c=this.value().remember,key=el.dataset.memory;if(key==='type')c.initial={number:0,string:'',boolean:false}[el.value];else c[key]=key==='initial'?(typeof c.initial==='number'?+el.value:typeof c.initial==='boolean'?el.value==='true':el.value):el.value;});return;}
+   if(el.closest('.remember-when')&&el.dataset.prop){event.stopPropagation();this.changeRule(()=>this.changeWhen(this.value().remember.when,el.dataset.prop,el.value));return;}
+   if(el.hasAttribute('data-value-name')){this.changeRule(()=>this.value().name=el.value.trim());return;}
+   if(el.hasAttribute('data-expression')){const key=el.dataset.expression,path=el.closest('[data-expression-path]').dataset.expressionPath;this.changeRule(()=>{
+    const e=this.expr(path);if(!e)return;
+    if(key==='kind'){const l=this.getRule().logic;let next=V.literal(0);if(el.value==='data')next={kind:'data',source:{dataSource:'resource',dataResource:'primary',dataUnit:'player'},field:'percent'};if(el.value==='value')next={kind:'value',key:l.values.find(v=>v.key!==this.selected||this.value()?.remember).key};if(el.value==='option')next={kind:'option',key:l.options[0].key};if(el.value==='op')next={kind:'op',op:'add',args:[V.literal(0),V.literal(0)]};if(el.value==='predicate')next={kind:'predicate',check:{condition:'group',mode:'all',tests:[this.defaults('buff')]}};for(const k of Object.keys(e))delete e[k];Object.assign(e,next);this.checkPath=null;return;}
+    if(key==='literalType'){e.value={number:0,string:'',boolean:true}[el.value];return;}
+    if(key==='literal'){e.value=typeof e.value==='boolean'?el.value==='true':el.type==='number'?+el.value:el.value;return;}
+    if(key==='op'){e.op=el.value;const [min,max]=V.arity(e.op);e.args=e.args.slice(0,max);while(e.args.length<min)e.args.push(V.literal(0));return;}
+    if(key==='source'){const kind=el.value;e.source={dataSource:kind};if(['health','resource','buff','debuff','casting'].includes(kind))e.source.dataUnit='player';if(kind==='resource')e.source.dataResource='primary';if(['spell','buff','debuff','item','slot','gcd','talent','learned'].includes(kind))e.source.dataID=kind==='gcd'?'61304':kind==='slot'?'13':kind==='item'?'5512':kind==='buff'||kind==='debuff'?'436336':'363916';if(kind==='talent')e.source.dataTalentKind='spell';if(['bossTimer','bossStage'].includes(kind))e.source.dataProvider='auto';e.field=sourceFields[kind][0];return;}
+    if(key.startsWith('data')){e.source[key]=el.value.trim();if(key==='dataProvider')delete e.source.dataTimelineSource;return;}e[key]=el.value;
+   });return;}
+   if(el.hasAttribute('data-option')){const key=el.closest('[data-option-key]').dataset.optionKey,prop=el.dataset.option;if(prop==='scope'){this.shareOption(key,el.value==='shared');return;}this.changeRule(()=>{const o=V.option(this.getRule().logic,key);if(prop==='type'){o.type=el.value;delete o.value;delete o.min;delete o.max;delete o.choices;o.default={number:20,boolean:true,text:'',choice:'Choice 1'}[o.type];if(o.type==='number'){o.min=0;o.max=100;}if(o.type==='choice')o.choices=['Choice 1','Choice 2'];return;}if(prop==='choices'){o.choices=el.value.split('\n').map(s=>s.trim()).filter(Boolean);if(!o.choices.includes(o.default))o.default=o.choices[0];if(!o.choices.includes(o.value))delete o.value;return;}if(['min','max'].includes(prop)){if(el.value==='')delete o[prop];else o[prop]=+el.value;return;}o[prop]=prop==='name'?el.value.trim():o.type==='number'?+el.value:o.type==='boolean'?el.value==='true':el.value;});}
+  }
+ }
+ root.OverlayValueEditor=Editor;
+})(window);

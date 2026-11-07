@@ -1,0 +1,9 @@
+{
+  "product": "LamdaExport",
+  "version": "0.1.1",
+  "schema": 1,
+  "clients": {
+    "forever": [16001],
+    "retail": [120100, 120105]
+  }
+}

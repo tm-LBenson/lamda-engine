@@ -1,0 +1,919 @@
+{
+  "0": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg",
+    "fetchedAt": "2026-09-15T18:57:34.452945+00:00",
+    "icon": "inv_misc_questionmark",
+    "metadataURL": null,
+    "name": "Unknown spell",
+    "sha256": "c2946592d85b6172ea3cf6714832fa867c3b253a06eb2e4ba6f57908863e44a0"
+  },
+  "1022": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_sealofprotection.jpg",
+    "fetchedAt": "2026-09-15T18:58:08.622868+00:00",
+    "icon": "spell_holy_sealofprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/1022",
+    "name": "Blessing of Protection",
+    "sha256": "6254b10a5fed1f6528766ed010c27727e0299db5379474c576fe55d47fe70278"
+  },
+  "102342": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_druid_ironbark.jpg",
+    "fetchedAt": "2026-09-15T18:57:49.623753+00:00",
+    "icon": "spell_druid_ironbark",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/102342",
+    "name": "Ironbark",
+    "sha256": "39a03a39435f622ee8b789617790814d7a9edbde874ee126de0ed40d3058959d"
+  },
+  "104773": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_demonictactics.jpg",
+    "fetchedAt": "2026-09-15T18:58:27.596674+00:00",
+    "icon": "spell_shadow_demonictactics",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/104773",
+    "name": "Unending Resolve",
+    "sha256": "1d29b032421c35d736f7cbc672c816400adc2e1d0b55e29cb4760b5c5ac67465"
+  },
+  "106839": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/inv_bone_skull_04.jpg",
+    "fetchedAt": "2026-09-16T15:15:36.024063+00:00",
+    "icon": "inv_bone_skull_04",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/106839",
+    "name": "Skull Bash",
+    "sha256": "9cd71a56383dbb29726f6af47389e855eca16605d2311e3c7eafe881d0517a56"
+  },
+  "107079": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/pandarenracial_quiveringpain.jpg",
+    "fetchedAt": "2026-09-28T14:10:04.118887+00:00",
+    "icon": "pandarenracial_quiveringpain",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/107079",
+    "name": "Quaking Palm",
+    "sha256": "024245d2de142b8c7159229db9888e277370d0e86c1dee4a962ef31044fb967e"
+  },
+  "108271": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_shaman_astralshift.jpg",
+    "fetchedAt": "2026-09-15T18:58:24.048672+00:00",
+    "icon": "ability_shaman_astralshift",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/108271",
+    "name": "Astral Shift",
+    "sha256": "f09abbecd81abc2de2c5c7430716986ee51e3477faa77c39125f355d2550898d"
+  },
+  "108416": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_deathpact.jpg",
+    "fetchedAt": "2026-09-15T18:58:26.413138+00:00",
+    "icon": "spell_shadow_deathpact",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/108416",
+    "name": "Dark Pact",
+    "sha256": "603e25e330876457ca6d44da6e448bcc82993754f1f2bfbd29ec834007f02668"
+  },
+  "109304": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_onewithnature.jpg",
+    "fetchedAt": "2026-09-15T18:57:57.937306+00:00",
+    "icon": "ability_hunter_onewithnature",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/109304",
+    "name": "Exhilaration",
+    "sha256": "ebcf443d761e3351df4bfc76613fec0986ae88d2354d51531d1d6e48411987ff"
+  },
+  "110959": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_mage_greaterinvisibility.jpg",
+    "fetchedAt": "2026-09-15T18:58:00.334097+00:00",
+    "icon": "ability_mage_greaterinvisibility",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/110959",
+    "name": "Greater Invisibility",
+    "sha256": "fe95eae254bfe4a0984a041d97f3696f2f61cb817591b50d566f6ad58922f749"
+  },
+  "115203": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_monk_fortifyingale_new.jpg",
+    "fetchedAt": "2026-09-15T18:58:03.888970+00:00",
+    "icon": "ability_monk_fortifyingale_new",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/115203",
+    "name": "Fortifying Brew",
+    "sha256": "b8f101828f087eeae3f9a819066246ad94d8aaa3d6b9fe1bd7f3abca1c38a4e6"
+  },
+  "116705": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_monk_spearhand.jpg",
+    "fetchedAt": "2026-09-16T15:15:37.242883+00:00",
+    "icon": "ability_monk_spearhand",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/116705",
+    "name": "Spear Hand Strike",
+    "sha256": "5ec239b7b023b9bf6393d40676245ecba043f801d69f7cf61a4c48684472ab0d"
+  },
+  "116849": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_monk_chicocoon.jpg",
+    "fetchedAt": "2026-09-15T18:58:05.075650+00:00",
+    "icon": "ability_monk_chicocoon",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/116849",
+    "name": "Life Cocoon",
+    "sha256": "45d4bef78b5cca2be0577dc4c9c1ab26bbb79cb176bb1709a31fbe692642dd18"
+  },
+  "118038": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_challange.jpg",
+    "fetchedAt": "2026-09-15T18:58:28.775552+00:00",
+    "icon": "ability_warrior_challange",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/118038",
+    "name": "Die by the Sword",
+    "sha256": "41e78f4bb45c94e1648f2151c0eaecabbad30c108eb8816c5663887a92dd4cb4"
+  },
+  "121093": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holyprotection.jpg",
+    "fetchedAt": "2026-09-28T14:10:03.774694+00:00",
+    "icon": "spell_holy_holyprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/121093",
+    "name": "Gift of the Naaru",
+    "sha256": "326f406f6ad99490e83b7ed0342983529c622a98947d927ceeebd6690c715809"
+  },
+  "122470": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_monk_touchofkarma.jpg",
+    "fetchedAt": "2026-09-15T18:58:06.264554+00:00",
+    "icon": "ability_monk_touchofkarma",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/122470",
+    "name": "Touch of Karma",
+    "sha256": "a3883d96ebffc6a4c30886e81a0c01011cb94e8a38154c241d926b956327fb7d"
+  },
+  "129597": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:04.054151+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/129597",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "12975": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_ashestoashes.jpg",
+    "fetchedAt": "2026-09-16T01:19:08.170230+00:00",
+    "icon": "spell_holy_ashestoashes",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/12975",
+    "name": "Last Stand",
+    "sha256": "2d7007c75de7e00e87ef6f65f5bcf064817764da4167ca419742aa93042cb68e"
+  },
+  "147362": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/inv_ammo_arrow_03.jpg",
+    "fetchedAt": "2026-09-16T15:15:38.479051+00:00",
+    "icon": "inv_ammo_arrow_03",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/147362",
+    "name": "Counter Shot",
+    "sha256": "4ec36243d9296cdc33546b38d89a9e195692fe91d011a3731e3d9d5d3d741515"
+  },
+  "15487": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_priest_silence.jpg",
+    "fetchedAt": "2026-09-16T15:15:26.507485+00:00",
+    "icon": "ability_priest_silence",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/15487",
+    "name": "Silence",
+    "sha256": "ef27dfc53c88f88dcb71a5776e77ba91898c660b8a514e0fffc5a6c73424bd0a"
+  },
+  "155145": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:03.812733+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/155145",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "1766": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_kick.jpg",
+    "fetchedAt": "2026-09-16T15:15:22.877994+00:00",
+    "icon": "ability_kick",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/1766",
+    "name": "Kick",
+    "sha256": "f4d0761df3163b086da179d5011db94abfbd748125c87f893b6804b592a42f08"
+  },
+  "183752": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_consumemagic.jpg",
+    "fetchedAt": "2026-09-16T15:15:40.692196+00:00",
+    "icon": "ability_demonhunter_consumemagic",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/183752",
+    "name": "Disrupt",
+    "sha256": "7e28e43dd24cd1fcbaadc7d966fe1a9ec0ed6cb47a3ec46b0e0150cb2605b54e"
+  },
+  "184364": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_focusedrage.jpg",
+    "fetchedAt": "2026-09-15T18:58:29.970864+00:00",
+    "icon": "ability_warrior_focusedrage",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/184364",
+    "name": "Enraged Regeneration",
+    "sha256": "ea0cfc7a023e6d3ac508e8f33b3ee1ba6eaabcbc002dfe92e638c0dbedb443d4"
+  },
+  "186265": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_pet_turtle.jpg",
+    "fetchedAt": "2026-09-15T18:57:56.740987+00:00",
+    "icon": "ability_hunter_pet_turtle",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/186265",
+    "name": "Aspect of the Turtle",
+    "sha256": "6836f837103a10abfe489f4a6feec7948b24fcca463c59f73178358ab5c30ed7"
+  },
+  "187707": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_negate.jpg",
+    "fetchedAt": "2026-09-16T15:15:41.893186+00:00",
+    "icon": "ability_hunter_negate",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/187707",
+    "name": "Muzzle",
+    "sha256": "b3f30a269d45a24c5ded3b6a5340725be41723cc638f21e9601939e0f16079ec"
+  },
+  "187827": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_metamorphasistank.jpg",
+    "fetchedAt": "2026-09-15T18:57:46.333732+00:00",
+    "icon": "ability_demonhunter_metamorphasistank",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/187827",
+    "name": "Metamorphosis",
+    "sha256": "4249151dd31244f4828c0cdbfcd5de593cba84c01fd050581a27bdc6c04be678"
+  },
+  "190456": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_renewedvigor.jpg",
+    "fetchedAt": "2026-09-16T01:19:11.767087+00:00",
+    "icon": "ability_warrior_renewedvigor",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/190456",
+    "name": "Ignore Pain",
+    "sha256": "5d5f564ab8621da0c98b4d4a397ededc4729d0143fdf9bb4a7272fa0f9f202f6"
+  },
+  "19236": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_testoffaith.jpg",
+    "fetchedAt": "2026-09-15T18:58:15.740851+00:00",
+    "icon": "spell_holy_testoffaith",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/19236",
+    "name": "Desperate Prayer",
+    "sha256": "6cd0fc5267e51b39b74d067c4606b89a06508def63b1a58cd2da06c7d2c82fa2"
+  },
+  "19647": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_mindrot.jpg",
+    "fetchedAt": "2026-09-16T15:15:28.716826+00:00",
+    "icon": "spell_shadow_mindrot",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/19647",
+    "name": "Spell Lock",
+    "sha256": "89473aa566a434b0cc7bceee9dfc76acd5aa0efb017a7594991519e51c0fe164"
+  },
+  "196718": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_darkness.jpg",
+    "fetchedAt": "2026-09-15T18:57:43.947336+00:00",
+    "icon": "ability_demonhunter_darkness",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/196718",
+    "name": "Darkness",
+    "sha256": "c959c634391b50698fe5eb445935bc517ba276665ff26208042f7a662e324df8"
+  },
+  "198589": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_blur.jpg",
+    "fetchedAt": "2026-09-15T18:57:42.753485+00:00",
+    "icon": "ability_demonhunter_blur",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/198589",
+    "name": "Blur",
+    "sha256": "7ba75e25742265c3a846d1bb68c9cae964d9cf4bf6eda2c9621fda3466ff664b"
+  },
+  "202168": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_impending_victory.jpg",
+    "fetchedAt": "2026-09-16T01:19:10.568493+00:00",
+    "icon": "spell_impending_victory",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/202168",
+    "name": "Impending Victory",
+    "sha256": "a46e1be414bb6d4aef2f7759cae597afc4dc4a48fec18c5594c3ce3a4144f759"
+  },
+  "202719": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:05.470582+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/202719",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "204021": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_fierybrand.jpg",
+    "fetchedAt": "2026-09-15T18:57:45.130159+00:00",
+    "icon": "ability_demonhunter_fierybrand",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/204021",
+    "name": "Fiery Brand",
+    "sha256": "1a75ba4caf29ad4259f78daef33bff5355f805f869ad466905879cea0e9402eb"
+  },
+  "20549": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_warstomp.jpg",
+    "fetchedAt": "2026-09-28T14:10:05.582904+00:00",
+    "icon": "ability_warstomp",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/20549",
+    "name": "War Stomp",
+    "sha256": "d979897edf1f9831889e2179ed85cafdfb97613d2c404a575150b653ce34ab91"
+  },
+  "20572": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/racial_orc_berserkerstrength.jpg",
+    "fetchedAt": "2026-09-28T14:10:05.816225+00:00",
+    "icon": "racial_orc_berserkerstrength",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/20572",
+    "name": "Blood Fury",
+    "sha256": "cf31ea139adf33bbdc79ca3aab46e37c0cd47c4006e46057cb55b3444c14fd6c"
+  },
+  "20589": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_rogue_trip.jpg",
+    "fetchedAt": "2026-09-28T14:10:05.801737+00:00",
+    "icon": "ability_rogue_trip",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/20589",
+    "name": "Escape Artist",
+    "sha256": "5b47640ef027bc7f1ac1082292b09e41b2643ddb327e502844cf4c37a1b12e36"
+  },
+  "20594": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_unholystrength.jpg",
+    "fetchedAt": "2026-09-28T14:10:07.181548+00:00",
+    "icon": "spell_shadow_unholystrength",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/20594",
+    "name": "Stoneform",
+    "sha256": "dc626dbb8285f1f6f0c2c2ed260ca026c621de27ff35c4b7bba2e5b5e7625529"
+  },
+  "2139": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_frost_iceshock.jpg",
+    "fetchedAt": "2026-09-16T15:15:24.090143+00:00",
+    "icon": "spell_frost_iceshock",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/2139",
+    "name": "Counterspell",
+    "sha256": "8ade3c70f67bc470b3dc39e0ae0f6f4fa95d6022f72bc992ab15b70019d44ff7"
+  },
+  "22812": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_stoneclawtotem.jpg",
+    "fetchedAt": "2026-09-15T18:57:47.515855+00:00",
+    "icon": "spell_nature_stoneclawtotem",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/22812",
+    "name": "Barkskin",
+    "sha256": "aa710067b510239097b5ad3f887f5d105c724660b1d646462b4a8c154f66fd7b"
+  },
+  "232633": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:07.335418+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/232633",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "23920": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_shieldreflection.jpg",
+    "fetchedAt": "2026-09-16T01:19:09.368336+00:00",
+    "icon": "ability_warrior_shieldreflection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/23920",
+    "name": "Spell Reflection",
+    "sha256": "c57a75c68f5c8d65d39bc62622cd1a5b790a7a77e066cde1f5387c1b64c6e80f"
+  },
+  "25046": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:07.514918+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/25046",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "255647": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_orbitalstrike.jpg",
+    "fetchedAt": "2026-09-28T14:10:07.768735+00:00",
+    "icon": "ability_racial_orbitalstrike",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/255647",
+    "name": "Light's Judgment",
+    "sha256": "fe86e98e9229b103fb18de6a82540e5ddb4a18d599281759f43cb788af0dfc2a"
+  },
+  "255654": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_bullrush.jpg",
+    "fetchedAt": "2026-09-28T14:10:08.918619+00:00",
+    "icon": "ability_racial_bullrush",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/255654",
+    "name": "Bull Rush",
+    "sha256": "39ded05da34b5a6182b3d8a30b9088693f5638bb947c9a9195b657795ced8e10"
+  },
+  "2565": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_defend.jpg",
+    "fetchedAt": "2026-09-16T01:19:06.962578+00:00",
+    "icon": "ability_defend",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/2565",
+    "name": "Shield Block",
+    "sha256": "82db313c61b9ed6bee314a3e51bf54410bc9d828c8978e294b5955f39ad41d82"
+  },
+  "256948": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_spatialrift.jpg",
+    "fetchedAt": "2026-09-28T14:10:09.420096+00:00",
+    "icon": "ability_racial_spatialrift",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/256948",
+    "name": "Spatial Rift",
+    "sha256": "6ec7b45263b6b6583f96cb67aa3e41f5953e8585c314d6c99c6541a4ab1bbcfc"
+  },
+  "260364": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_forceshield.jpg",
+    "fetchedAt": "2026-09-28T14:10:09.216075+00:00",
+    "icon": "ability_racial_forceshield",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/260364",
+    "name": "Arcane Pulse",
+    "sha256": "c696f38b6536071adc5a6f89b4f212af66abb9a238861a5e50c25471fd9f65c2"
+  },
+  "26297": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/racial_troll_berserk.jpg",
+    "fetchedAt": "2026-09-28T14:10:09.518876+00:00",
+    "icon": "racial_troll_berserk",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/26297",
+    "name": "Berserking",
+    "sha256": "bb2edf2ce5879298f2bf04688f2d9630ad922c849672f8f45e82dde87ce1f837"
+  },
+  "264735": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_spiritarmor.jpg",
+    "fetchedAt": "2026-09-15T18:57:59.118833+00:00",
+    "icon": "spell_nature_spiritarmor",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/264735",
+    "name": "Survival of the Fittest",
+    "sha256": "d30d93192619f063d4853501c64da74cb5f0b1d43e3b8709bcc44ef375700d12"
+  },
+  "265221": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_fireblood.jpg",
+    "fetchedAt": "2026-09-28T14:10:10.924239+00:00",
+    "icon": "ability_racial_fireblood",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/265221",
+    "name": "Fireblood",
+    "sha256": "64f7d2511e79937ff5e22bfb83fdb692f6fd57dec34717b4135213f7ed7aa52f"
+  },
+  "274738": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_ancestralcall.jpg",
+    "fetchedAt": "2026-09-28T14:10:10.930069+00:00",
+    "icon": "ability_racial_ancestralcall",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/274738",
+    "name": "Ancestral Call",
+    "sha256": "5a31bfdb310ca038dac4ac01ceb9732911123e66c9a1904b8bad0a83e3ec7844"
+  },
+  "28730": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:11.603342+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/28730",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "287712": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_haymaker.jpg",
+    "fetchedAt": "2026-09-28T14:10:11.529122+00:00",
+    "icon": "ability_racial_haymaker",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/287712",
+    "name": "Haymaker",
+    "sha256": "df8548b3cbb84efb19dcfcd0168a54382b7635306067af7df49b9c5872ed5586"
+  },
+  "28880": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holyprotection.jpg",
+    "fetchedAt": "2026-09-28T14:10:12.828546+00:00",
+    "icon": "spell_holy_holyprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/28880",
+    "name": "Gift of the Naaru",
+    "sha256": "326f406f6ad99490e83b7ed0342983529c622a98947d927ceeebd6690c715809"
+  },
+  "291944": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_regeneratin.jpg",
+    "fetchedAt": "2026-09-28T14:10:12.864663+00:00",
+    "icon": "ability_racial_regeneratin",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/291944",
+    "name": "Regeneratin'",
+    "sha256": "9d9c07bba5248757f052ea95256e5436c505d3c5a7ed7087e26dd67cde7d505c"
+  },
+  "31224": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_nethercloak.jpg",
+    "fetchedAt": "2026-09-15T18:58:21.682859+00:00",
+    "icon": "spell_shadow_nethercloak",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/31224",
+    "name": "Cloak of Shadows",
+    "sha256": "ef7e74f1be0f8550ec5939d7226b7a1d1a446d9b1333e5d8f02ef440cfab7365"
+  },
+  "312411": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_bagoftricks.jpg",
+    "fetchedAt": "2026-09-28T14:10:13.477333+00:00",
+    "icon": "ability_racial_bagoftricks",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/312411",
+    "name": "Bag of Tricks",
+    "sha256": "41817afdf92941839795960ebfa6b68652151f6696933f261c3084e9f8c5a345"
+  },
+  "31850": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_ardentdefender.jpg",
+    "fetchedAt": "2026-09-15T18:58:07.445955+00:00",
+    "icon": "spell_holy_ardentdefender",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/31850",
+    "name": "Ardent Defender",
+    "sha256": "a3c47db0422a43af43079c61ab754fabfaba7e7cd16d628151223d8d9926d7ef"
+  },
+  "33206": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_painsupression.jpg",
+    "fetchedAt": "2026-09-15T18:58:19.293933+00:00",
+    "icon": "spell_holy_painsupression",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/33206",
+    "name": "Pain Suppression",
+    "sha256": "fc05d5c4f688bc3282f37e13711b1453c530f9f4ddf7c1c677200b01234bf3c6"
+  },
+  "33697": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/racial_orc_berserkerstrength.jpg",
+    "fetchedAt": "2026-09-28T14:10:13.315238+00:00",
+    "icon": "racial_orc_berserkerstrength",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/33697",
+    "name": "Blood Fury",
+    "sha256": "cf31ea139adf33bbdc79ca3aab46e37c0cd47c4006e46057cb55b3444c14fd6c"
+  },
+  "33702": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/racial_orc_berserkerstrength.jpg",
+    "fetchedAt": "2026-09-28T14:10:15.025909+00:00",
+    "icon": "racial_orc_berserkerstrength",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/33702",
+    "name": "Blood Fury",
+    "sha256": "cf31ea139adf33bbdc79ca3aab46e37c0cd47c4006e46057cb55b3444c14fd6c"
+  },
+  "342245": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_mage_altertime.jpg",
+    "fetchedAt": "2026-11-02T00:15:52.144344+00:00",
+    "name": "Alter Time",
+    "sha256": "d707d97ca527906e6bdb4956015015e96ca293bf04e87ba7f13ad296a967cbdb"
+  },
+  "351338": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_evoker_quell.jpg",
+    "fetchedAt": "2026-09-16T15:15:43.128953+00:00",
+    "icon": "ability_evoker_quell",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/351338",
+    "name": "Quell",
+    "sha256": "122581d279cd954a64bc201bb0e773b4b617d0cf66b3b612def69d5136c66d55"
+  },
+  "357170": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_evoker_timedilation.jpg",
+    "fetchedAt": "2026-09-15T18:57:54.382931+00:00",
+    "icon": "ability_evoker_timedilation",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/357170",
+    "name": "Time Dilation",
+    "sha256": "1623e63a34618c001421211b7c3c96d2e67d5dabfdb27f52ebfa1f21e5ea8f35"
+  },
+  "357214": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_wingbuffet.jpg",
+    "fetchedAt": "2026-09-28T14:10:14.556634+00:00",
+    "icon": "ability_racial_wingbuffet",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/357214",
+    "name": "Wing Buffet",
+    "sha256": "1507b6ec44c5c484811cb67d4d32360aa78d79e5b9c468c0c431441e85d3a119"
+  },
+  "363534": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_evoker_rewind.jpg",
+    "fetchedAt": "2026-09-15T18:57:53.225687+00:00",
+    "icon": "ability_evoker_rewind",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/363534",
+    "name": "Rewind",
+    "sha256": "caf163f29fc4d8ced4d0de658b256dbe1155eca68fb9da017277fd8d4b2cd9da"
+  },
+  "363916": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/inv_artifact_dragonscales.jpg",
+    "fetchedAt": "2026-09-15T18:57:51.978159+00:00",
+    "icon": "inv_artifact_dragonscales",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/363916",
+    "name": "Obsidian Scales",
+    "sha256": "01f2b4797ddde8b0b000b1b1449f96c5a5567ee1bdefa006b6ab0b5939568581"
+  },
+  "368970": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_tailswipe.jpg",
+    "fetchedAt": "2026-09-28T14:10:15.268110+00:00",
+    "icon": "ability_racial_tailswipe",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/368970",
+    "name": "Tail Swipe",
+    "sha256": "b8416bdcd08e0ed00a7cf72c8bdf5fe711c1abf5b2d22a6a38b418557113904d"
+  },
+  "374227": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_evoker_hoverblack.jpg",
+    "fetchedAt": "2026-09-15T18:57:55.539850+00:00",
+    "icon": "ability_evoker_hoverblack",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/374227",
+    "name": "Zephyr",
+    "sha256": "c8e4f893dbcccadf1edc87cbf36673d5ef6a269e2e417f42a390c82b009ca309"
+  },
+  "414658": {
+    "copiedFromSpell": 45438,
+    "fetchedAt": "2026-11-02T00:15:52.150145+00:00",
+    "name": "Ice Cold",
+    "scope": "Same shared Ice Block recharge family artwork; cooldown mechanics use the pinned local game data.",
+    "sha256": "11dc63e8f210f76d53fd96815e9ce596d5041f853d2e00871dc2222f495a4491"
+  },
+  "436344": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_earthen_azeritesurge.jpg",
+    "fetchedAt": "2026-09-28T14:10:15.569236+00:00",
+    "icon": "ability_earthen_azeritesurge",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/436344",
+    "name": "Azerite Surge",
+    "sha256": "d2dfed69d44cf8a7f795f41cd75b6561c98e2edce87dc42ab13f2bdc48193804"
+  },
+  "45438": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_frost_frost.jpg",
+    "fetchedAt": "2026-09-15T18:58:01.514814+00:00",
+    "icon": "spell_frost_frost",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/45438",
+    "name": "Ice Block",
+    "sha256": "11dc63e8f210f76d53fd96815e9ce596d5041f853d2e00871dc2222f495a4491"
+  },
+  "47528": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_mindfreeze.jpg",
+    "fetchedAt": "2026-09-16T15:15:29.883230+00:00",
+    "icon": "spell_deathknight_mindfreeze",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/47528",
+    "name": "Mind Freeze",
+    "sha256": "770c99fcef1f9c346ac16d3475d4ddbce0d673e46187939da42072c9190f7748"
+  },
+  "47585": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_dispersion.jpg",
+    "fetchedAt": "2026-09-15T18:58:16.935287+00:00",
+    "icon": "spell_shadow_dispersion",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/47585",
+    "name": "Dispersion",
+    "sha256": "c73fc754dd007b3a4465dff56d556204bf99762c23fd926ea7c0e180cf19248d"
+  },
+  "47788": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_guardianspirit.jpg",
+    "fetchedAt": "2026-09-15T18:58:18.113428+00:00",
+    "icon": "spell_holy_guardianspirit",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/47788",
+    "name": "Guardian Spirit",
+    "sha256": "f151fd656d54600c744d5a8079dfbdaf4e33999f93ef78954cc28ddcc20c0784"
+  },
+  "48707": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_antimagicshell.jpg",
+    "fetchedAt": "2026-09-15T18:57:35.632707+00:00",
+    "icon": "spell_shadow_antimagicshell",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/48707",
+    "name": "Anti-Magic Shell",
+    "sha256": "27b39c1a1dd1828c822f94b68f38e9acc06fe77438fe96fedecde2e9e680c22b"
+  },
+  "48792": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_iceboundfortitude.jpg",
+    "fetchedAt": "2026-09-15T18:57:39.167407+00:00",
+    "icon": "spell_deathknight_iceboundfortitude",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/48792",
+    "name": "Icebound Fortitude",
+    "sha256": "07966d5fd02c4dce90fbaa0c142eaec4e2ba8fc06ff65da32c1c046a786e2573"
+  },
+  "49028": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/inv_sword_07.jpg",
+    "fetchedAt": "2026-09-15T18:57:37.992646+00:00",
+    "icon": "inv_sword_07",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/49028",
+    "name": "Dancing Rune Weapon",
+    "sha256": "cb5c45b804e7e5f2d7f6dc47854b5afbd06e53045d259b24a22d4a6697a8dff1"
+  },
+  "49039": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_raisedead.jpg",
+    "fetchedAt": "2026-09-15T18:57:40.351441+00:00",
+    "icon": "spell_shadow_raisedead",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/49039",
+    "name": "Lichborne",
+    "sha256": "c009ad34cd82b80842491931f2a5f44ca65f78a14e83b7b959cedcce40b6ad84"
+  },
+  "498": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_divineprotection.jpg",
+    "fetchedAt": "2026-09-15T18:58:11.000612+00:00",
+    "icon": "spell_holy_divineprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/498",
+    "name": "Divine Protection",
+    "sha256": "e82445ec231b886aa4d878a69df220cda5d9ed4ceedbdd69fad98139e492896e"
+  },
+  "50613": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:16.691767+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/50613",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "51052": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_antimagiczone.jpg",
+    "fetchedAt": "2026-09-15T18:57:36.815801+00:00",
+    "icon": "spell_deathknight_antimagiczone",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/51052",
+    "name": "Anti-Magic Zone",
+    "sha256": "57806f5907d04aa79d3204eebce3e84eca160b04d954c824ac88dd79dddc3b95"
+  },
+  "5277": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowward.jpg",
+    "fetchedAt": "2026-09-15T18:58:22.861991+00:00",
+    "icon": "spell_shadow_shadowward",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/5277",
+    "name": "Evasion",
+    "sha256": "503e40bedea406664ca6b4e43d09ec611f8add0366b4d0681173e2691eba448f"
+  },
+  "55233": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_lifedrain.jpg",
+    "fetchedAt": "2026-09-15T18:57:41.552439+00:00",
+    "icon": "spell_shadow_lifedrain",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/55233",
+    "name": "Vampiric Blood",
+    "sha256": "2b43024ccfe8fc3a25506256994e53972608fcb834a3a7628a5a3bba1b3baa34"
+  },
+  "55342": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_magic_lesserinvisibilty.jpg",
+    "fetchedAt": "2026-09-15T18:58:02.694331+00:00",
+    "icon": "spell_magic_lesserinvisibilty",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/55342",
+    "name": "Mirror Image",
+    "sha256": "5cee8a51afc8b50522a146468890a104bf3319321f958e78cc8859cbd4100a11"
+  },
+  "57994": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_cyclone.jpg",
+    "fetchedAt": "2026-09-16T15:15:31.087677+00:00",
+    "icon": "spell_nature_cyclone",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/57994",
+    "name": "Wind Shear",
+    "sha256": "d83c25e2c8f0cdeec4e64461b25a954528bef8fc2b5447deb32e39ba31ff833b"
+  },
+  "58984": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_ambush.jpg",
+    "fetchedAt": "2026-09-28T14:10:16.719845+00:00",
+    "icon": "ability_ambush",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/58984",
+    "name": "Shadowmeld",
+    "sha256": "acc00e6886d46737cfd65fac9d9915eabc604859e52e999dba3a155a95737ea7"
+  },
+  "59542": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holyprotection.jpg",
+    "fetchedAt": "2026-09-28T14:10:16.970943+00:00",
+    "icon": "spell_holy_holyprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/59542",
+    "name": "Gift of the Naaru",
+    "sha256": "326f406f6ad99490e83b7ed0342983529c622a98947d927ceeebd6690c715809"
+  },
+  "59543": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holyprotection.jpg",
+    "fetchedAt": "2026-09-28T14:10:18.777303+00:00",
+    "icon": "spell_holy_holyprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/59543",
+    "name": "Gift of the Naaru",
+    "sha256": "326f406f6ad99490e83b7ed0342983529c622a98947d927ceeebd6690c715809"
+  },
+  "59544": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holyprotection.jpg",
+    "fetchedAt": "2026-09-28T14:10:18.487069+00:00",
+    "icon": "spell_holy_holyprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/59544",
+    "name": "Gift of the Naaru",
+    "sha256": "326f406f6ad99490e83b7ed0342983529c622a98947d927ceeebd6690c715809"
+  },
+  "59545": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holyprotection.jpg",
+    "fetchedAt": "2026-09-28T14:10:18.480636+00:00",
+    "icon": "spell_holy_holyprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/59545",
+    "name": "Gift of the Naaru",
+    "sha256": "326f406f6ad99490e83b7ed0342983529c622a98947d927ceeebd6690c715809"
+  },
+  "59547": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holyprotection.jpg",
+    "fetchedAt": "2026-09-28T14:10:18.694997+00:00",
+    "icon": "spell_holy_holyprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/59547",
+    "name": "Gift of the Naaru",
+    "sha256": "326f406f6ad99490e83b7ed0342983529c622a98947d927ceeebd6690c715809"
+  },
+  "59548": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holyprotection.jpg",
+    "fetchedAt": "2026-09-28T14:10:20.198590+00:00",
+    "icon": "spell_holy_holyprotection",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/59548",
+    "name": "Gift of the Naaru",
+    "sha256": "326f406f6ad99490e83b7ed0342983529c622a98947d927ceeebd6690c715809"
+  },
+  "59752": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_charm.jpg",
+    "fetchedAt": "2026-09-28T14:10:20.271443+00:00",
+    "icon": "spell_shadow_charm",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/59752",
+    "name": "Will to Survive",
+    "sha256": "c424e5b28f48d0acb90036bcf1987f4709227e53f648f3b6f674c10160d308db"
+  },
+  "61336": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_druid_tigersroar.jpg",
+    "fetchedAt": "2026-09-15T18:57:50.799409+00:00",
+    "icon": "ability_druid_tigersroar",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/61336",
+    "name": "Survival Instincts",
+    "sha256": "13a4031d4b134de91a710107e7e83193c21fdc6285b1248489dca96ae11d2efc"
+  },
+  "62618": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_powerwordbarrier.jpg",
+    "fetchedAt": "2026-09-15T18:58:20.480934+00:00",
+    "icon": "spell_holy_powerwordbarrier",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/62618",
+    "name": "Power Word: Barrier",
+    "sha256": "29bf0377034471b7010e3cfd6eef522cdc487d7d546bb4243a4f9b0b132c1e21"
+  },
+  "633": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_layonhands.jpg",
+    "fetchedAt": "2026-09-15T18:58:14.563343+00:00",
+    "icon": "spell_holy_layonhands",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/633",
+    "name": "Lay on Hands",
+    "sha256": "bd2b6ccccb4fee0690323bcacd0766ecb8a9fae7e3d944df27fc04b8c05a2378"
+  },
+  "642": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_divineshield.jpg",
+    "fetchedAt": "2026-09-15T18:58:12.185521+00:00",
+    "icon": "spell_holy_divineshield",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/642",
+    "name": "Divine Shield",
+    "sha256": "32e4368a39b17277c224e2d9513db313282809c6c0f7a70338492875db8f02e1"
+  },
+  "6552": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/inv_gauntlets_04.jpg",
+    "fetchedAt": "2026-09-16T15:15:25.304470+00:00",
+    "icon": "inv_gauntlets_04",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/6552",
+    "name": "Pummel",
+    "sha256": "2a8c53696ce26e9fbd0014f9c4f5762dc17b85e2a54efcd518b68e499de51488"
+  },
+  "68992": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_darkflight.jpg",
+    "fetchedAt": "2026-09-28T14:10:20.696327+00:00",
+    "icon": "ability_racial_darkflight",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/68992",
+    "name": "Darkflight",
+    "sha256": "0fc8317e2d0dd6184b43694eb049fddd06919cfee1e069ecd91289c3134ee149"
+  },
+  "69041": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/inv_gizmo_rocketlauncher.jpg",
+    "fetchedAt": "2026-09-28T14:10:20.557378+00:00",
+    "icon": "inv_gizmo_rocketlauncher",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/69041",
+    "name": "Rocket Barrage",
+    "sha256": "5c1b0812e1425b4b0ec7653c2426dd5ae62a784a9743ab1f3b40f3aa609b2197"
+  },
+  "69070": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_racial_rocketjump.jpg",
+    "fetchedAt": "2026-09-28T14:10:22.154021+00:00",
+    "icon": "ability_racial_rocketjump",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/69070",
+    "name": "Rocket Jump",
+    "sha256": "a1d7dd29bd0f2e59f49e25ee08181bd9fddd7326dee4ae69d05a25292336fc0a"
+  },
+  "69179": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:22.088287+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/69179",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "6940": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_sealofsacrifice.jpg",
+    "fetchedAt": "2026-09-15T18:58:09.803322+00:00",
+    "icon": "spell_holy_sealofsacrifice",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/6940",
+    "name": "Blessing of Sacrifice",
+    "sha256": "d2282379ba9e3647b9bfe7a3c9d7ba7e63e678cb383df7496e9e84d7a01a81fa"
+  },
+  "7744": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_raisedead.jpg",
+    "fetchedAt": "2026-09-28T14:10:22.705578+00:00",
+    "icon": "spell_shadow_raisedead",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/7744",
+    "name": "Will of the Forsaken",
+    "sha256": "c009ad34cd82b80842491931f2a5f44ca65f78a14e83b7b959cedcce40b6ad84"
+  },
+  "78675": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_vehicle_sonicshockwave.jpg",
+    "fetchedAt": "2026-09-16T15:15:32.287647+00:00",
+    "icon": "ability_vehicle_sonicshockwave",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/78675",
+    "name": "Solar Beam",
+    "sha256": "2808b404f9bdbe93274773a1d451424476f3c42e049c274a5c2c6661ee76cfa7"
+  },
+  "80483": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_teleport.jpg",
+    "fetchedAt": "2026-09-28T14:10:22.371214+00:00",
+    "icon": "spell_shadow_teleport",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/80483",
+    "name": "Arcane Torrent",
+    "sha256": "de32ecf5291453fe20d58a791caa557fa195546263b239df72671f3613854384"
+  },
+  "86659": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_heroism.jpg",
+    "fetchedAt": "2026-09-15T18:58:13.364244+00:00",
+    "icon": "spell_holy_heroism",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/86659",
+    "name": "Guardian of Ancient Kings",
+    "sha256": "b07b539e15c06c3533dabd6f500f0233e6f3c1e7b3318261541c26e9e3970cae"
+  },
+  "871": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_shieldwall.jpg",
+    "fetchedAt": "2026-09-15T18:58:33.030915+00:00",
+    "icon": "ability_warrior_shieldwall",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/871",
+    "name": "Shield Wall",
+    "sha256": "626b81e2359640877573cf64b93c26bf44fa0a87676bfd22409c2e90308d8f96"
+  },
+  "89766": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_titansgrip.jpg",
+    "fetchedAt": "2026-09-16T15:15:33.587420+00:00",
+    "icon": "ability_warrior_titansgrip",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/89766",
+    "name": "Axe Toss",
+    "sha256": "91caa13730f57487f5ec1f746881ce5e1f08542b336f93138d60e91e7014fb51"
+  },
+  "96231": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_rebuke.jpg",
+    "fetchedAt": "2026-09-16T15:15:34.790295+00:00",
+    "icon": "spell_holy_rebuke",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/96231",
+    "name": "Rebuke",
+    "sha256": "a534c8fd9aed193e64d2e65f972e5c816b03ec0fbb5c6a0caea1876781e5822b"
+  },
+  "97462": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_rallyingcry.jpg",
+    "fetchedAt": "2026-09-15T18:58:31.822785+00:00",
+    "icon": "ability_warrior_rallyingcry",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/97462",
+    "name": "Rallying Cry",
+    "sha256": "90cc18fb8968180b2386bacf3fa1cb3f4b76176cdbe8cd7d09a1d05134f6ddfd"
+  },
+  "98008": {
+    "artworkURL": "https://wow.zamimg.com/images/wow/icons/large/spell_shaman_spiritlink.jpg",
+    "fetchedAt": "2026-09-15T18:58:25.234215+00:00",
+    "icon": "spell_shaman_spiritlink",
+    "metadataURL": "https://nether.wowhead.com/tooltip/spell/98008",
+    "name": "Spirit Link Totem",
+    "sha256": "7d56f21982dd3273b3e8b05fed51391834853440817dd57a0884cbfa9b7298e8"
+  }
+}

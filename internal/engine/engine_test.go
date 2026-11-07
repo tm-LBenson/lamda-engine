@@ -16,7 +16,7 @@ func TestParseParty(t *testing.T) {
 	if e != nil || c.Spell != 55342 || c.At.UTC().Hour() != 5 {
 		t.Fatalf("%+v %v", c, e)
 	}
-	for _, line := range []string{strings.Replace(mirror, "0x512", "0x511", 1), strings.Replace(mirror, "Player-1-ABCD", "Vehicle-1-ABCD", 1), strings.Replace(mirror, "SPELL_CAST_SUCCESS", "SPELL_AURA_APPLIED", 1), "partial"} {
+	for _, line := range []string{strings.Replace(mirror, "Player-1-ABCD", "Vehicle-1-ABCD", 1), strings.Replace(mirror, "SPELL_CAST_SUCCESS", "SPELL_AURA_APPLIED", 1), "partial"} {
 		if _, e := Parse(line); e == nil {
 			t.Fatal("accepted non-party cast", line)
 		}
@@ -27,7 +27,11 @@ func TestPlayerAffiliationAndTimezone(t *testing.T) {
 	if _, err := Parse(strings.Replace(mirror, "0x512", "0x514", 1)); err != nil {
 		t.Fatal("raid teammate rejected", err)
 	}
-	for _, flag := range []string{"0x511", "0x518", "0x542", "0x502", "0x513"} {
+	self, err := Parse(strings.Replace(mirror, "0x512", "0x511", 1))
+	if err != nil || !self.Self {
+		t.Fatal("self cast missing identity", self, err)
+	}
+	for _, flag := range []string{"0x518", "0x542", "0x502", "0x513", "0x531", "0x521"} {
 		if _, err := Parse(strings.Replace(mirror, "0x512", flag, 1)); err == nil {
 			t.Fatal("ineligible source accepted", flag)
 		}
@@ -76,11 +80,11 @@ func TestPlayerObservationMemoryBoundAndExpiry(t *testing.T) {
 		c.GUID = fmt.Sprintf("Player-%d", i)
 		m.Observe(c, c.At)
 	}
-	if len(m.Seen) > maxPlayerObservations || len(m.Rows) > maxPlayerObservations {
+	if len(m.Seen) > maxPlayerObservations || len(m.Rows) > maxPlayerObservations || len(m.Evidence) > maxPlayerObservations {
 		t.Fatal("unbounded observations", len(m.Seen), len(m.Rows))
 	}
 	m.Active(c.At.Add(observationRetention + time.Second))
-	if len(m.Seen) != 0 || len(m.Rows) != 0 {
+	if len(m.Seen) != 0 || len(m.Rows) != 0 || len(m.Evidence) != 0 {
 		t.Fatal("idle observations retained")
 	}
 }
@@ -148,7 +152,7 @@ func TestTailPartialRotationTruncation(t *testing.T) {
 func TestConfigIsDataOnly(t *testing.T) {
 	p := filepath.Join(t.TempDir(), "lamdaUI.lua")
 	data := `LamdaUIDB = { ["unrelated"] = true }
-LamdaEngineDB = {
+LamdaEngineDB = {["kickEnabled"]=false,
 ["schema"] = 1,
 ["cdEnabled"] = false,
 ["checkUpdates"] = true,
@@ -160,7 +164,7 @@ LamdaEngineDB = {
 }`
 	os.WriteFile(p, []byte(data), 0600)
 	c, e := ReadConfig(p)
-	if e != nil || c.Enabled || c.Days != 7 || c.Scale != 1.5 {
+	if e != nil || c.Enabled || c.TrackingEnabled || c.Days != 7 || c.Scale != 1.5 {
 		t.Fatal(c, e)
 	}
 	for _, bad := range []string{strings.TrimSuffix(data, "}"), strings.Replace(data, "1.5", "99", 1), strings.Replace(data, "[\"schema\"] = 1", "[\"schema\"] = 9", 1), "os.execute('invalid')"} {
@@ -187,9 +191,10 @@ LamdaEngineDB = {
 func TestNativeFramesSuppressDetachedDisplay(t *testing.T) {
 	p := filepath.Join(t.TempDir(), "lamdaUI.lua")
 	for _, native := range []string{"true", "false", "42"} {
-		data := `LamdaEngineDB = {
+		data := `LamdaEngineDB = {["kickEnabled"]=false,
 ["schema"] = 1,
 ["cdEnabled"] = true,
+["engineFrameEstimates"] = true,
 ["checkUpdates"] = false,
 ["notifyUpdates"] = false,
 ["checkDays"] = 1,
@@ -211,8 +216,22 @@ func TestNativeFramesSuppressDetachedDisplay(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if cfg.Enabled != (native == "false") {
+		if cfg.Enabled != (native == "false") || !cfg.TrackingEnabled {
 			t.Fatal("native and detached displays both enabled", cfg)
+		}
+		for _, enabled := range []string{"true", "false", "nil"} {
+			input := strings.Replace(data, `["nativeFrames"]`, `["engineTracking"] = `+enabled+",\n"+`["nativeFrames"]`, 1)
+			os.WriteFile(p, []byte(input), 0600)
+			c, err := ReadConfig(p)
+			if enabled == "nil" {
+				if err == nil {
+					t.Fatal("invalid tracking setting accepted")
+				}
+				continue
+			}
+			if err != nil || c.TrackingEnabled != (enabled == "true") || c.Enabled != cfg.Enabled {
+				t.Fatal("tracking and display coupled", c, err)
+			}
 		}
 	}
 }
