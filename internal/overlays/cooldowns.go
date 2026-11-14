@@ -24,6 +24,9 @@ func validCooldown(p map[string]any) bool {
 	if err != nil || !lookup.ValidCooldownWatch(kind, id) {
 		return false
 	}
+	if one(check, "carried", "missing", "cooldownReady") {
+		return kind == "item"
+	}
 	if one(check, "ready", "cooldown", "usable", "unusable") {
 		return true
 	}
@@ -93,10 +96,26 @@ func CooldownHash(w []CooldownWatch) string {
 func cooldownCondition(p map[string]any, input *lookup.OverlayInput) bool {
 	id, _ := strconv.Atoi(str(p, "id"))
 	for _, c := range input.Cooldowns {
-		if c.ID != id || c.Kind != str(p, "source") || !c.Available {
+		if c.ID != id || c.Kind != str(p, "source") {
 			continue
 		}
 		check := str(p, "check")
+		if check == "cooldownReady" {
+			return c.Kind == "item" && c.Available && c.Remaining != nil && compareNumber(*c.Remaining, 0, "eq")
+		}
+		if one(check, "carried", "missing") {
+			if c.Kind != "item" {
+				return false
+			}
+			if c.Carried != nil {
+				return *c.Carried == (check == "carried")
+			}
+			// Legacy availability proves presence, never absence.
+			return check == "carried" && c.Available
+		}
+		if !c.Available || c.Kind == "item" && c.Carried != nil && !*c.Carried {
+			continue
+		}
 		if one(check, "ready", "cooldown", "usable", "unusable") {
 			if c.Enabled == nil || !*c.Enabled || c.Remaining == nil || c.MaxCharges == nil {
 				return false

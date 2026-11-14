@@ -1,6 +1,6 @@
 local _, LUI = ...
 LUI.modules = {}
-local defaults = {schema=1,colorStripVersion=2,checkUpdates=true,notifyUpdates=true,checkDays=1,keepUIWhenUnfocused=false,allowCombatManagement=true,scanTiming=2,scanMinutes=3,startHidden=false}
+local defaults = {schema=1,colorStripVersion=2,checkUpdates=true,notifyUpdates=true,checkDays=1,keepUIWhenUnfocused=false,allowCombatManagement=true,scanTiming=2,scanMinutes=3,startHidden=false,instanceAutoLog=false}
 local limits = {colorStripVersion={2,2,integer=true},checkDays={values={1,7}},scanTiming={values={1,2,3,4}},scanMinutes={values={1,3,5}}}
 local moduleKeys = {}
 -- Modules declare settings delivered through SavedVariables. Everything else
@@ -262,7 +262,7 @@ function LUI:ResetKeys(keys)
     if self.RefreshUI then self:RefreshUI()end
 end
 function LUI:ResetGeneral()
-    local keys={"checkUpdates","notifyUpdates","checkDays","keepUIWhenUnfocused","allowCombatManagement","resourceAdvanced","resourceLow","resourceCustomized","scanTiming","scanMinutes","startHidden"}
+    local keys={"checkUpdates","notifyUpdates","checkDays","keepUIWhenUnfocused","allowCombatManagement","instanceAutoLog","resourceAdvanced","resourceLow","resourceCustomized","scanTiming","scanMinutes","startHidden"}
     for _,key in ipairs(resourceKeys)do keys[#keys+1]=key end
     self:ResetKeys(keys)
 end
@@ -296,9 +296,9 @@ function LUI:Save()
 end
 function LUI:EnsureLogging()
     local db=self:DB()
-    if not (self:CDTrackingEnabled(db) and db.autoLog) and not (db.kickEnabled and db.kickAutoLog) then return end
+    if not db.instanceAutoLog and not (self:CDTrackingEnabled(db) and db.autoLog) and not (db.kickEnabled and db.kickAutoLog) then return end
     local inside,kind=IsInInstance()
-    if not inside or (kind~="party" and kind~="scenario" and kind~="raid" and kind~="arena") then return end
+    if not inside or (kind~="party" and kind~="scenario" and kind~="raid" and kind~="arena" and not (kind=="pvp" and db.instanceAutoLog)) then return end
     if type(LoggingCombat)=="function" then pcall(LoggingCombat,true) end
 end
 local events=CreateFrame("Frame")

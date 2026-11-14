@@ -51,9 +51,11 @@ function LUI:BuildGeneralSettings(parent)
         "Keep Lamda Engine's cooldown and kick overlays visible when you switch to another app. Timers continue at the last known frame positions and may appear over other windows. Live screen readings resume when WoW regains focus. The overlay still hides if WoW is minimized or closed. Off by default; applies live while the engine can read the event strip.")
     self:Checkbox(parent,"Allow changes during combat","allowCombatManagement",-366,0,
         "Keep LamdaUI settings and non-secure movement controls available during combat. Protected frame layouts, secure bindings, addon loading, and restricted game data still wait until combat ends, as required by WoW.")
-    local resetGeneral=self:ResetButton(parent,"General settings",function()LUI:ResetGeneral()end,4,-414)
+    self:Checkbox(parent,"Automatically log instances","instanceAutoLog",-410,0,
+        "Start combat logging when entering dungeons, raids, scenarios, battlegrounds and arenas, including logging in or reloading inside one. Applies across module profiles. Logging stays on until you stop it with /combatlog; turning this option off does not stop an existing log.")
+    local resetGeneral=self:ResetButton(parent,"General settings",function()LUI:ResetGeneral()end,4,-454)
     resetGeneral:SetText("Reset General")
-    local resetAll=self:ResetButton(parent,"General and all modules in this profile",function()LUI:ResetAllSettings()end,4,-454)
+    local resetAll=self:ResetButton(parent,"General and all modules in this profile",function()LUI:ResetAllSettings()end,4,-494)
     resetAll:SetText("Reset all settings")
     self:Explain(resetAll,"Reset all settings","Restore General, shared Performance settings, and the current profile's modules. Other named profiles are preserved. A confirmation appears first.")
     self:Label(parent,"Profiles",360,-44,true)

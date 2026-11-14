@@ -236,6 +236,12 @@ func predicateKnown(q map[string]any, p *lookup.OverlayInput, unit string) bool 
 			if c.ID != id || c.Kind != str(q, "source") {
 				continue
 			}
+			if one(check, "carried", "missing") {
+				return c.Kind == "item" && (c.Carried != nil || c.Available)
+			}
+			if check == "cooldownReady" {
+				return c.Kind == "item" && c.Available && finite(c.Remaining)
+			}
 			if !c.Available {
 				return false
 			}

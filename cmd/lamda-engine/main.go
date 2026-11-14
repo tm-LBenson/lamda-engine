@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/tm-LBenson/lamda-engine/internal/arena"
@@ -113,7 +114,7 @@ func main() {
 		return
 	}
 	if *simWorkspace {
-		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer cancel()
 		service, err := startSimWorkspace(ctx, dir, *client, "")
 		if err != nil {
@@ -188,7 +189,7 @@ func main() {
 	augLogActive := false
 	augWindow := &lookup.WindowTracker{}
 	session := &engine.LogSession{}
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go lookup.RunQueueAccept(ctx, *retail, *client, log.Printf)
 	simService, simError := startSimWorkspace(ctx, dir, *client, *retail, *saved)

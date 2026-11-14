@@ -1048,6 +1048,11 @@ function O:CooldownTick()
             for _,f in ipairs(fonts[field+1])do f:SetText(d:FormatTotalDuration(self.cooldownFormatter))end
         end
         local available=false
+        local carried
+        if w.kind=="item"then
+            local ok,count=pcall(function()return C_Item.GetItemCount(w.id,false)end)
+            if ok and public(count)and type(count)=="number"and count>=0 and count<math.huge then carried=count>0 end
+        end
         -- Failed reads erase every sink in this slot, so stale ready values
         -- cannot survive an unlearned spell, equipment swap or API failure.
         local ok=pcall(function()
@@ -1091,21 +1096,25 @@ function O:CooldownTick()
                     start,span,enabled=GetInventoryItemCooldown("player",w.id)
                     number(8,enabled)
                 else
-                    local count=value(C_Item.GetItemCount(id,false),0)
-                    if type(count)~="number"or count<=0 then return end
+                    -- Shared item cooldowns survive consumption. A confirmed
+                    -- zero count must still expose the remaining cooldown.
+                    if carried==nil then return end
                     start,span,enabled=C_Item.GetItemCooldown(id)
-                    boolean(8,enabled)
+                    if carried then boolean(8,enabled)
+                    else number(8,0)end
                 end
                 available=true
                 local d=C_DurationUtil.CreateDuration();d:SetTimeFromStart(start,span)
-                timer(1,d);boolean(7,C_Item.IsUsableItem(id))
+                timer(1,d)
+                if w.kind=="item"and carried==false then number(7,0)
+                else boolean(7,C_Item.IsUsableItem(id))end
                 number(3,0);number(4,0);number(5,0);number(6,0)
             end
         end)
         if not ok or not available then
             for _,pair in ipairs(fonts)do for _,f in ipairs(pair)do f:SetFormattedText("|cff%06xI|r",0xffffff)end end
         end
-        rows[#rows+1]=json({kind=w.kind,id=w.id,available=ok and available})
+        rows[#rows+1]=json({kind=w.kind,id=w.id,available=ok and available,carried=carried})
     end
     return table.concat(rows,",")
 end

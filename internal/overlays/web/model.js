@@ -426,6 +426,7 @@
   function validCooldown(p) {
     if(p.condition!=='cooldown'||typeof p.id!=='string'||!/^[1-9][0-9]{0,6}$/.test(p.id))return false;
     if(!['spell','item','slot','gcd'].includes(p.source)||(p.source==='slot'&&+p.id>19)||(p.source==='gcd'&&p.id!=='61304'))return false;
+    if(['carried','missing','cooldownReady'].includes(p.check))return p.source==='item';
     if(['ready','cooldown','usable','unusable'].includes(p.check))return true;
     if(['charges','full','recharge'].includes(p.check)&&p.source!=='spell')return false;
     if(p.check==='full')return true;
@@ -439,7 +440,14 @@
   }
   function cooldownCondition(p, context) {
     const c=context.cooldowns?.find(c=>c.kind===p.source&&c.id===Number(p.id));
+    if(p.check==='cooldownReady')return p.source==='item'&&c?.available&&Number.isFinite(c.remaining)?c.remaining===0:null;
+    if(['carried','missing'].includes(p.check)) {
+      if(p.source!=='item'||!c)return null;
+      const carried=typeof c.carried==='boolean'?c.carried:c.available?true:null;
+      return carried===null?null:carried===(p.check==='carried');
+    }
     if(!c||!c.available)return null;
+    if(c.kind==='item'&&c.carried===false)return null;
     if(['ready','cooldown','usable','unusable'].includes(p.check)) {
       if(typeof c.enabled!=='boolean'||!Number.isFinite(c.remaining)||!Number.isFinite(c.maxCharges))return null;
       if(!c.enabled)return false;

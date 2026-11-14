@@ -180,7 +180,7 @@
           value=choice(n,'source',{spell:'Spell',item:'Item',slot:'Equipped',gcd:'Global'},'Cooldown source');
           if(p.source==='slot')value+=choice(n,'id',{13:'Upper trinket',14:'Lower trinket',16:'Main hand',17:'Off hand'},'Equipment slot');
           else if(p.source!=='gcd')value+=`<span class="spell-field"><input type="text" maxlength="7" value="${esc(p.id)}" data-prop="id" data-node="${n.id}" aria-label="${p.source==='spell'?'Cooldown spell ID':'Item ID'}" placeholder="ID">${p.source==='spell'?`<button type="button" class="spell-find" data-spell-node="${n.id}" aria-label="Find cooldown spell">Search</button>`:''}</span>`;
-          value+=choice(n,'check',{ready:'Ready',cooldown:'On cooldown',usable:'Usable',unusable:'Not usable',remaining:'Time left',...(p.source==='spell'?{charges:'Charges',full:'Full charges',recharge:'Recharge'}:{})},'Cooldown check');
+          value+=choice(n,'check',{...(p.source==='item'?{carried:'Carried in bags',missing:'Missing from bags',cooldownReady:'Cooldown finished, even if missing'}:{}),ready:'Ready',cooldown:'On cooldown',usable:'Usable',unusable:'Not usable',remaining:'Time left',...(p.source==='spell'?{charges:'Charges',full:'Full charges',recharge:'Recharge'}:{})},'Cooldown check');
           if(['remaining','charges','recharge'].includes(p.check))value+='<span class="block-measure">'+choice(n,'operator',{gte:'≥',gt:'>',eq:'=',ne:'≠',lt:'<',lte:'≤'},'Cooldown comparison')+number(n,'value',0,p.check==='charges'?999:86400,'Cooldown threshold',p.check==='charges'?1:.1)+(p.check==='charges'?'':'<span class="block-phrase">sec</span>')+'</span>';
         } else if (['buff','debuff'].includes(n.props.condition)) {
           value = choice(n,'unit',M.unitChoices,'Aura unit') + `<span class="spell-field"><input type="text" maxlength="80" value="${esc(n.props.aura)}" data-prop="aura" data-node="${n.id}" aria-label="Spell ID" placeholder="Spell ID"><button type="button" class="spell-find" data-spell-node="${n.id}" aria-label="Find condition spell">Search</button></span>` + choice(n,'check',{active:'is active',missing:'is missing',stacks:'has stacks',remaining:'has time left'},'Aura check');
@@ -401,7 +401,7 @@
     if(p.condition==='encounter')return `Encounter · ${p.check==='elapsed'?'elapsed '+op+' '+p.value+'s':p.check}`;
     if(p.condition==='eventValue')return `${M.combatValues[p.field]} ${op} ${p.value}`;
     if(p.condition==='casting')return `${M.unitChoices[p.unit||'player']} · ${p.check}`;
-    if(p.condition==='cooldown')return `${p.source==='gcd'?'Global':p.source==='slot'?'Slot '+p.id:'ID '+p.id} · ${{ready:'ready',cooldown:'on cooldown',usable:'usable',unusable:'not usable',remaining:'time left',charges:'charges',full:'full charges',recharge:'recharge'}[p.check]}`;
+    if(p.condition==='cooldown')return `${p.source==='gcd'?'Global':p.source==='slot'?'Slot '+p.id:'ID '+p.id} · ${{carried:'carried in bags',missing:'missing from bags',cooldownReady:'cooldown finished',ready:'ready',cooldown:'on cooldown',usable:'usable',unusable:'not usable',remaining:'time left',charges:'charges',full:'full charges',recharge:'recharge'}[p.check]}`;
     return `${predicateTypes[p.condition]} · ${p.value}`;
   }
   function setPredicateMode(p,value){

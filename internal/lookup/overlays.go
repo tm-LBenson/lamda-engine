@@ -158,6 +158,10 @@ func parseOverlays(b []byte) BridgeSample {
 			return BridgeSample{Error: "overlays_cooldown_invalid"}
 		}
 		p.Cooldowns[i] = OverlayCooldown{Kind: c.Kind, ID: c.ID, Available: c.Available}
+		// Public item counts are metadata; native timer values remain untrusted.
+		if c.Kind == "item" {
+			p.Cooldowns[i].Carried = c.Carried
+		}
 	}
 	for i := range p.Watches {
 		a := &p.Watches[i]

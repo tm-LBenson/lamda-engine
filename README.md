@@ -27,6 +27,20 @@ the game yourself; ordinary compatible updates use `/reload` afterward.
 `windows/install.ps1` is a compatibility entry point for the setup source in a
 full checkout. The release installer is the supported download for normal use.
 
+## Linux / Nobara
+
+The current source restores native Linux capture and overlays for Steam Proton
+through X11/XWayland. See [Linux setup and current limits](linux/README.md).
+
+```sh
+git clone https://github.com/tm-LBenson/lamda-engine.git
+cd lamda-engine
+/usr/bin/python3 linux/launch.py --check
+/usr/bin/python3 linux/launch.py --client forever --wow "/path/to/World of Warcraft/_forever_"
+```
+
+This is a source update; the Windows release assets above remain unchanged.
+
 ## Included features
 
 - **Frames and LamdaCD:** unit frames, click casting and native aura displays.
