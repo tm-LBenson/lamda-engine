@@ -37,7 +37,7 @@ func TestReplaySevenMissingMageCastsFromNovemberFirstArenas(t *testing.T) {
 		}
 		m.ObservePartyContext(lookup.PartyContext{Arena: true, At: at.Truncate(time.Second), Epoch: c.MatchStart}, at)
 		stamp := at.In(time.FixedZone("EST", -5*3600)).Format("1/2/2006 15:04:05.000") + "-5"
-		line := fmt.Sprintf("%s  SPELL_CAST_SUCCESS,%s,\"Fixturemage-Example-US\",0x512,0x0,0000000000000000,nil,0x80000000,0x0,%d,\"%s\",0x40", stamp, c.GUID, c.Spell, c.Name)
+		line := fmt.Sprintf("%s  SPELL_CAST_SUCCESS,%s,\"Cottonfrost-Tichondrius-US\",0x512,0x0,0000000000000000,nil,0x80000000,0x0,%d,\"%s\",0x40", stamp, c.GUID, c.Spell, c.Name)
 		if !m.IngestWithRoster(line, at.Add(250*time.Millisecond), true, map[string]bool{c.GUID: true}) {
 			t.Fatal("previously missing cast remains missing", c)
 		}
@@ -49,7 +49,7 @@ func TestReplaySevenMissingMageCastsFromNovemberFirstArenas(t *testing.T) {
 }
 
 func mageBuild(m *Model, now time.Time) BuildSnapshot {
-	b := BuildSnapshot{GUID: "Player-1-00000002", Player: "Fixturemage", Source: "inspect", At: now.Add(-time.Second), SpecID: 64, GameBuild: "12.1.5",
+	b := BuildSnapshot{GUID: "Player-11-0EBADDFE", Player: "Cottonfrost", Source: "inspect", At: now.Add(-time.Second), SpecID: 64, GameBuild: "12.1.5",
 		SpellRanks: map[int]int{45438: 1, 414658: 1, 342245: 1, 342249: 2, 382424: 2, 1244110: 1, 1265517: 1}, Talents: [][3]int{{1, 1, 1}}}
 	m.ObserveInspectedBuild(b, now)
 	return m.InspectedBuilds[b.GUID]
@@ -143,7 +143,7 @@ func TestAlterTimeReturnNeverStartsAnotherCooldown(t *testing.T) {
 	b := mageBuild(m, now)
 	line := func(spell int, at time.Time) string {
 		stamp := at.In(time.FixedZone("EST", -5*3600)).Format("1/2/2006 15:04:05.000") + "-5"
-		return fmt.Sprintf("%s  SPELL_CAST_SUCCESS,%s,\"Fixturemage-Example-US\",0x512,0x0,0000000000000000,nil,0x80000000,0x0,%d,\"Alter Time\",0x40", stamp, b.GUID, spell)
+		return fmt.Sprintf("%s  SPELL_CAST_SUCCESS,%s,\"Cottonfrost-Tichondrius-US\",0x512,0x0,0000000000000000,nil,0x80000000,0x0,%d,\"Alter Time\",0x40", stamp, b.GUID, spell)
 	}
 	if !m.IngestWithRoster(line(342245, now), now.Add(200*time.Millisecond), true, map[string]bool{b.GUID: true}) {
 		t.Fatal("start missing")

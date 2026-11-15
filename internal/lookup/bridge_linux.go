@@ -101,6 +101,9 @@ func (c *linuxCapture) capturePixels(_ uintptr, p BridgePosition, width, height 
 }
 
 func (c *linuxCapture) captureBridgeLayout(position BridgePosition, wide bool, overlayWidth int) BridgeSample {
+	return c.captureBridgeLayoutMode(position, wide, overlayWidth, false)
+}
+func (c *linuxCapture) captureBridgeLayoutMode(position BridgePosition, wide bool, overlayWidth int, market bool) BridgeSample {
 	c.context = c.request(map[string]string{"op": "context"})
 	c.error = c.context.Error
 	if c.error != "" {
@@ -112,7 +115,13 @@ func (c *linuxCapture) captureBridgeLayout(position BridgePosition, wide bool, o
 		return BridgeSample{Error: "bridge_window_too_small"}
 	}
 	var sample BridgeSample
-	if overlayWidth != 0 {
+	bulkFound := false
+	if market {
+		sample, bulkFound = captureMarketBoard(position, w, h, func(p BridgePosition, w, h int) (Pixels, bool) { return c.capturePixels(0, p, w, h) })
+	}
+	if bulkFound {
+		// No tracking bands on a Market bulk frame.
+	} else if overlayWidth != 0 {
 		if !ValidOverlayWidth(overlayWidth) {
 			return BridgeSample{Error: "overlays_shape_invalid"}
 		}
@@ -214,7 +223,7 @@ func linuxRead(ctx context.Context, target BridgeTarget, game, client string) <-
 				value, found = c.captureMeterBorderSlot(target.LocatorBase, target.MeterSlot, game, client)
 			}
 			if !found {
-				value = c.captureBridgeLayout(target.Position, target.Wide, target.OverlayWidth)
+				value = c.captureBridgeLayoutMode(target.Position, target.Wide, target.OverlayWidth, target.Source == "market")
 				value.Position = target.Position
 			}
 			value.LocatorBase = target.LocatorBase
@@ -348,7 +357,7 @@ func (capture *linuxCapture) captureSimBridgeDC(dc uintptr, wide, narrow BridgeP
 	result := BridgeSample{Error: "bridge_not_visible"}
 	if wideFits {
 		result = capture.captureBridgeDCSize(dc, wide, SimBridgeWidth, SimBridgeHeight)
-		if result.Error == "" && (len(result.Sim) > 0 || len(result.Reload) > 0 || len(result.KBB) > 0) {
+		if result.Error == "" && (len(result.Sim) > 0 || len(result.Reload) > 0 || len(result.KBB) > 0 || len(result.Market) > 0) {
 			return result
 		}
 	}

@@ -80,6 +80,9 @@ func captureBridgeMode(position BridgePosition, retail string, sim bool, clients
 	return captureBridgeLayout(position, retail, sim, 0, clients...)
 }
 func (capture *captureSession) captureBridgeLayout(position BridgePosition, retail string, sim bool, overlayWidth int, clients ...string) (sample BridgeSample) {
+	return capture.captureBridgeLayoutMode(position, retail, sim, overlayWidth, false, clients...)
+}
+func (capture *captureSession) captureBridgeLayoutMode(position BridgePosition, retail string, sim bool, overlayWidth int, market bool, clients ...string) (sample BridgeSample) {
 	hwnd, reason := capture.gameWindow(retail, clients...)
 	if reason != "" {
 		return BridgeSample{Error: reason}
@@ -128,7 +131,16 @@ func (capture *captureSession) captureBridgeLayout(position BridgePosition, reta
 	}
 	defer releaseDC.Call(0, dc)
 	position = BridgePosition{X: position.X + int(origin.X), Y: position.Y + int(origin.Y)}
-	if sim {
+	bulkFound := false
+	if market {
+		sample, bulkFound = captureMarketBoard(layoutPosition, int(rect.Right), int(rect.Bottom), func(p BridgePosition, w, h int) (Pixels, bool) {
+			return capture.capturePixels(dc, BridgePosition{X: p.X + int(origin.X), Y: p.Y + int(origin.Y)}, w, h)
+		})
+	}
+	if bulkFound {
+		// Bulk packets have no tracking bands; the common identity checks below
+		// still verify that the same game window supplied the entire frame.
+	} else if sim {
 		widePosition = BridgePosition{X: widePosition.X + int(origin.X), Y: widePosition.Y + int(origin.Y)}
 		if overlayWidth != 0 {
 			p, ok := capture.capturePixels(dc, widePosition, overlayWidth, 18432/overlayWidth)
@@ -302,7 +314,7 @@ func (capture *captureSession) captureSimBridgeDC(dc uintptr, wide, narrow Bridg
 	result := BridgeSample{Error: "bridge_not_visible"}
 	if wideFits {
 		result = capture.captureBridgeDCSize(dc, wide, SimBridgeWidth, SimBridgeHeight)
-		if result.Error == "" && (len(result.Sim) > 0 || len(result.Reload) > 0 || len(result.KBB) > 0) {
+		if result.Error == "" && (len(result.Sim) > 0 || len(result.Reload) > 0 || len(result.KBB) > 0 || len(result.Market) > 0) {
 			return result
 		}
 	}
@@ -415,7 +427,7 @@ func readBridge(ctx context.Context, position BridgePosition, retail string, sim
 	return readBridgeLayout(ctx, position, retail, sim, 0, clients...)
 }
 func readBridgeLayout(ctx context.Context, position BridgePosition, retail string, sim bool, overlayWidth int, clients ...string) <-chan BridgeSample {
-	return readBridgeLayoutTimed(ctx, position, retail, sim, overlayWidth, 0, clients...)
+	return readBridgeLayoutTimed(ctx, position, retail, sim, overlayWidth, 0, false, clients...)
 }
 func readTargetBridge(ctx context.Context, target BridgeTarget, game, client string) <-chan BridgeSample {
 	if target.Source == "augmentation" {
@@ -425,9 +437,9 @@ func readTargetBridge(ctx context.Context, target BridgeTarget, game, client str
 	if target.Source == "overlays" {
 		width = target.OverlayWidth
 	}
-	return readBridgeLayoutTimed(ctx, target.Position, game, target.Wide, width, target.IdleInterval, client)
+	return readBridgeLayoutTimed(ctx, target.Position, game, target.Wide, width, target.IdleInterval, target.Source == "market", client)
 }
-func readBridgeLayoutTimed(ctx context.Context, position BridgePosition, retail string, sim bool, overlayWidth int, idle time.Duration, clients ...string) <-chan BridgeSample {
+func readBridgeLayoutTimed(ctx context.Context, position BridgePosition, retail string, sim bool, overlayWidth int, idle time.Duration, market bool, clients ...string) <-chan BridgeSample {
 	ch := make(chan BridgeSample, 1)
 	go func() {
 		defer close(ch)
@@ -450,7 +462,7 @@ func readBridgeLayoutTimed(ctx context.Context, position BridgePosition, retail 
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
-				value := capture.captureBridgeLayout(position, retail, sim, overlayWidth, clients...)
+				value := capture.captureBridgeLayoutMode(position, retail, sim, overlayWidth, market, clients...)
 				if next := cadence.next(value.Error == ""); next != interval {
 					interval = next
 					ticker.Reset(interval)

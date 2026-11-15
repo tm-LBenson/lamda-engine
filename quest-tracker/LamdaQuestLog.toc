@@ -1,0 +1,19 @@
+## Interface: 16001, 120100, 120105, 120107
+## Title: Lamda Quest Log
+## Notes: Native-style scrolling quest tracker, categories, personal tasks and navigation.
+## Author: Lewis Benson
+## Version: 1.0.0
+## SavedVariablesPerCharacter: LamdaQuestLogDB
+## OptionalDeps: TomTom, WaypointUI
+
+Namespace.lua
+Model.lua
+Navigation.lua
+Compat.lua
+Recipes.lua
+UI.lua
+EntryMenu.lua
+Manager.lua
+Filters.lua
+Core.lua
+Bindings.xml

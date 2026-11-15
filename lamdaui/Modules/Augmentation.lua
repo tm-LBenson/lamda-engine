@@ -1,6 +1,6 @@
 local _,LUI=...
 local A=LUI.Augmentation
-local module={id="augmentation",name="LamdaMeters",enabledKey="augEnabled",reloadKeys={"meterOverlay","augLiveHybrid","augDebug","augEnabled","augShowMeter","augMeterScope","augX","augY","augUIWidth","augUIHeight"},
+local module={id="augmentation",name="LamdaMeters",experimental=true,enabledKey="augEnabled",reloadKeys={"meterOverlay","augLiveHybrid","augDebug","augEnabled","augShowMeter","augMeterScope","augX","augY","augUIWidth","augUIHeight"},
     enabledHelp="Damage, healing, utility and combat breakdowns. Augmentation attribution uses Lamda Engine.",
     defaults={meterReportHistoryLimit=100,meterCaptureBorder=2,meterCaptureDock=1,meterOverlay=false,meterShareDpsRankings=true,meterShareDamageMVP=true,meterShareBossUptime=true,meterCaptureDockBottom=true,meterNativeWindows=true,meterCaptureEnabled=false,meterAutoCurrent=true,meterAutoOverall=true,augEnabled=false,augLiveHybrid=true,augPrivateSummary=true,augGroupSummary=false,augAfterBoss=false,augAfterKey=true,
         augmentationBridgeX=288,augmentationBridgeY=320,augMeterWidth=380,augMeterHeight=220,augMeterLocked=false,

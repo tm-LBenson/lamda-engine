@@ -60,3 +60,24 @@ func TestIconCacheMetadataBoundsAndOfflineReuse(t *testing.T) {
 		t.Fatal("invalid asset accepted")
 	}
 }
+
+func TestItemIconsUseItemMetadataAndSeparateCache(t *testing.T) {
+	var pngData bytes.Buffer
+	png.Encode(&pngData, image.NewRGBA(image.Rect(0, 0, 64, 64)))
+	cache := NewItemIconCache(t.TempDir())
+	cache.client.Transport = iconTransport(func(r *http.Request) (*http.Response, error) {
+		body := pngData.String()
+		if r.URL.Host == "nether.wowhead.com" {
+			if r.URL.Path != "/tooltip/item/2589" {
+				t.Errorf("wrong item metadata endpoint %s", r.URL)
+			}
+			body = `{"icon":"inv_fabric_linen_01"}`
+		} else if r.URL.Host != "wow.zamimg.com" || r.URL.Path != "/images/wow/icons/large/inv_fabric_linen_01.jpg" {
+			t.Errorf("unexpected asset URL %s", r.URL)
+		}
+		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(body)), Header: make(http.Header)}, nil
+	})
+	if path := cache.Get(context.Background(), 2589); path == "" {
+		t.Fatal("item icon not cached")
+	}
+}

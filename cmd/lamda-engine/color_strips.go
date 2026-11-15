@@ -60,6 +60,9 @@ func transferStrips(c engine.Config) []lookup.BridgeTarget {
 	if c.SimEnabled {
 		targets = append(targets, lookup.BridgeTarget{Source: "sim", Position: lookup.BridgePosition{X: c.SimBridgeX, Y: c.SimBridgeY}, Wide: true})
 	}
+	if c.MarketEnabled {
+		targets = append(targets, lookup.BridgeTarget{Source: "market", Position: lookup.BridgePosition{X: c.MarketBridgeX, Y: c.MarketBridgeY}, Wide: true})
+	}
 	if c.KBBEnabled {
 		targets = append(targets, lookup.BridgeTarget{Source: "kbb", Position: lookup.BridgePosition{X: c.KBBBridgeX, Y: c.KBBBridgeY}, Wide: true})
 	}
@@ -123,6 +126,9 @@ func reserveModuleStrips(d *engine.FrameDisplay, c engine.Config, panels map[str
 		width, height := 128, 16
 		if target.Wide {
 			width, height = 256, 32
+		}
+		if target.Source == "market" {
+			width, height = lookup.MarketBridgeWidth, lookup.MarketBridgeHeight
 		}
 		if target.Source == "overlays" && lookup.ValidOverlayWidth(target.OverlayWidth) {
 			width, height = target.OverlayWidth, 18432/target.OverlayWidth

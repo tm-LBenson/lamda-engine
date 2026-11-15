@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="LAMDAQUESTLOG_TOGGLE" header="LAMDAQUESTLOG">
+        LamdaQuestLog_Toggle()
+    </Binding>
+</Bindings>

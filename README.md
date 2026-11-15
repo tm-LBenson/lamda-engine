@@ -1,6 +1,6 @@
 # LamdaUI and Lamda Engine
 
-[**Download LamdaUI 1.5.1**](https://github.com/tm-LBenson/lamda-engine/releases/tag/v1.5.1) · [Latest release](https://github.com/tm-LBenson/lamda-engine/releases/latest)
+[**Download LamdaUI 1.6.0**](https://github.com/tm-LBenson/lamda-engine/releases/tag/v1.6.0) · [Latest release](https://github.com/tm-LBenson/lamda-engine/releases/latest)
 
 LamdaUI combines an in-game addon hub with a Windows companion. Retail and WoW
 Forever have separate addon builds, settings, companion data and backups.
@@ -48,26 +48,29 @@ cd lamda-engine
 /usr/bin/python3 linux/launch.py --client forever --wow "/path/to/World of Warcraft/_forever_"
 ```
 
-This is a source update; the Windows release assets above remain unchanged.
+The Linux launcher is independent of the Windows installer.
 
-## Included features
+## Included modules
 
-- **Frames and LamdaCD:** unit frames, click casting and native aura displays.
-- **LamdaKick and LamdaGladius:** interrupt and arena observations, with explicit estimates when native timing is unavailable.
-- **Overlays:** editable display rules, previews and per-character backgrounds. Aura checks can restrict harmful effects to the player's own casts.
-- **Planner (LamdaKBB), Drawer, Vendor, Settings and Performance:** optional UI and companion modules.
-- **LamdaSim:** local calculation jobs, including a pinned offline SimulationCraft worker for Retail DPS. Its GPL license and corresponding source are included under `providers/simc`.
-- **LamdaQueue:** an optional module with its own explicit enable switch; installing the companion alone does not enable queue acceptance.
+Browse Addons offers **LamdaMarket**, **Lamda Quest Tracker**, **LamdaFrames**,
+**LamdaOverlays**, **LamdaSim**, **LamdaVendor**, **LamdaDrawer** and **Performance**.
+LamdaMarket no longer carries the Experimental label. LamdaOverlays remains
+experimental and installable.
 
-Open `/lamda` for the module controls. Optional features are installed and enabled
-individually. Native aura display works without the companion. Features that use
-capture or companion calculations require the corresponding module and reader.
+LamdaKBB, LamdaMeters, LamdaQueue, LamdaKick, LamdaCD and LamdaGladius remain
+visible as Experimental, with Install disabled. Existing installations retain
+their settings and can still update or uninstall.
 
-Cooldown estimates can miss unseen casts, talents and resets. Capture formats
-and some combat behavior still need live validation; automated tests establish
-software contracts, not perfect combat tracking. Calculation models have not
-been independently reviewed. Healer scores are not verified HPS. A private
-healer worker is not redistributed in this release.
+Quest Tracker is the standalone LamdaQuestLog addon, managed through LamdaUI.
+It keeps its own per-character settings and bindings. Existing standalone copies
+are recognized; choose Update to add its LamdaUI settings link. A first install
+of a new addon needs one WoW restart. Installed trackers open from
+**/lamda → Modules → Lamda Quest Tracker → Open tracker settings**.
+
+LamdaSim includes a pinned offline SimulationCraft worker for Retail DPS. Its GPL
+license and corresponding source are bundled under `providers/simc`. Calculation
+models remain unreviewed; healer scores are not verified HPS. A private healer
+worker is not redistributed.
 
 ## Source
 
@@ -75,6 +78,7 @@ healer worker is not redistributed in this release.
 - `lamdaui/`: addon hub and module sources; this is an integration source tree rather than an installable assembled addon.
 - `desktop/`: native Windows tray application.
 - `setup/`: current Windows installer and updater.
+- `quest-tracker/`: standalone quest tracker source, packaged without modifications.
 - `character-export/`: independent LamdaExport addon source. It is separate from the LamdaUI installer.
 - `tools/sim_results_runtime.py`: the independent data validator used by the cross-language overlay contract test.
 
@@ -82,7 +86,7 @@ The older `addon/`, other `tools/` scripts and historical design documents remai
 for reference. Their version-specific installation instructions predate the
 current release; use the release assets above for installation.
 
-With Go 1.25 or later and Python 3 available:
+With Go 1.25 or later and Python 3 with `lupa` available:
 
 ```sh
 go test ./...

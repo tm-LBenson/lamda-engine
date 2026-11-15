@@ -260,6 +260,10 @@ type Config struct {
 	GladiusBridgeX      int     `json:"gladiusBridgeX"`
 	GladiusBridgeY      int     `json:"gladiusBridgeY"`
 	OverlaysEnabled     bool    `json:"overlaysEnabled"`
+	MarketConfigured    bool    `json:"-"`
+	MarketEnabled       bool    `json:"marketEnabled"`
+	MarketBridgeX       int     `json:"marketBridgeX"`
+	MarketBridgeY       int     `json:"marketBridgeY"`
 	KBBEnabled          bool    `json:"kbbEnabled"`
 	AugLiveHybrid       bool    `json:"augLiveHybrid"`
 	MeterOverlay        bool    `json:"meterOverlay"`
@@ -329,7 +333,7 @@ type Config struct {
 }
 
 func DefaultConfig() Config {
-	return Config{AugLiveHybrid: true, AugmentationBridgeX: 288, AugmentationBridgeY: 320, AugDebug: true, AugX: 20, AugY: 300, AugUIWidth: 1920, AugUIHeight: 1080, AugMeterScope: 1, ScanTiming: 2, ScanMinutes: 3, ResourceLookups: true, ResourceFastIdle: true, ResourceSmooth: true, OverlaysBridgeX: 0, OverlaysBridgeY: 320, KickBridgeX: 224, GladiusBridgeX: 448, KBBBridgeY: 224, SimBridgeX: 288, SimBridgeY: 224, DefensiveTracking: true, Anchor: 1, Grow: 1, Width: 340, Height: 34, Gap: 3, FontSize: 14, Opacity: 95, Columns: 1, MaxRows: 12, Accent: 1, ShowNames: true, ShowSpells: true, ShowTimers: true, Border: true, Bars: true, Enabled: true, TrackingEnabled: true, PublicLookups: true, LookupInterval: 1, LookupBridge: true, EstimateSelf: true, EstimateParty: true, EstimateRows: 8, EstimateSize: 2, EstimateX: 60, EstimateY: 200, Companions: true, Updates: true, Notify: true, Days: 1, X: 60, Y: 240, Scale: 1}
+	return Config{MarketBridgeY: 416, AugLiveHybrid: true, AugmentationBridgeX: 288, AugmentationBridgeY: 320, AugDebug: true, AugX: 20, AugY: 300, AugUIWidth: 1920, AugUIHeight: 1080, AugMeterScope: 1, ScanTiming: 2, ScanMinutes: 3, ResourceLookups: true, ResourceFastIdle: true, ResourceSmooth: true, OverlaysBridgeX: 0, OverlaysBridgeY: 320, KickBridgeX: 224, GladiusBridgeX: 448, KBBBridgeY: 224, SimBridgeX: 288, SimBridgeY: 224, DefensiveTracking: true, Anchor: 1, Grow: 1, Width: 340, Height: 34, Gap: 3, FontSize: 14, Opacity: 95, Columns: 1, MaxRows: 12, Accent: 1, ShowNames: true, ShowSpells: true, ShowTimers: true, Border: true, Bars: true, Enabled: true, TrackingEnabled: true, PublicLookups: true, LookupInterval: 1, LookupBridge: true, EstimateSelf: true, EstimateParty: true, EstimateRows: 8, EstimateSize: 2, EstimateX: 60, EstimateY: 200, Companions: true, Updates: true, Notify: true, Days: 1, X: 60, Y: 240, Scale: 1}
 }
 
 // Simple mode is a preset, not a destructive rewrite of advanced/module choices.
@@ -372,7 +376,8 @@ func ReadConfig(path string) (Config, error) {
 		}
 		*p = v == "true"
 	}
-	for k, p := range map[string]*bool{"meterOverlay": &c.MeterOverlay, "resourceAdvanced": &c.ResourceAdvanced, "resourceLow": &c.ResourceLow, "resourceLookups": &c.ResourceLookups, "resourceFastIdle": &c.ResourceFastIdle, "resourceSmooth": &c.ResourceSmooth, "overlaysEnabled": &c.OverlaysEnabled, "kbbEnabled": &c.KBBEnabled, "simEnabled": &c.SimEnabled, "augEnabled": &c.AugEnabled, "augLiveHybrid": &c.AugLiveHybrid, "augDebug": &c.AugDebug, "augShowMeter": &c.AugShowMeter, "kickEnabled": &c.KickEnabled, "estimatePanel": &c.EstimatePanel, "estimateSelf": &c.EstimateSelf, "estimateParty": &c.EstimateParty, "estimateReady": &c.EstimateReady, "publicLookups": &c.PublicLookups, "lookupBridge": &c.LookupBridge, "engineTracking": &c.TrackingEnabled, "companions": &c.Companions, "preview": &c.Preview, "showNames": &c.ShowNames, "showSpells": &c.ShowSpells, "showTimers": &c.ShowTimers, "border": &c.Border, "bars": &c.Bars} {
+	c.MarketConfigured = field("marketEnabled") != ""
+	for k, p := range map[string]*bool{"meterOverlay": &c.MeterOverlay, "resourceAdvanced": &c.ResourceAdvanced, "resourceLow": &c.ResourceLow, "resourceLookups": &c.ResourceLookups, "resourceFastIdle": &c.ResourceFastIdle, "resourceSmooth": &c.ResourceSmooth, "overlaysEnabled": &c.OverlaysEnabled, "marketEnabled": &c.MarketEnabled, "kbbEnabled": &c.KBBEnabled, "simEnabled": &c.SimEnabled, "augEnabled": &c.AugEnabled, "augLiveHybrid": &c.AugLiveHybrid, "augDebug": &c.AugDebug, "augShowMeter": &c.AugShowMeter, "kickEnabled": &c.KickEnabled, "estimatePanel": &c.EstimatePanel, "estimateSelf": &c.EstimateSelf, "estimateParty": &c.EstimateParty, "estimateReady": &c.EstimateReady, "publicLookups": &c.PublicLookups, "lookupBridge": &c.LookupBridge, "engineTracking": &c.TrackingEnabled, "companions": &c.Companions, "preview": &c.Preview, "showNames": &c.ShowNames, "showSpells": &c.ShowSpells, "showTimers": &c.ShowTimers, "border": &c.Border, "bars": &c.Bars} {
 		v := field(k)
 		if v != "" {
 			if v != "true" && v != "false" {
@@ -398,7 +403,7 @@ func ReadConfig(path string) (Config, error) {
 		"gladiusBridgeX": {&c.GladiusBridgeX, 0, 16000}, "gladiusBridgeY": {&c.GladiusBridgeY, 0, 16000},
 		"overlaysBridgeWidth": {&c.OverlaysBridgeWidth, 16, 1152},
 		"overlaysBridgeX":     {&c.OverlaysBridgeX, 0, 16000}, "overlaysBridgeY": {&c.OverlaysBridgeY, 0, 16000},
-		"kbbBridgeX": {&c.KBBBridgeX, 0, 16000}, "kbbBridgeY": {&c.KBBBridgeY, 0, 16000},
+		"marketBridgeX": {&c.MarketBridgeX, 0, 16000}, "marketBridgeY": {&c.MarketBridgeY, 0, 16000}, "kbbBridgeX": {&c.KBBBridgeX, 0, 16000}, "kbbBridgeY": {&c.KBBBridgeY, 0, 16000},
 		"simBridgeX": {&c.SimBridgeX, 0, 16000}, "simBridgeY": {&c.SimBridgeY, 0, 16000},
 		"augmentationBridgeX": {&c.AugmentationBridgeX, 0, 16000}, "augmentationBridgeY": {&c.AugmentationBridgeY, 0, 16000},
 		"augX": {&c.AugX, 0, 16000}, "augY": {&c.AugY, 0, 16000}, "augUIWidth": {&c.AugUIWidth, 1, 16000}, "augUIHeight": {&c.AugUIHeight, 1, 16000}, "augMeterScope": {&c.AugMeterScope, 1, 2},

@@ -11,7 +11,7 @@ import (
 
 func TestCastRosterFreshnessIdentityAndLeaving(t *testing.T) {
 	now := time.Date(2026, 9, 15, 23, 33, 10, 0, time.UTC)
-	member := lookup.Character{GUID: "Player-1-00000001", Name: "Shaman", Realm: "BurningBlade", Region: "us"}
+	member := lookup.Character{GUID: "Player-104-0C71695B", Name: "Shaman", Realm: "BurningBlade", Region: "us"}
 	valid := lookup.Event{ID: "1:1", At: now, Kind: "roster", Members: []lookup.Character{member}}
 	if !rosterForCasts(&valid, now)[member.GUID] {
 		t.Fatal("fresh explicit roster rejected")

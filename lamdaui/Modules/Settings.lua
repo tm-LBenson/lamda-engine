@@ -109,7 +109,7 @@ function LUI:BuildColorStripSettings(parent)
         together:SetChecked(bridge()and bridge().moveTogether or false)
     end)
     parent.stripRows={}
-    for index,definition in ipairs({{"cd","LamdaCD"},{"kick","LamdaKick"},{"gladius","LamdaGladius"},{"kbb","LamdaKBB"},{"sim","LamdaSim"},{"overlays","LamdaOverlays"},{"augmentation","LamdaMeters"}})do
+    for index,definition in ipairs({{"cd","LamdaCD"},{"kick","LamdaKick"},{"gladius","LamdaGladius"},{"kbb","LamdaKBB"},{"sim","LamdaSim"},{"overlays","LamdaOverlays"},{"augmentation","LamdaMeters"},{"market","LamdaMarket"}})do
         local id,name=definition[1],definition[2];local y=-60-(index-1)*52
         self:Label(parent,name,4,y-6)
         local status=self:Label(parent,"",174,y-6)

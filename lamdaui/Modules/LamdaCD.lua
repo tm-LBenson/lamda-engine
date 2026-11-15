@@ -1,6 +1,6 @@
 local _,LUI=...
 local S=LUI.SpellLists
-local module={id="cd",name="LamdaCD",enabledKey="cdEnabled",
+local module={id="cd",name="LamdaCD",experimental=true,enabledKey="cdEnabled",
     reloadKeys={"cdEnabled","nativeFrames","engineTracking","companions","publicLookups","lookupInterval",
         "lookupBridge","lookupBridgeX","lookupBridgeY","engineFrameEstimates","engineFrameSpells"},
     defaults={cdEnabled=false,defensiveCatalogVersion=2,nativeFrames=true,engineTracking=true,inspectTalents=true,liveCasts=true,auraStarts=true,publicLookups=true,lookupInterval=1,lookupBridge=true,lookupBridgeX=0,lookupBridgeY=0,

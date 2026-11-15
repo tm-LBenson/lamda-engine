@@ -21,7 +21,7 @@ func TestInterruptPublicAndScreenPathsCountOneUseInAnyOrder(t *testing.T) {
 		t.Run(prefix[0]+"/"+prefix[1]+"/"+prefix[2]+"/"+prefix[3], func(t *testing.T) {
 			m := NewModel()
 			at := time.Unix(1790701778, 0)
-			guid := "Player-1-00000003"
+			guid := "Player-1136-09634704"
 			for n := 0; n < 3; n++ {
 				castAt := at.Add(time.Duration(n) * time.Minute)
 				for i, path := range prefix {

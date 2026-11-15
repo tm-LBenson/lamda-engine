@@ -21,6 +21,7 @@ import (
 // Only public spell IDs leave the machine. Rendering never waits on HTTP or disk.
 // Assets are normalized to small PNGs and retained separately from shared rules.
 type IconCache struct {
+	kind    string
 	mu      sync.Mutex
 	dir     string
 	entries map[int]*iconEntry
@@ -35,6 +36,11 @@ type iconEntry struct {
 
 func NewIconCache(dir string) *IconCache {
 	return &IconCache{dir: dir, entries: map[int]*iconEntry{}, workers: make(chan struct{}, 4), client: &http.Client{Timeout: 8 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}
+}
+func NewItemIconCache(dir string) *IconCache {
+	c := NewIconCache(dir)
+	c.kind = "item"
+	return c
 }
 func (c *IconCache) request(id int) *iconEntry {
 	if c == nil || id < 1 || id >= 10000000 {
@@ -91,9 +97,17 @@ func (c *IconCache) Request(id int) string {
 	return e.path
 }
 func (c *IconCache) Get(ctx context.Context, id int) string {
-	e := c.request(id)
-	if e == nil {
+	if c == nil || id < 1 || id >= 10000000 {
 		return ""
+	}
+	e := c.request(id)
+	for e == nil {
+		select {
+		case <-ctx.Done():
+			return ""
+		case <-time.After(25 * time.Millisecond):
+		}
+		e = c.request(id)
 	}
 	select {
 	case <-e.done:
@@ -132,7 +146,11 @@ func (c *IconCache) fetch(id int) (string, error) {
 			return path, nil
 		}
 	}
-	b, err := c.read("https://nether.wowhead.com/tooltip/spell/"+strconv.Itoa(id), 128*1024)
+	kind := "spell"
+	if c.kind == "item" {
+		kind = "item"
+	}
+	b, err := c.read("https://nether.wowhead.com/tooltip/"+kind+"/"+strconv.Itoa(id), 128*1024)
 	if err != nil {
 		return "", err
 	}

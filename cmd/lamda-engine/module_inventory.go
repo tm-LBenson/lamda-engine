@@ -29,6 +29,11 @@ func applyModuleInventory(c engine.Config, modules moduleInventory) engine.Confi
 	if !modules.Installed("overlays") {
 		c.OverlaysEnabled = false
 	}
+	if !modules.Installed("market") {
+		c.MarketEnabled = false
+	} else if !c.MarketConfigured {
+		c.MarketEnabled = true
+	}
 	if !modules.Installed("kbb") {
 		c.KBBEnabled = false
 	}

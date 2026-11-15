@@ -497,6 +497,6 @@ events:SetScript("OnEvent",function(_,event,questID)
         turned={};K:Changed()
     end)
 end)
-LUI:RegisterModule({id="kbb",name="LamdaKBB",enabledKey="kbbEnabled",settingsScope="global",defaults={kbbEnabled=false,kbbBridgeX=0,kbbBridgeY=224},reloadKeys={"kbbEnabled","kbbBridgeX","kbbBridgeY"},limits={kbbBridgeX={0,16000,integer=true},kbbBridgeY={0,16000,integer=true}},onReset=function()K:ResetDisplays()end,build=function(parent)
+LUI:RegisterModule({id="kbb",name="LamdaKBB",experimental=true,enabledKey="kbbEnabled",settingsScope="global",defaults={kbbEnabled=false,kbbBridgeX=0,kbbBridgeY=224},reloadKeys={"kbbEnabled","kbbBridgeX","kbbBridgeY"},limits={kbbBridgeX={0,16000,integer=true},kbbBridgeY={0,16000,integer=true}},onReset=function()K:ResetDisplays()end,build=function(parent)
     if K.UI then K.UI:BuildSettings(parent)end
 end})

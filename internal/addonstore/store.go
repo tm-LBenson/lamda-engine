@@ -24,13 +24,15 @@ type orderEntry struct {
 }
 
 type moduleSummary struct {
-	ID           string   `json:"id"`
-	Name         string   `json:"name"`
-	Summary      string   `json:"summary"`
-	Version      string   `json:"version"`
-	Client       string   `json:"client"`
-	Experimental bool     `json:"experimental,omitempty"`
-	Dependencies []string `json:"dependencies,omitempty"`
+	ID              string   `json:"id"`
+	Name            string   `json:"name"`
+	Summary         string   `json:"summary"`
+	Version         string   `json:"version"`
+	Client          string   `json:"client"`
+	Experimental    bool     `json:"experimental,omitempty"`
+	InstallDisabled bool     `json:"installDisabled,omitempty"`
+	Addon           string   `json:"addon,omitempty"`
+	Dependencies    []string `json:"dependencies,omitempty"`
 }
 
 type manifest struct {
@@ -74,6 +76,7 @@ type Module struct {
 	InstalledVersion string   `json:"installedVersion,omitempty"`
 	Status           string   `json:"status"`
 	Experimental     bool     `json:"experimental,omitempty"`
+	InstallDisabled  bool     `json:"installDisabled,omitempty"`
 	Dependencies     []string `json:"dependencies,omitempty"`
 }
 
@@ -84,11 +87,12 @@ type State struct {
 }
 
 type Result struct {
-	State  State  `json:"state"`
-	Action string `json:"action"`
-	Module string `json:"module"`
-	Reload bool   `json:"reload"`
-	Backup string `json:"backup,omitempty"`
+	State   State  `json:"state"`
+	Action  string `json:"action"`
+	Module  string `json:"module"`
+	Reload  bool   `json:"reload"`
+	Restart bool   `json:"restart,omitempty"`
+	Backup  string `json:"backup,omitempty"`
 }
 
 type Store struct {
@@ -142,7 +146,7 @@ func OpenPaths(stateDir, addonsDir, catalogDir, client string) (*Store, error) {
 		if err := readJSON(filepath.Join(catalogDir, summary.ID, "manifest.json"), &item); err != nil {
 			return nil, fmt.Errorf("read %s manifest: %w", summary.ID, err)
 		}
-		if item.Schema != 1 || item.ID != summary.ID || item.Name != summary.Name || item.Version != summary.Version || item.Client != client || len(item.Files) == 0 || len(item.Entries) == 0 {
+		if item.Schema != 1 || item.ID != summary.ID || item.Name != summary.Name || item.Version != summary.Version || item.Client != client || len(item.Files) == 0 || len(item.Entries) == 0 || item.InstallDisabled != summary.InstallDisabled || item.Experimental != summary.Experimental || item.Addon != summary.Addon || (item.Addon != "" && item.Addon != "LamdaQuestLog") {
 			return nil, fmt.Errorf("invalid %s module package", summary.ID)
 		}
 		entryFiles := map[string]bool{}
@@ -248,7 +252,7 @@ func safeRelative(name string) (string, error) {
 		return "", fmt.Errorf("invalid package path")
 	}
 	first := strings.Split(clean, "/")[0]
-	if first != "lamdaUI" && first != "LamdaFrames" && first != "LamdaMover" {
+	if first != "lamdaUI" && first != "LamdaFrames" && first != "LamdaMover" && first != "LamdaQuestLog" {
 		return "", fmt.Errorf("package path leaves LamdaUI")
 	}
 	return clean, nil
@@ -277,7 +281,7 @@ func (s *Store) loadInventory() error {
 				delete(s.inventory.Installed, id)
 				continue
 			}
-			if record.Version == "" || len(record.Files) == 0 || len(record.Entries) == 0 {
+			if record.Version == "" || len(record.Files) == 0 || (len(record.Entries) == 0 && item.Addon == "") {
 				return fmt.Errorf("invalid installed module record")
 			}
 			for _, name := range record.Files {
@@ -294,6 +298,9 @@ func (s *Store) loadInventory() error {
 				record.Metadata = s.installedRecord(item).Metadata
 				s.inventory.Installed[id] = record
 			}
+		}
+		if s.adoptStandalone() {
+			return s.saveInventory()
 		}
 		return nil
 	} else if !errors.Is(err, os.ErrNotExist) {
@@ -324,7 +331,45 @@ func (s *Store) loadInventory() error {
 			}
 		}
 	}
+	s.adoptStandalone()
 	return s.saveInventory()
+}
+
+// An independently installed tracker keeps its own addon and SavedVariables.
+// Missing hub links remain absent until the user chooses Update.
+func (s *Store) adoptStandalone() bool {
+	changed := false
+	for id, item := range s.manifests {
+		if item.Addon != "LamdaQuestLog" {
+			continue
+		}
+		if _, exists := s.inventory.Installed[id]; exists {
+			continue
+		}
+		name := item.Addon + "/" + item.Addon + ".toc"
+		target, err := safeTarget(s.addonsDir, name)
+		if err != nil {
+			continue
+		}
+		toc, err := os.ReadFile(target)
+		if err != nil || !strings.Contains(string(toc), "## Title: Lamda Quest Log") || !strings.Contains(string(toc), "## SavedVariablesPerCharacter: LamdaQuestLogDB") {
+			continue
+		}
+		record := installedModule{Version: "legacy", Files: []string{}, Entries: []string{}}
+		for name := range item.Files {
+			if !strings.HasPrefix(name, item.Addon+"/") {
+				continue
+			}
+			path, err := safeTarget(s.addonsDir, name)
+			if err == nil && hashFile(path) != "" {
+				record.Files = append(record.Files, name)
+			}
+		}
+		sort.Strings(record.Files)
+		s.inventory.Installed[id] = record
+		changed = true
+	}
+	return changed
 }
 
 func (s *Store) installedRecord(item manifest) installedModule {
@@ -437,7 +482,7 @@ func (s *Store) stateLocked() State {
 		}
 		result.Modules = append(result.Modules, Module{ID: summary.ID, Name: summary.Name, Summary: summary.Summary,
 			Version: summary.Version, Installed: installed, InstalledVersion: record.Version, Status: status,
-			Experimental: summary.Experimental, Dependencies: append([]string(nil), summary.Dependencies...)})
+			Experimental: summary.Experimental, InstallDisabled: summary.InstallDisabled, Dependencies: append([]string(nil), summary.Dependencies...)})
 	}
 	return result
 }
@@ -458,6 +503,14 @@ func (s *Store) Apply(id, action string) (Result, error) {
 		return Result{}, fmt.Errorf("unsupported addon action")
 	}
 	_, installed := s.inventory.Installed[id]
+	if item.InstallDisabled && !installed && action != "uninstall" {
+		return Result{}, fmt.Errorf("%s is experimental and is not available for new installations", item.Name)
+	}
+	needsRestart := false
+	if item.Addon != "" && action != "uninstall" {
+		_, err := os.Stat(filepath.Join(s.addonsDir, item.Addon, item.Addon+".toc"))
+		needsRestart = errors.Is(err, os.ErrNotExist)
+	}
 	previousRecord := s.inventory.Installed[id]
 	if action == "uninstall" && !installed {
 		return Result{State: s.stateLocked(), Action: action, Module: id}, nil
@@ -621,7 +674,7 @@ func (s *Store) Apply(id, action string) (Result, error) {
 		rollback()
 		return Result{}, err
 	}
-	return Result{State: s.stateLocked(), Action: action, Module: id, Reload: true, Backup: backup}, nil
+	return Result{State: s.stateLocked(), Action: action, Module: id, Reload: true, Restart: needsRestart, Backup: backup}, nil
 }
 
 func removeEmptyParents(root, file string) {

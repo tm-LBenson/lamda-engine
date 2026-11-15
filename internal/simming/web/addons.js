@@ -6,7 +6,7 @@ async function api(options){
  if(!response.ok)throw Error(body.error||'Browse Addons is unavailable.');return body;
 }
 function message(value,error=false){$('message').textContent=value||'';$('message').className=error?'error':'success';}
-function statusName(module){return module.status==='update'?'Update available':module.installed?'Installed':'Available';}
+function statusName(module){return module.status==='update'?'Update available':module.installed?'Installed':module.installDisabled?'Unavailable':'Available';}
 function visible(module){
  if(tab==='installed'&&!module.installed)return false;if(tab==='updates'&&module.status!=='update')return false;
  const query=$('search').value.trim().toLowerCase();return !query||(module.name+' '+module.summary).toLowerCase().includes(query);
@@ -15,7 +15,7 @@ function button(text,kind,handler){const value=document.createElement('button');
 async function apply(module,action){
  if(action==='uninstall'&&!confirm('Uninstall '+module.name+'? Its settings will be kept.'))return;
  busy=true;message(action==='uninstall'?'Uninstalling…':action==='update'?'Updating…':'Installing…');render();
- try{const result=await api({method:'POST',headers:{'Content-Type':'application/json','X-Lamda-Sim':'1'},body:JSON.stringify({id:module.id,action})});state=result.state;message(module.name+' is '+(action==='uninstall'?'uninstalled.':'ready. Use /reload in WoW.'));}
+ try{const result=await api({method:'POST',headers:{'Content-Type':'application/json','X-Lamda-Sim':'1'},body:JSON.stringify({id:module.id,action})});state=result.state;message(module.name+' is '+(action==='uninstall'?'uninstalled. Use /reload in WoW.':result.restart?'installed. Restart WoW once to load the new addon.':'ready. Use /reload in WoW.'));}
  catch(error){message(error.message,true);}finally{busy=false;render();}
 }
 function render(){
@@ -29,7 +29,7 @@ function render(){
   if(module.experimental){const badge=document.createElement('span');badge.className='experimental';badge.textContent='Experimental';meta.append(badge);}header.append(meta);
   const summary=document.createElement('p');summary.textContent=module.summary;
   const footer=document.createElement('footer');
-  if(!module.installed)footer.append(button('Install','',()=>apply(module,'install')));
+  if(!module.installed){const install=button('Install','',()=>apply(module,'install'));if(module.installDisabled){install.disabled=true;install.title='This experimental module is not available for new installations.';install.setAttribute('aria-label','Install '+module.name+' (unavailable)');}footer.append(install);}
   else if(module.status==='update')footer.append(button('Update','',()=>apply(module,'update')));
   else{const version=document.createElement('span');version.className='addon-meta';version.textContent='Version '+module.version;footer.append(version);}
   if(module.installed)footer.append(button('Uninstall','quiet',()=>apply(module,'uninstall')));

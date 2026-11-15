@@ -37,3 +37,21 @@ func TestModuleInventoryKeepsLegacyConfigWhenStoreUnavailable(t *testing.T) {
 		t.Fatal("missing module store changed legacy configuration")
 	}
 }
+
+func TestNewMarketInstallStartsBeforeFirstSettingsWrite(t *testing.T) {
+	modules := testModuleInventory{"market": true}
+	c := engine.DefaultClientConfig()
+	c.MarketConfigured = false
+	c.MarketEnabled = false
+	if !applyModuleInventory(c, modules).MarketEnabled {
+		t.Fatal("newly installed market requires a second settings write")
+	}
+	c.MarketConfigured = true
+	if applyModuleInventory(c, modules).MarketEnabled {
+		t.Fatal("explicit market opt-out was ignored")
+	}
+	c.MarketEnabled = true
+	if applyModuleInventory(c, testModuleInventory{}).MarketEnabled {
+		t.Fatal("removed module kept capturing")
+	}
+}

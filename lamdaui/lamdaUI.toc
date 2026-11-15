@@ -3,7 +3,7 @@
 ## Notes: Module settings for Lamda Engine
 ## Author: Lewis Benson
 ## Version: 0.45.4-dev
-## SavedVariables: LamdaEngineDB, LamdaUIDB, LamdaUIMigrationDB
+## SavedVariables: LamdaEngineDB, LamdaUIDB, LamdaUIMigrationDB, LamdaMarketDB
 ## OptionalDeps: Simulationcraft
 ## IconTexture: Interface\Icons\INV_Misc_Gear_01
 
@@ -41,4 +41,7 @@ AugmentationResults.lua
 Augmentation.lua
 Modules\Augmentation.lua
 Modules\Queue.lua
+Modules\MarketCodec.lua
+Modules\Market.lua
+Modules/QuestTracker.lua
 UI.lua

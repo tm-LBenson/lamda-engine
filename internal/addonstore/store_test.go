@@ -248,3 +248,138 @@ func TestRefusesLinkedAddonFolder(t *testing.T) {
 		t.Fatalf("linked addon folder accepted: %v", err)
 	}
 }
+
+func TestExperimentalInstallRestrictionPreservesExistingUsers(t *testing.T) {
+	store, _, _ := testStore(t, false)
+	item := store.manifests["test"]
+	item.Experimental, item.InstallDisabled = true, true
+	store.manifests["test"] = item
+	store.catalog.Modules[0] = item.moduleSummary
+	before := hashFile(store.inventoryPath())
+	for _, action := range []string{"install", "update"} {
+		if _, err := store.Apply("test", action); err == nil {
+			t.Fatalf("uninstalled experimental module accepted %s", action)
+		}
+	}
+	if hashFile(store.inventoryPath()) != before {
+		t.Fatal("blocked install changed inventory")
+	}
+	state := store.State().Modules[0]
+	if !state.Experimental || !state.InstallDisabled || state.Installed {
+		t.Fatalf("missing restriction state: %+v", state)
+	}
+	item.InstallDisabled = false
+	store.manifests["test"] = item
+	if _, err := store.Apply("test", "install"); err != nil {
+		t.Fatal(err)
+	}
+	item.InstallDisabled = true
+	store.manifests["test"] = item
+	if _, err := store.Apply("test", "update"); err != nil {
+		t.Fatal("existing experimental module cannot update:", err)
+	}
+	if _, err := store.Apply("test", "uninstall"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.Apply("test", "install"); err == nil {
+		t.Fatal("removed experimental module could be reinstalled")
+	}
+}
+
+func questStore(t *testing.T, existing bool) (*Store, string) {
+	t.Helper()
+	base, addons, _ := testStore(t, false)
+	summary := moduleSummary{ID: "quests", Name: "Lamda Quest Tracker", Summary: "Quests and tasks.", Version: "1.0.0", Client: "retail", Addon: "LamdaQuestLog"}
+	files := map[string][]byte{
+		"lamdaUI/Modules/QuestTracker.lua": []byte("local _, LUI = ...\n"),
+		"LamdaQuestLog/LamdaQuestLog.toc":  []byte("## Title: Lamda Quest Log\n## Version: 1.0.0\n## SavedVariablesPerCharacter: LamdaQuestLogDB\nNamespace.lua\nCore.lua\n"),
+		"LamdaQuestLog/Namespace.lua":      []byte("local addon, ns = ...\n"),
+		"LamdaQuestLog/Core.lua":           []byte("local addon, ns = ...\n"),
+	}
+	hashes := map[string]string{}
+	for name, data := range files {
+		path := filepath.Join(base.catalogDir, "quests", "package", filepath.FromSlash(name))
+		if err := atomicWrite(path, data, 0644); err != nil {
+			t.Fatal(err)
+		}
+		hashes[name] = hashBytes(data)
+		if existing && strings.HasPrefix(name, "LamdaQuestLog/") {
+			if err := atomicWrite(filepath.Join(addons, filepath.FromSlash(name)), data, 0644); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	base.catalog.Modules = append(base.catalog.Modules, summary)
+	base.catalog.Order = append(base.catalog.Order, orderEntry{Path: "Modules/QuestTracker.lua", Module: "quests"})
+	writeTestJSON(t, filepath.Join(base.catalogDir, "quests", "manifest.json"), manifest{moduleSummary: summary, Schema: 1, Files: hashes, Entries: []string{"Modules/QuestTracker.lua"}})
+	writeTestJSON(t, filepath.Join(base.catalogDir, "catalog.json"), base.catalog)
+	store, err := OpenPaths(base.stateDir, addons, base.catalogDir, "retail")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return store, addons
+}
+
+func TestQuestTrackerInstallAndRemovalPreserveCharacterSettings(t *testing.T) {
+	store, addons := questStore(t, false)
+	settings := filepath.Join(filepath.Dir(addons), "WTF", "LamdaQuestLog.lua")
+	if err := atomicWrite(settings, []byte("LamdaQuestLogDB={tasks={mine=true}}"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	before := hashFile(settings)
+	result, err := store.Apply("quests", "install")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !result.Restart || !result.Reload {
+		t.Fatal("new standalone addon needs a clear first-restart message")
+	}
+	if hashFile(filepath.Join(addons, "LamdaQuestLog", "Core.lua")) == "" {
+		t.Fatal("native addon runtime was not installed")
+	}
+	toc, _ := os.ReadFile(filepath.Join(addons, "lamdaUI", "lamdaUI.toc"))
+	if !strings.Contains(string(toc), "Modules\\QuestTracker.lua") || strings.Contains(string(toc), "Namespace.lua") {
+		t.Fatal("native runtime was embedded into the hub load list")
+	}
+	if _, err := store.Apply("quests", "uninstall"); err != nil {
+		t.Fatal(err)
+	}
+	if hashFile(settings) != before {
+		t.Fatal("quest character settings were changed")
+	}
+	if hashFile(filepath.Join(addons, "LamdaQuestLog", "Core.lua")) != "" {
+		t.Fatal("native quest runtime was not removed")
+	}
+}
+
+func TestExistingQuestTrackerIsAdoptedWithoutLoadingAMissingHubLink(t *testing.T) {
+	store, addons := questStore(t, true)
+	if !store.Installed("quests") {
+		t.Fatal("existing standalone tracker not recognized")
+	}
+	if _, err := store.Apply("test", "install"); err != nil {
+		t.Fatal(err)
+	}
+	toc, _ := os.ReadFile(filepath.Join(addons, "lamdaUI", "lamdaUI.toc"))
+	if strings.Contains(string(toc), "Modules\\QuestTracker.lua") {
+		t.Fatal("missing hub link added before user chose Update")
+	}
+	reloaded, err := OpenPaths(store.stateDir, addons, store.catalogDir, "retail")
+	if err != nil {
+		t.Fatal("adopted inventory could not reopen:", err)
+	}
+	result, err := reloaded.Apply("quests", "update")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Restart {
+		t.Fatal("already installed native addon should only require reload")
+	}
+	toc, _ = os.ReadFile(filepath.Join(addons, "lamdaUI", "lamdaUI.toc"))
+	if strings.Count(string(toc), "Modules\\QuestTracker.lua") != 1 {
+		t.Fatal("hub link was not installed exactly once")
+	}
+	if !reloaded.State().Modules[1].Installed {
+		t.Fatal("updated tracker lost its installed state")
+	}
+}

@@ -9,6 +9,7 @@
 .addon-card h2{margin:0;font-size:18px}.addon-card p{margin:10px 0;color:var(--muted);line-height:1.45}
 .addon-card header{min-height:auto;padding:0;border:0}.addon-card footer{display:flex;align-items:center;gap:8px;margin-top:auto}
 .addon-card footer button{margin:0}.addon-card .quiet{margin-left:auto}
+.addon-card footer button:disabled{background:#273039;border-color:#3b4650;color:#85909b;cursor:not-allowed;opacity:.75}
 .addon-meta{display:flex;align-items:center;gap:8px;color:#8fa7b7;font-size:12px}
 .status{color:#78ddcf}.experimental{padding:2px 6px;color:#e9c46a;background:#3b3120;border:1px solid #735d2e;border-radius:10px}
 .empty{grid-column:1/-1;padding:50px;text-align:center;color:var(--muted);border:1px dashed var(--border)}

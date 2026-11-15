@@ -390,6 +390,22 @@ function Get-LamdaModulePlan([string]$Release,[string]$Client,[string]$Component
             }
         }
     }
+    foreach($summary in $catalog.modules) {
+        if((Get-LamdaMember $summary 'addon' '') -ne 'LamdaQuestLog' -or $records.ContainsKey($summary.id)){continue}
+        $tocPath=Join-Path $Addons 'LamdaQuestLog\LamdaQuestLog.toc'
+        Assert-LamdaOrdinaryPath $tocPath
+        if(-not [IO.File]::Exists($tocPath)){continue}
+        $text=[IO.File]::ReadAllText($tocPath)
+        if(-not $text.Contains('## Title: Lamda Quest Log') -or -not $text.Contains('## SavedVariablesPerCharacter: LamdaQuestLogDB')){continue}
+        $present=@()
+        foreach($property in $available[$summary.id].files.PSObject.Properties) {
+            if(-not $property.Name.StartsWith('LamdaQuestLog/')){continue}
+            $path=Join-Path $Addons $property.Name;Assert-LamdaOrdinaryPath $path
+            $hash=Get-LamdaHash $path
+            if($hash){$present+=@($property.Name);$effective[$property.Name]=@{hash=$hash;source=$null}}
+        }
+        $records[$summary.id]=@{version='legacy';files=$present;entries=@();metadata=@()}
+    }
     $lines=New-Object Collections.Generic.List[string]
     foreach($line in $catalog.headers){$lines.Add([string]$line)}
     $lines.Add('## X-Lamda-Modules: '+(($records.Keys | Sort-Object) -join ','))
@@ -483,7 +499,7 @@ function Assert-LamdaRecovery($Journal,[string]$JournalFile,[string]$Root,[hasht
         $expected=Join-Path (Join-Path $Root (Get-Culture).TextInfo.ToTitleCase($engine.client)) 'lamda-engine.exe'
         if($engine.exe -ne $expected){throw 'The recovery record contains an unexpected companion.'}
     }
-    foreach($game in $Games.Values){foreach($addon in $script:LamdaAddons){$allowed.Add((Join-Path $game ('Interface\AddOns\'+$addon)).TrimEnd('\')+'\')}}
+    foreach($game in $Games.Values){foreach($addon in @($script:LamdaAddons)+@('LamdaQuestLog')){$allowed.Add((Join-Path $game ('Interface\AddOns\'+$addon)).TrimEnd('\')+'\')}}
     $backupRoot=(Split-Path -Parent $JournalFile).TrimEnd('\')+'\files\'
     foreach($change in $Journal.changes) {
         $target=[IO.Path]::GetFullPath($change.target)

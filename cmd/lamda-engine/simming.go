@@ -54,6 +54,7 @@ func startSimWorkspace(ctx context.Context, dir, client, wow string, configs ...
 		assembler := &simming.Assembler{Client: client}
 		plannerAssembler := &kbb.Assembler{Client: client}
 		plannerProblem := ""
+		marketProblem := ""
 		reloadGate := &simming.ReloadGate{Client: client}
 		reloadDiagnostics := simReloadDiagnostics{write: log.Printf}
 		transferDiagnostics := simTransferDiagnostics{write: log.Printf}
@@ -81,6 +82,7 @@ func startSimWorkspace(ctx context.Context, dir, client, wow string, configs ...
 				cfg = applyModuleInventory(cfg, service.Addons)
 			}
 			service.Overlays.SetCaptureEnabled(cfg.OverlaysEnabled)
+			service.Market.SetCaptureEnabled(cfg.MarketEnabled)
 			service.SetAutomaticAudit(cfg.SimEnabled)
 			capture.Configure(service.Context, transferStrips(cfg), wow, client)
 			samples = capture.samples
@@ -107,6 +109,17 @@ func startSimWorkspace(ctx context.Context, dir, client, wow string, configs ...
 			}
 			if sample.Overlays != nil && cfg.OverlaysEnabled {
 				service.Overlays.Accept(sample, time.Now())
+				continue
+			}
+			if len(sample.Market) > 0 && cfg.MarketEnabled && service.Market != nil {
+				err := service.Market.Accept(sample.Market, time.Now())
+				if err != nil && err.Error() != marketProblem {
+					marketProblem = err.Error()
+					log.Printf("Market capture: %s", marketProblem)
+				}
+				if err == nil {
+					marketProblem = ""
+				}
 				continue
 			}
 			if len(sample.KBB) > 0 && cfg.KBBEnabled {

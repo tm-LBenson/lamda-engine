@@ -9,11 +9,11 @@ import (
 	"github.com/tm-LBenson/lamda-engine/internal/framewire"
 )
 
-const outdoorAstral = `9/15/2026 23:33:10.792-4  SPELL_CAST_SUCCESS,Player-1-00000001,"Shaman-Realm",0x10548,0x80000000,0000000000000000,nil,0x80000000,0x80000000,108271,"Astral Shift",0x1`
-const outdoorLink = `9/15/2026 23:33:25.875-4  SPELL_CAST_SUCCESS,Player-1-00000001,"Shaman-Realm",0x10548,0x80000000,0000000000000000,nil,0x80000000,0x80000000,98008,"Spirit Link Totem",0x8`
+const outdoorAstral = `9/15/2026 23:33:10.792-4  SPELL_CAST_SUCCESS,Player-104-0C71695B,"Shaman-Realm",0x10548,0x80000000,0000000000000000,nil,0x80000000,0x80000000,108271,"Astral Shift",0x1`
+const outdoorLink = `9/15/2026 23:33:25.875-4  SPELL_CAST_SUCCESS,Player-104-0C71695B,"Shaman-Realm",0x10548,0x80000000,0000000000000000,nil,0x80000000,0x80000000,98008,"Spirit Link Totem",0x8`
 
 func TestRosterMatchedShamanCastsReachFrameCountdowns(t *testing.T) {
-	roster := map[string]bool{"Player-1-00000001": true}
+	roster := map[string]bool{"Player-104-0C71695B": true}
 	now, _, _ := RecordHeader(outdoorLink)
 	now = now.Add(time.Second)
 	m := NewModel()
@@ -28,7 +28,7 @@ func TestRosterMatchedShamanCastsReachFrameCountdowns(t *testing.T) {
 	g := &framewire.Snapshot{At: now, Player: "Player-1-SELF", Width: 1920, Height: 1080,
 		Size: 41, Spacing: 2, PerRow: 6, Maximum: 6, Opacity: 100, Anchor: 1,
 		Party: true, Unknown: true, Persistent: true,
-		Frames: []framewire.Rect{{GUID: "Player-1-00000001", X: 680, Y: 400, Width: 150, Height: 64}}}
+		Frames: []framewire.Rect{{GUID: "Player-104-0C71695B", X: 680, Y: 400, Width: 150, Height: 64}}}
 	cfg := DefaultConfig()
 	cfg.FrameEstimates = true
 	view := FrameView(m.Snapshot(now), cfg, g, now, now, 123)
@@ -53,7 +53,7 @@ func TestRosterFallbackDoesNotAcceptUnrelatedSourcesOrInventTimers(t *testing.T)
 	at, _, _ := RecordHeader(outdoorAstral)
 	for name, roster := range map[string]map[string]bool{
 		"unavailable": nil, "ungrouped": {}, "different player": {"Player-1-OTHER": true},
-		"false membership": {"Player-1-00000001": false},
+		"false membership": {"Player-104-0C71695B": false},
 	} {
 		t.Run(name, func(t *testing.T) {
 			m := NewModel()
@@ -62,9 +62,9 @@ func TestRosterFallbackDoesNotAcceptUnrelatedSourcesOrInventTimers(t *testing.T)
 			}
 		})
 	}
-	roster := map[string]bool{"Player-1-00000001": true}
+	roster := map[string]bool{"Player-104-0C71695B": true}
 	for _, line := range []string{
-		strings.Replace(outdoorAstral, "Player-1-00000001", "Player-104-DIFFERENT", 1),
+		strings.Replace(outdoorAstral, "Player-104-0C71695B", "Player-104-DIFFERENT", 1),
 		strings.Replace(outdoorAstral, "SPELL_CAST_SUCCESS", "SPELL_AURA_APPLIED", 1),
 		strings.Replace(outdoorAstral, "0x10548", "invalid", 1),
 	} {
@@ -72,7 +72,7 @@ func TestRosterFallbackDoesNotAcceptUnrelatedSourcesOrInventTimers(t *testing.T)
 			t.Fatal("invalid/noncast source accepted", line)
 		}
 	}
-	pet := strings.Replace(outdoorAstral, "Player-1-00000001", "Pet-104-0C71695B", 1)
+	pet := strings.Replace(outdoorAstral, "Player-104-0C71695B", "Pet-104-0C71695B", 1)
 	if NewModel().IngestWithRoster(pet, at, true, map[string]bool{"Pet-104-0C71695B": true}) {
 		t.Fatal("roster broadened NPC/companion filtering")
 	}

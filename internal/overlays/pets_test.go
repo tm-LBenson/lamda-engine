@@ -116,7 +116,7 @@ func TestPetWarningRuntimeTransitionsAndLoadFilters(t *testing.T) {
 	r.Roots[0].Children[0].Props = map[string]any{"condition": "pet", "check": "unavailable"}
 	r.Roots[0].Children[0].Children = r.Roots[0].Children[0].Children[:1]
 	r.Roots[0].Children[0].Children[0].Props = map[string]any{"display": "text", "text": "NO PET", "visibility": "conditions"}
-	r.Load = Load{Character: "Lamdabow", Realm: "Gurubashi", Class: "HUNTER", Spec: 253, Mounted: "no", Alive: "yes"}
+	r.Load = Load{Character: "Examplehunter", Realm: "Gurubashi", Class: "HUNTER", Spec: 253, Mounted: "no", Alive: "yes"}
 	rs := []Rule{r}
 	if err := Validate(rs); err != nil {
 		t.Fatal(err)
@@ -140,7 +140,7 @@ func TestPetWarningRuntimeTransitionsAndLoadFilters(t *testing.T) {
 	} {
 		s := sample(rs, now, i+1)
 		p := s.Overlays
-		p.Character = "Lamdabow"
+		p.Character = "Examplehunter"
 		p.Class = "HUNTER"
 		p.Spec = 253
 		p.PetVersion = 1

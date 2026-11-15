@@ -10,6 +10,7 @@ import (
 	"github.com/tm-LBenson/lamda-engine/internal/augmentation"
 	"github.com/tm-LBenson/lamda-engine/internal/kbb"
 	"github.com/tm-LBenson/lamda-engine/internal/lookup"
+	"github.com/tm-LBenson/lamda-engine/internal/market"
 	"github.com/tm-LBenson/lamda-engine/internal/overlays"
 	"io"
 	"net"
@@ -36,6 +37,7 @@ type Service struct {
 	Addons        *addonstore.Store
 	Overlays      *overlays.Store
 	Planner       *kbb.Store
+	Market        *market.Store
 	URL           string
 	server        *http.Server
 	listener      net.Listener
@@ -71,7 +73,21 @@ func Listen(ctx context.Context, dir, client string, p Calculator) (*Service, er
 		w.Close()
 		return nil, err
 	}
-	s := &Service{MeterCommands: make(chan lookup.MeterCommand, 4), MeterShares: make(chan struct{}, 1), Augmentation: augmentation.New(filepath.Join(filepath.Dir(dir), "augmentation", "reports.json")), Overlays: overlayStore, Planner: planner, Workspace: w, URL: "http://" + address, listener: l, Context: ctx, cancel: cancel}
+	marketStore, err := market.Open(filepath.Join(filepath.Dir(dir), "market", "market.sqlite"), client)
+	if err != nil {
+		cancel()
+		l.Close()
+		w.Close()
+		return nil, err
+	}
+	if err = marketStore.StartPublisher(ctx); err != nil {
+		marketStore.Close()
+		cancel()
+		l.Close()
+		w.Close()
+		return nil, err
+	}
+	s := &Service{Market: marketStore, MeterCommands: make(chan lookup.MeterCommand, 4), MeterShares: make(chan struct{}, 1), Augmentation: augmentation.New(filepath.Join(filepath.Dir(dir), "augmentation", "reports.json")), Overlays: overlayStore, Planner: planner, Workspace: w, URL: "http://" + address, listener: l, Context: ctx, cancel: cancel}
 	s.summaryDone = make(chan struct{})
 	go func() { defer close(s.summaryDone); s.Augmentation.RunSummaryPreparation(ctx) }()
 	s.server = &http.Server{Handler: s.Handler(address), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 15 * time.Second, IdleTimeout: 30 * time.Second, MaxHeaderBytes: 8192}
@@ -125,6 +141,9 @@ func (s *Service) Close() {
 	s.SetAutomaticAudit(false)
 	s.server.Close()
 	s.Workspace.Close()
+	if s.Market != nil {
+		s.Market.Close()
+	}
 	if s.Overlays != nil {
 		_ = s.Overlays.FlushMemory()
 	}
@@ -186,6 +205,12 @@ func (s *Service) Handler(host string) http.Handler {
 			w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; media-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'")
 		}
 		switch {
+		case r.URL.Path == "/market" || strings.HasPrefix(r.URL.Path, "/market/") || strings.HasPrefix(r.URL.Path, "/api/market/"):
+			if s.Market == nil {
+				failure(w, 503, fmt.Errorf("market unavailable"))
+				return
+			}
+			s.Market.ServeHTTP(w, r)
 		case r.URL.Path == "/api/overlays/pack-history" || r.URL.Path == "/api/overlays/pack-history/delete" || r.URL.Path == "/api/overlays/pack-history/recover":
 			s.overlayPackHistory(w, r)
 		case r.URL.Path == "/api/addons":

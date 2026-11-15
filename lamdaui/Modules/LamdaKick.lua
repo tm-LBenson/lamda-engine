@@ -1,5 +1,5 @@
 local _,LUI=...
-local module={id="kick",name="LamdaKick",enabledKey="kickEnabled",
+local module={id="kick",name="LamdaKick",experimental=true,enabledKey="kickEnabled",
     enabledHelp="Your interrupt uses WoW's actual cooldown. Teammates use Lamda Engine: Calibrating means watching for a cast or waiting one normal cooldown, then Ready or a countdown. Teammate timers assume no missed use.",
     reloadKeys={"kickBridgeX","kickBridgeY","kickEnabled","kickSpells","castCaptureMode"},
     defaults={kickBridgeX=224,kickBridgeY=0,kickSpells=table.concat(LUI.SpellLists.interrupts,","),kickEnabled=false,kickMode=2,kickSelf=true,kickSolo=false,kickLocked=true,

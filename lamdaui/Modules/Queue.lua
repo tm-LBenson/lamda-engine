@@ -170,7 +170,7 @@ end
 function Q:Skip()
     if self.current then self.current.record.skip=true;self:Tick(GetTime()) end
 end
-local module={id="queue",name="LamdaQueue",enabledKey="queueEnabled",settingsScope="global",
+local module={id="queue",name="LamdaQueue",experimental=true,enabledKey="queueEnabled",settingsScope="global",
     enabledHelp="Allow Lamda Engine to click supported queue acceptance buttons while WoW has focus. Requires the matching engine update.",
     defaults={queueEnabled=false,queueLFG=true,queuePVP=true,queueMode=2,queueRemaining=3,queueDelay=5,queueLFGWindow=40},
     limits={queueMode={1,3,integer=true},queueRemaining={1,30,integer=true},queueDelay={0,60,integer=true},queueLFGWindow={10,120,integer=true}}}

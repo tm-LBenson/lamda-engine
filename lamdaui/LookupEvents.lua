@@ -16,7 +16,8 @@ function lookup:Enabled()
     local db=LUI:DB()
     if self.id=="kick" then return db.kickEnabled end
     if self.id=="gladius" then return not LUI.ForeverEngine and db.gladiusEnabled and db.gladiusEngine end
-    if self.id=="kbb" then return db.kbbEnabled end
+    if self.id=="market" then return db.marketEnabled end
+ if self.id=="kbb" then return db.kbbEnabled end
     if self.id=="overlays" then return db.overlaysEnabled end
     if self.id=="sim" then return db.simEnabled end
     if self.id=="augmentation" then return not LUI.ForeverEngine and db.augEnabled and db.meterCaptureEnabled==true end
@@ -38,7 +39,7 @@ function lookup:GetPosition()
 end
 function lookup:ManagedStrips()
     local result={}
-    for _,id in ipairs({"cd","kick","gladius","kbb","sim","overlays","augmentation"})do
+    for _,id in ipairs({"cd","kick","gladius","kbb","sim","overlays","augmentation","market"})do
         for _,module in ipairs(LUI.modules)do
             if module.id==id then result[#result+1]=self:GetStrip(id);break end
         end
@@ -368,10 +369,10 @@ function lookup:GetStrip(id)
     if not self.frame then self:Initialize()end
     if id=="cd" then return self end
     if self.strips[id]then return self.strips[id]end
-    local names={kick="LamdaKick",gladius="LamdaGladius",kbb="LamdaKBB",sim="LamdaSim",overlays="LamdaOverlays",augmentation="LamdaMeters"}
+    local names={market="LamdaMarket",kick="LamdaKick",gladius="LamdaGladius",kbb="LamdaKBB",sim="LamdaSim",overlays="LamdaOverlays",augmentation="LamdaMeters"}
     assert(names[id],"Unknown color strip")
-    local wide=id=="kbb" or id=="sim" or id=="overlays" or id=="augmentation"
-    local positions={kick={224,0},gladius={448,0},kbb={0,224},sim={288,224},overlays={0,320},augmentation={288,320}}
+    local wide=id=="market" or id=="kbb" or id=="sim" or id=="overlays" or id=="augmentation"
+    local positions={market={0,416},kick={224,0},gladius={448,0},kbb={0,224},sim={288,224},overlays={0,320},augmentation={288,320}}
     local strip=setmetatable({id=id,xKey=id.."BridgeX",yKey=id.."BridgeY",width=wide and 256 or 128,height=wide and 32 or 16,wide=wide,
         defaultX=positions[id][1],defaultY=positions[id][2],cells={},packet=false,rendered=false,moving=false,dragging=false,minimizeButton=false},{__index=self})
     self.strips[id]=strip
@@ -444,7 +445,7 @@ local function bytes(value,count)
 end
 function lookup:Checksum(body) return crc32(body) end
 function lookup:Packet(body,magic)
-    local capacity=(magic=="LUS2" or magic=="LUR2" or magic=="LUK2" or magic=="LUO1" or magic=="LUM1") and 6134 or 1526
+    local capacity=(magic=="LMK1" or magic=="LUS2" or magic=="LUR2" or magic=="LUK2" or magic=="LUO1" or magic=="LUM1") and 6134 or 1526
     if #body>capacity then gap("packet_too_large");return nil end
     return (magic or "LUI1")..bytes(#body,2)..bytes(crc32(body),4)..body..string.rep("\0",capacity-#body)
 end

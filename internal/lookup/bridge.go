@@ -24,6 +24,11 @@ const SimBridgeWidth = 256
 const SimBridgeHeight = 32
 const SimBridgeBytes = 6144
 
+// Market bulk frames retain the same opaque 2x2 RGB cells and CRC envelope.
+const MarketBridgeWidth = 512
+const MarketBridgeHeight = 64
+const MarketBridgeBytes = MarketBridgeWidth * MarketBridgeHeight / 4 * 3
+
 // BridgePosition is measured in physical pixels from the client area's top left.
 // Keep a profile's preferred origin when a smaller window temporarily clamps it.
 type BridgePosition struct{ X, Y int }
@@ -53,7 +58,9 @@ func DecodeSample(data []byte) BridgeSample {
 	}
 	magic := string(data[:4])
 	expected := BridgeBytes
-	if magic == "LUS2" || magic == "LUR2" || magic == "LUK2" || magic == "LUO1" || magic == "LUM1" {
+	if magic == "LMK2" {
+		expected = MarketBridgeBytes
+	} else if magic == "LMK1" || magic == "LUS2" || magic == "LUR2" || magic == "LUK2" || magic == "LUO1" || magic == "LUM1" {
 		expected = SimBridgeBytes
 	} else if magic != "LUQ1" && magic != "LUI1" && magic != "LUI2" && magic != "LUI3" && magic != "LUI4" && magic != "LUF4" && magic != "LUS1" && magic != "LUA1" && magic != "LCD1" && magic != "LKI1" && magic != "FCD1" && magic != "FKI1" {
 		return BridgeSample{Error: "bridge_not_visible"}
@@ -85,6 +92,16 @@ func DecodeSample(data []byte) BridgeSample {
 		sample := parseArena(string(body))
 		sample.Source = "gladius"
 		return sample
+	}
+	if magic == "LMK1" || magic == "LMK2" {
+		first, second := byte('1'), byte('2')
+		if magic == "LMK2" {
+			first, second = '3', '4'
+		}
+		if len(body) < 2 || body[1] != '|' || (body[0] != first && body[0] != second) {
+			return BridgeSample{Error: "market_bridge_version"}
+		}
+		return BridgeSample{Source: "market", Market: append([]byte(nil), body...)}
 	}
 	if magic == "LUK2" {
 		if !bytes.HasPrefix(body, []byte("2|")) {
@@ -249,6 +266,7 @@ type BridgeSample struct {
 	Source           string
 	Position         BridgePosition
 	KBB              []byte
+	Market           []byte
 	Arena            *ArenaSnapshot
 	Queue            []byte
 	Reload           []byte
