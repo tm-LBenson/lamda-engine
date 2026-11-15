@@ -68,7 +68,7 @@ function Show-LamdaSetup {
         $label.Size=New-Object Drawing.Size(488,$Height);$form.Controls.Add($label);return $label
     }
     $heading=Add-Label 'LamdaUI' 22 42;$heading.Font=New-Object Drawing.Font('Segoe UI',24,[Drawing.FontStyle]::Bold)
-    $subtitle=Add-Label 'Ready for WoW in a few clicks.' 69
+    $subtitle=Add-Label 'Build and install LamdaUI on this PC.' 69
     $gameLabel=Add-Label 'Your game' 112
     $choice=New-Object Windows.Forms.ComboBox;$choice.DropDownStyle='DropDownList'
     $choice.Items.AddRange(@('World of Warcraft','WoW Forever'));$choice.SelectedIndex=if($Client -eq 'forever'){1}else{0}
@@ -76,7 +76,7 @@ function Show-LamdaSetup {
     $browse=New-Object Windows.Forms.Button;$browse.Text='Find WoW...';$browse.Location=New-Object Drawing.Point(364,139);$browse.Size=New-Object Drawing.Size(150,32)
     $browse.BackColor=[Drawing.Color]::FromArgb(45,65,83);$browse.ForeColor=[Drawing.Color]::White;$browse.FlatStyle='Flat';$form.Controls.Add($browse)
     $location=Add-Label '' 179 41;$location.ForeColor=[Drawing.Color]::FromArgb(157,179,198)
-    $status=Add-Label 'We will install the addon and its companion app.' 228 44
+    $status=Add-Label 'Setup installs Git and Go if needed, then builds the companion and tray app. Windows may ask for permission.' 220 58
     $progress=New-Object Windows.Forms.ProgressBar;$progress.Location=New-Object Drawing.Point(26,275);$progress.Size=New-Object Drawing.Size(312,8);$progress.Style='Marquee';$progress.Visible=$false;$form.Controls.Add($progress)
     $action=New-Object Windows.Forms.Button;$action.Text=if($Update){'Update'}else{'Install'}
     $action.BackColor=[Drawing.Color]::FromArgb(90,205,227);$action.ForeColor=[Drawing.Color]::Black;$action.FlatStyle='Flat'
@@ -144,6 +144,7 @@ function Show-LamdaSetup {
                 if($ReadOnly){return @{downloaded=$true}}
                 $release=Join-Path $Stage 'release';Expand-LamdaRelease $archive $release
                 Set-LamdaStatus $StatusFile 'verifying' 'Checking your download...'
+                Build-LamdaRelease $release $Stage @($Games.Keys) $StatusFile ''
                 $result=Install-LamdaRelease $release $Root $Games $StatusFile $Desktop
                 $script:LamdaStatusMirror=Join-Path $Root 'Updater\data\status.json'
                 Complete-LamdaSetup $result

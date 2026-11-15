@@ -1,4 +1,4 @@
-# Shared Windows setup/update operations. No development tools are required.
+# Shared Windows setup/update operations. LamdaUI executables are built locally.
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $script:LamdaRepository='tm-LBenson/lamda-engine'
@@ -6,6 +6,7 @@ $script:LamdaAddons=@('lamdaUI','LamdaFrames','LamdaMover')
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.IO.Compression
 $script:LamdaStatusMirror=$null
+$script:LamdaControlMutex='Local\LamdaUI.EngineControl'
 
 function Write-LamdaAtomic([string]$Path,[byte[]]$Bytes) {
     $parent=Split-Path -Parent $Path
@@ -186,6 +187,7 @@ function Test-LamdaRelease([string]$Release) {
         if($bundle.product -ne 'LamdaUI' -or $bundle.component -ne $kind){throw 'The setup package is incomplete.'}
         $null=Get-LamdaVersion $bundle.version
         $names=if($kind -eq 'desktop'){@('LamdaUI.exe','LamdaUI.exe.config','lui.ico')}else{@('Install.ps1','Core.ps1','Update.ps1')}
+        if($kind -eq 'updater' -and (Get-LamdaMember $bundle.files 'build-source.zip')){$names+=@('build-source.zip')}
         if(@($bundle.files.PSObject.Properties).Count -ne $names.Count){throw 'The setup package contains unexpected files.'}
         $allowed[$kind+'/manifest.json']=$true
         foreach($name in $names) {
@@ -197,6 +199,150 @@ function Test-LamdaRelease([string]$Release) {
     }
     if($allowed.Count -ne $expected.Count){throw 'The release contains unexpected files.'}
     return $bundles
+}
+function ConvertTo-LamdaNativeArgument([string]$Value) {
+    if($Value.Contains([char]0)){throw 'Invalid build argument.'}
+    # Windows argv escaping; no shell or expression evaluation is involved.
+    return '"'+(($Value -replace '(\\*)"','$1$1\"') -replace '(\\+)$','$1$1')+'"'
+}
+function Invoke-LamdaBuildCommand([string]$File,[string[]]$Arguments,[string]$Directory,[string]$Log,[hashtable]$Environment=@{}) {
+    $info=New-Object Diagnostics.ProcessStartInfo
+    $info.FileName=$File;$info.Arguments=(@($Arguments | ForEach-Object {ConvertTo-LamdaNativeArgument $_}) -join ' ')
+    $info.WorkingDirectory=$Directory;$info.UseShellExecute=$false;$info.CreateNoWindow=$true
+    $info.RedirectStandardOutput=$true;$info.RedirectStandardError=$true
+    foreach($key in $Environment.Keys){$info.EnvironmentVariables[$key]=$Environment[$key]}
+    [IO.Directory]::CreateDirectory((Split-Path -Parent $Log)) | Out-Null
+    $process=New-Object Diagnostics.Process;$process.StartInfo=$info
+    try {
+        if(-not $process.Start()){throw 'The build tool could not start.'}
+        $stdout=$process.StandardOutput.ReadToEndAsync();$stderr=$process.StandardError.ReadToEndAsync()
+        if(-not $process.WaitForExit(1200000)){$process.Kill();throw 'The build tool timed out. Please try again.'}
+        $output=$stdout.GetAwaiter().GetResult();$errors=$stderr.GetAwaiter().GetResult()
+        [IO.File]::WriteAllText($Log,$output+$errors)
+        if($process.ExitCode -ne 0){throw ('The build tool exited with code '+$process.ExitCode+'.')}
+        return $output.Trim()
+    } catch {throw ('Could not build LamdaUI. '+$_.Exception.Message+' Build log: '+$Log)}
+    finally {$process.Dispose()}
+}
+function Find-LamdaBuildTool([string]$Name) {
+    $command=Get-Command ($Name+'.exe') -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+    if($command){return $command.Source}
+    $paths=if($Name -eq 'git'){@('Git\cmd\git.exe')}elseif($Name -eq 'go'){@('Go\bin\go.exe')}else{@()}
+    foreach($base in @($env:ProgramFiles,${env:ProgramFiles(x86)},(Join-Path $env:LOCALAPPDATA 'Programs'))) {
+        if($base){foreach($relative in $paths){$candidate=Join-Path $base $relative;if([IO.File]::Exists($candidate)){return $candidate}}}
+    }
+    return $null
+}
+function Install-LamdaBuildTool([string]$Name,[string]$Package,[string]$Stage,[string]$StatusFile,[string]$LogRoot,[switch]$Upgrade) {
+    $tool=Find-LamdaBuildTool $Name
+    if($tool -and -not $Upgrade){return $tool}
+    $winget=Find-LamdaBuildTool 'winget'
+    if(-not $winget){throw ('Windows App Installer (winget) is needed to install '+$Name+'. Install App Installer from Microsoft Store, then run setup again.')}
+    Set-LamdaStatus $StatusFile 'tools' ('Installing '+$Name+' with Windows Package Manager. Accept the Windows permission prompt if shown.')
+    $null=Invoke-LamdaBuildCommand $winget @('install','--id',$Package,'--exact','--source','winget','--architecture','x64','--silent','--accept-source-agreements','--accept-package-agreements','--disable-interactivity') $Stage (Join-Path $LogRoot ($Name+'-install.log'))
+    # Newly installed tools must work without asking the user to reopen setup.
+    $env:Path=[Environment]::GetEnvironmentVariable('Path','Machine')+';'+[Environment]::GetEnvironmentVariable('Path','User')+';'+$env:Path
+    $tool=Find-LamdaBuildTool $Name
+    if(-not $tool){throw ($Name+' installation did not finish. Please run setup again. Build logs: '+$LogRoot)}
+    return $tool
+}
+function Get-LamdaBuildTools([string]$Stage,[string]$StatusFile,[string]$LogRoot) {
+    $git=Install-LamdaBuildTool 'git' 'Git.Git' $Stage $StatusFile $LogRoot
+    $go=Install-LamdaBuildTool 'go' 'GoLang.Go' $Stage $StatusFile $LogRoot
+    $compiler=Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
+    if(-not [IO.File]::Exists($compiler)){throw 'The Windows .NET Framework C# compiler is missing. Install .NET Framework 4.8, then run setup again.'}
+    $gitVersion=Invoke-LamdaBuildCommand $git @('--version') $Stage (Join-Path $LogRoot 'git-version.log')
+    $goVersion=Invoke-LamdaBuildCommand $go @('version') $Stage (Join-Path $LogRoot 'go-version.log') @{GOTOOLCHAIN='local';GOENV='off';GOWORK='off'}
+    if($goVersion -notmatch '^go version go1\.(\d+)' -or [int]$Matches[1] -lt 21) {
+        $go=Install-LamdaBuildTool 'go' 'GoLang.Go' $Stage $StatusFile $LogRoot -Upgrade
+        $goVersion=Invoke-LamdaBuildCommand $go @('version') $Stage (Join-Path $LogRoot 'go-version.log') @{GOTOOLCHAIN='local';GOENV='off';GOWORK='off'}
+        if($goVersion -notmatch '^go version go1\.(\d+)' -or [int]$Matches[1] -lt 21){throw 'Go could not be updated to a supported version. Build logs are at: '+$LogRoot}
+    }
+    return @{git=$git;go=$go;compiler=$compiler;gitVersion=$gitVersion}
+}
+function Test-LamdaBuildSource([string]$Source,$Bundles) {
+    $recipe=Read-LamdaJson (Join-Path $Source 'build.json')
+    if($recipe.product -ne 'LamdaUI' -or $recipe.schema -ne 1){throw 'This release has an invalid source package.'}
+    $null=Get-LamdaVersion $recipe.productVersion
+    if($recipe.desktopVersion -ne $Bundles.desktop.version){throw 'The tray source belongs to a different release.'}
+    foreach($client in @('retail','forever')) {
+        if((Get-LamdaMember $recipe.clients $client) -ne $Bundles[$client].engine.version){throw 'The engine source belongs to a different release.'}
+    }
+    $expected=@{}
+    foreach($property in $recipe.files.PSObject.Properties) {
+        Assert-LamdaPath $property.Name
+        if($property.Name -notmatch '^(engine/|desktop/)' -or $expected.ContainsKey($property.Name) -or $property.Value -notmatch '^[0-9a-f]{64}$'){throw 'The build source manifest is invalid.'}
+        if((Get-LamdaHash (Join-Path $Source $property.Name)) -ne $property.Value){throw 'The build source failed its integrity check.'}
+        $expected[$property.Name]=$true
+    }
+    if(@(Get-ChildItem -LiteralPath $Source -Recurse -File).Count -ne $expected.Count+1){throw 'The build source contains unexpected files.'}
+    foreach($name in @('engine/go.mod','engine/go.sum','engine/cmd/lamda-engine/main.go','desktop/Program.cs','desktop/Tests.cs','desktop/app.manifest','desktop/lui.ico')) {
+        if(-not $expected.ContainsKey($name)){throw 'The build source package is incomplete.'}
+    }
+    $module=[IO.File]::ReadAllText((Join-Path $Source 'engine/go.mod'))
+    if($module -notmatch '(?m)^module github.com/tm-LBenson/lamda-engine\s*$'){throw 'The build source belongs to a different application.'}
+    return $recipe
+}
+function Build-LamdaRelease([string]$Release,[string]$Stage,[string[]]$Clients,[string]$StatusFile,[string]$LogRoot) {
+    # The downloaded release is verified before any source is compiled or run.
+    $bundles=Test-LamdaRelease $Release
+    if(-not $Clients.Count -or @($Clients | Where-Object {$_ -notin @('retail','forever')}).Count){throw 'Choose a game to build.'}
+    $sourceArchive=Join-Path $Release 'updater/package/build-source.zip'
+    if(-not (Get-LamdaMember $bundles.updater.files 'build-source.zip')){throw 'This release does not include local build source. Wait for a source-enabled release; your installed files have not changed.'}
+    $sourceHash=Get-LamdaHash $sourceArchive;$releaseHash=Get-LamdaHash (Join-Path $Release 'release.json')
+    $source=Join-Path $Stage 'build-source'
+    Set-LamdaStatus $StatusFile 'source' 'Checking the release source...'
+    Expand-LamdaRelease $sourceArchive $source
+    $recipe=Test-LamdaBuildSource $source $bundles
+    if(-not $LogRoot){$LogRoot=Join-Path (Join-Path $env:LOCALAPPDATA 'LamdaUI-Setup\Logs') ([guid]::NewGuid().ToString('N'))}
+    [IO.Directory]::CreateDirectory($LogRoot) | Out-Null
+    $tools=Get-LamdaBuildTools $Stage $StatusFile $LogRoot
+    $environment=@{GOOS='windows';GOARCH='amd64';CGO_ENABLED='0';GOENV='off';GOWORK='off';GOFLAGS='';GOTOOLCHAIN='auto';GOPROXY='https://proxy.golang.org';GOSUMDB='sum.golang.org';GOPRIVATE='';GONOPROXY='';GONOSUMDB='';Path=((Split-Path -Parent $tools.git)+';'+$env:Path)}
+    $engine=Join-Path $source 'engine';$built=Join-Path $Stage 'built'
+    [IO.Directory]::CreateDirectory($built) | Out-Null
+    Set-LamdaStatus $StatusFile 'dependencies' 'Downloading Go build dependencies. The first build may take several minutes...'
+    $null=Invoke-LamdaBuildCommand $tools.go @('mod','download') $engine (Join-Path $LogRoot 'go-dependencies.log') $environment
+    $goVersion=Invoke-LamdaBuildCommand $tools.go @('version') $engine (Join-Path $LogRoot 'go-toolchain.log') $environment
+    $outputs=@{}
+    foreach($client in @($Clients | Sort-Object -Unique)) {
+        Set-LamdaStatus $StatusFile 'building' ('Building the '+$client+' companion on this PC...')
+        $exe=Join-Path $built ($client+'-lamda-engine.exe')
+        $flags='-X main.version='+$recipe.clients.$client+' -X main.productReleaseVersion='+$recipe.productVersion
+        $null=Invoke-LamdaBuildCommand $tools.go @('build','-trimpath','-buildvcs=false','-mod=readonly','-ldflags',$flags,'-o',$exe,'./cmd/lamda-engine') $engine (Join-Path $LogRoot ($client+'-build.log')) $environment
+        $version=Invoke-LamdaBuildCommand $exe @('--version') $built (Join-Path $LogRoot ($client+'-version.log'))
+        if($version -ne $recipe.clients.$client){throw 'The locally built engine did not report the expected version.'}
+        $outputs[$client]=$exe
+    }
+    Set-LamdaStatus $StatusFile 'building' 'Building the LamdaUI tray app on this PC...'
+    $desktop=Join-Path $source 'desktop';$desktopExe=Join-Path $built 'LamdaUI.exe'
+    $arguments=@('/nologo','/target:winexe','/platform:x64','/optimize+','/warnaserror+',
+        '/reference:System.Windows.Forms.dll','/reference:System.Drawing.dll','/reference:System.Web.Extensions.dll','/reference:System.Management.dll',
+        ('/win32icon:'+(Join-Path $desktop 'lui.ico')),('/win32manifest:'+(Join-Path $desktop 'app.manifest')),('/out:'+$desktopExe))
+    $arguments+=@(Get-ChildItem -LiteralPath $desktop -Filter '*.cs' -File | Sort-Object Name | ForEach-Object {$_.FullName})
+    $null=Invoke-LamdaBuildCommand $tools.compiler $arguments $desktop (Join-Path $LogRoot 'desktop-build.log')
+    Copy-Item -LiteralPath (Join-Path $Release 'desktop/package/LamdaUI.exe.config') -Destination ($desktopExe+'.config')
+    Set-LamdaStatus $StatusFile 'testing' 'Checking the locally built apps...'
+    $null=Invoke-LamdaBuildCommand $desktopExe @('--self-test',(Join-Path $LogRoot 'desktop-tests.txt')) $built (Join-Path $LogRoot 'desktop-tests.log')
+    if(-not [IO.File]::Exists((Join-Path $LogRoot 'desktop-tests.txt')) -or [IO.File]::ReadAllText((Join-Path $LogRoot 'desktop-tests.txt')) -notmatch '^PASS:'){throw 'The tray build did not finish its checks.'}
+    $null=Test-LamdaBuildSource $source $bundles
+    # Seal the locally built artifacts only after every selected build passed.
+    $provenance=@{mode='local';sourceSHA256=$sourceHash;releaseSHA256=$releaseHash;go=$goVersion;git=$tools.gitVersion;builtAt=[DateTime]::UtcNow.ToString('o')}
+    foreach($client in $outputs.Keys) {
+        $target=Join-Path $Release ($client+'/engine/package/lamda-engine.exe')
+        [IO.File]::Copy($outputs[$client],$target,$true)
+        $bundle=$bundles[$client].engine;$bundle.files.'lamda-engine.exe'=Get-LamdaHash $target
+        $bundle | Add-Member -NotePropertyName localBuild -NotePropertyValue $provenance -Force
+        Write-LamdaJson (Join-Path $Release ($client+'/engine/manifest.json')) $bundle
+    }
+    $target=Join-Path $Release 'desktop/package/LamdaUI.exe';[IO.File]::Copy($desktopExe,$target,$true)
+    $bundles.desktop.files.'LamdaUI.exe'=Get-LamdaHash $target
+    $bundles.desktop | Add-Member -NotePropertyName localBuild -NotePropertyValue $provenance -Force
+    Write-LamdaJson (Join-Path $Release 'desktop/manifest.json') $bundles.desktop
+    $manifest=Read-LamdaJson (Join-Path $Release 'release.json');$files=@{}
+    foreach($file in Get-ChildItem -LiteralPath $Release -Recurse -File){if($file.FullName -ne (Join-Path $Release 'release.json')){$files[$file.FullName.Substring($Release.Length+1).Replace('\','/')]=Get-LamdaHash $file.FullName}}
+    $manifest.files=$files;Write-LamdaJson (Join-Path $Release 'release.json') $manifest
+    $null=Test-LamdaRelease $Release
+    Write-LamdaJson (Join-Path $LogRoot 'build.json') @{product='LamdaUI';clients=@($outputs.Keys);build=$provenance;files=@{desktop=(Get-LamdaHash $desktopExe);engines=@($outputs.Keys | ForEach-Object {@{client=$_;sha256=(Get-LamdaHash $outputs[$_])}})}}
 }
 function Get-LamdaModulePlan([string]$Release,[string]$Client,[string]$ComponentDir,[string]$Addons,$Bundle,[string]$PlanRoot) {
     $effective=@{}
@@ -393,7 +539,7 @@ function Restore-LamdaTransaction($Journal,[string]$JournalFile) {
 function Install-LamdaRelease([string]$Release,[string]$Root,[hashtable]$Games,[string]$StatusFile,[string]$DesktopPath) {
     $bundles=Test-LamdaRelease $Release
     Assert-LamdaOrdinaryPath $Root
-    $mutex=New-Object Threading.Mutex($false,'Local\LamdaUI.EngineControl');$owns=$false;$planRoot=$null
+    $mutex=New-Object Threading.Mutex($false,$script:LamdaControlMutex);$owns=$false;$planRoot=$null
     try {
         try {$owns=$mutex.WaitOne(0)}catch [Threading.AbandonedMutexException] {$owns=$true}
         if(-not $owns){throw 'LamdaUI is already updating or starting. Please try again when it finishes.'}
@@ -432,6 +578,12 @@ function Install-LamdaRelease([string]$Release,[string]$Root,[hashtable]$Games,[
         if(Test-Path -LiteralPath $configPath) {
             $old=Read-LamdaJson $configPath
             if($old.product -ne 'LamdaUI'){throw 'That installation folder belongs to another application.'}
+            if((Get-LamdaMember $old 'buildMode' '') -eq 'local') {
+                if((Get-LamdaMember (Get-LamdaMember $bundles.desktop 'localBuild' @{}) 'mode' '') -ne 'local'){throw 'This installation requires a locally built tray app. Run the current LamdaUI setup.'}
+                foreach($selectedClient in $Games.Keys) {
+                    if((Get-LamdaMember (Get-LamdaMember $bundles[$selectedClient].engine 'localBuild' @{}) 'mode' '') -ne 'local'){throw 'This installation requires a locally built engine. Run the current LamdaUI setup.'}
+                }
+            }
             if((Get-LamdaMember $old 'schema') -eq 2){foreach($p in $old.clients.PSObject.Properties){$clientConfig[$p.Name]=$p.Value}}
             elseif((Get-LamdaMember $old 'schema') -eq 1) {
                 # The earlier developer launcher used these fixed game paths.
@@ -521,7 +673,9 @@ function Install-LamdaRelease([string]$Release,[string]$Root,[hashtable]$Games,[
         $stage=Join-Path $transactions ([DateTime]::Now.ToString('yyyyMMdd-HHmmss-fff')+'-'+[guid]::NewGuid().ToString('N'))
         [IO.Directory]::CreateDirectory($stage) | Out-Null
         $newConfig=Join-Path $stage 'new-config.json'
-        Write-LamdaJson $newConfig @{product='LamdaUI';schema=2;repository=$script:LamdaRepository;clients=$clientConfig}
+        $configuration=@{product='LamdaUI';schema=2;repository=$script:LamdaRepository;clients=$clientConfig}
+        if((Get-LamdaMember (Get-LamdaMember $bundles.desktop 'localBuild' @{}) 'mode' '') -eq 'local'){$configuration.buildMode='local'}
+        Write-LamdaJson $newConfig $configuration
         if((Get-LamdaHash $configPath) -ne (Get-LamdaHash $newConfig)){$changes.Add(@{target=$configPath;source=$newConfig;before=(Get-LamdaHash $configPath);after=(Get-LamdaHash $newConfig);backup=$null})}
         if($changes.Count -eq 0) {
             Set-LamdaStatus $StatusFile 'complete' 'LamdaUI is already up to date.'

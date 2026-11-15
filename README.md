@@ -1,6 +1,6 @@
 # LamdaUI and Lamda Engine
 
-[**Download LamdaUI 1.5.0**](https://github.com/tm-LBenson/lamda-engine/releases/tag/v1.5.0) · [Latest release](https://github.com/tm-LBenson/lamda-engine/releases/latest)
+[**Download LamdaUI 1.5.1**](https://github.com/tm-LBenson/lamda-engine/releases/tag/v1.5.1) · [Latest release](https://github.com/tm-LBenson/lamda-engine/releases/latest)
 
 LamdaUI combines an in-game addon hub with a Windows companion. Retail and WoW
 Forever have separate addon builds, settings, companion data and backups.
@@ -10,6 +10,15 @@ Forever have separate addon builds, settings, companion data and backups.
 1. Download **Install-LamdaUI.cmd** from the release page and run it on 64-bit Windows.
 2. Select **World of Warcraft** for Retail or **WoW Forever**, then choose the game folder if it was not found.
 3. Complete setup, launch LamdaUI, and open `/lamda` in game. The companion's **Browse Addons** page installs the optional bundled modules.
+
+Setup installs Git and Go through Windows Package Manager if they are missing,
+then builds the LamdaUI engine and tray app on your PC. Updates use the same
+source build. The source is packaged with the release and verified before
+building. If a build fails, setup keeps the existing installation. Build logs
+are under `%LOCALAPPDATA%\\LamdaUI-Setup\\Logs`. Windows App Installer (winget)
+and .NET Framework 4.8 are prerequisites. Normal Windows permission prompts may
+appear when installing build tools. The optional Retail SimulationCraft worker
+remains the separately licensed upstream binary.
 
 Forever setup recognizes the production `_forever_\Wow.exe` folder and the older
 `_classic_beta_\WowB.exe` folder. Retail uses `_retail_\Wow.exe`. Setup checks the
